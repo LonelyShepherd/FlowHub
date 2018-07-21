@@ -1,0 +1,64 @@
+.form {
+  width: 100%;
+}
+
+.form-group {
+  width: 100%;
+  margin-bottom: 30px;
+  position: relative;
+
+  label {
+    display: inline-block;
+    font-size: 13px;
+  }
+
+  label + input {
+    margin-top: 10px;
+  }
+
+  input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    border: 1px solid #d4d7dd;
+    transition: .2s;
+  }
+
+  input:focus {
+    border-color: $light-blue;
+    box-shadow: 0 0 20px rgba(0,0,0,.06);
+  }
+
+  input.input-validation-error {
+    border-color: $light-red;
+  }
+
+  .checkbox {
+    display: table;
+
+    input, label {
+      display: table-cell;
+      vertical-align: middle;
+    }
+
+    input {
+      width: auto;
+      height: auto;
+      margin-right: 5px; 
+    }
+  }
+
+  .validation-error-message {
+    color: $red;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 3px;
+    margin-left: 5px;
+    
+    &, span {
+      height: auto;
+      line-height: normal;
+    }
+  }
+}

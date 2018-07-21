@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css?family=Poppins:400,600');
+@import "partials/pallete";
+
+$default-font-set: 'Poppins', sans-serif, arial;
+
+body {
+  font-family: $default-font-set;
+}
+
+.container {
+  width: 80%;
+  margin: 0 auto;
+}
+
+.btn {
+  display: inline-block;
+  border-radius: 3px;
+  padding: 0 20px;
+  height: 30px;
+  line-height: 30px;
+  font-size: 14px;
+  border: none;
+  color: #fff;
+  font-family: $default-font-set;
+}
+
+.btn-bolded {
+  font-weight: 600;
+}
+
+.btn-medium {
+  height: 35px;
+  line-height: 35px;
+}
+
+.btn-large {
+  height: 40px;
+  line-height: 40px;
+}
+
+.btn-default {
+  background: $blue;
+}
+
+.btn-default:hover {
+  background: $light-blue;
+}
+
+.clearfix:after {
+  content: "";
+  display: table;
+  clear: both;
+}
