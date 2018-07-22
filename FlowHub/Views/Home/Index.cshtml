@@ -1,0 +1,69 @@
+﻿@{
+    ViewBag.Title = "FlowHub";
+    Layout = "~/Views/Shared/_Landing.cshtml";
+}
+
+<div class="content clearfix">
+  <div class="container">
+    <div class="content__section content__section--about">
+      <div>
+        <h1>Introducing FlowHub</h1>
+        <p>A better way for managing your social media. Manage all your accounts in one place, schedule posts, analyze performance and more.</p>
+        <a href="@Url.Action("Register", "Account")" class="btn btn-bolded btn-medium call-to-action">Get Started</a>
+      </div>
+    </div>
+    <div class="content__section content__section--schedule-feature">
+      <h1 class="head-title">Schedule your social media posts</h1>
+      <p class="head-paragraph">Schedule your posts quick and easy for all of your social accounts and <strong>FlowHub</strong> will publish them automatically, according to your schedule</p>
+      <a href="@Url.Action("Register", "Account")" class="call-to-action-link">Schedule your first post now</a>
+      <div class="feature-steps clearfix">
+        <div class="feature-steps__step">
+          <div></div>
+          <h3>Set your posting schedule</h3>
+          <p>Choose the dates and times according to which you want to publish to each account</p>
+        </div>
+        <div class="feature-steps__step">
+          <div></div>
+          <h3>Add posts</h3>
+          <p>Create new posts and schedule them for publishing, <strong>FlowHub</strong> will do the rest</p>
+        </div>
+        <div class="feature-steps__step">
+          <div></div>
+          <h3>Wait for miracle</h3>
+          <p>Just wait and watch your social media influence growing from day to day</p>
+        </div>
+      </div>
+      <img src="dist/images/pointers.svg" class="pointers">
+      <h3><strong>It is fun and easy.</strong> We are counting on you to come and see for yourself.</h3>
+      <img src="dist/images/posts.png" class="posts">
+    </div>
+  </div>
+  <div class="content__section content__section--analytics-feature">
+    <div class="container">
+      <h1 class="head-title">Get a complete overview of your social trending</h1>
+      <p class="head-paragraph">With the given analytics tools, <strong>FlowHub</strong> will help you determine which types of content performs best with your audience</p>
+      <a href="@Url.Action("Register", "Account")" class="call-to-action-link">Start analyzing your posts now</a>
+      <div class="feature-steps clearfix">
+        <div class="feature-steps__step">
+          <div></div>
+          <h3>Track key engagement metrics</h3>
+          <p>Easily dive into key metrics such as likes, shares, comments, clicks, retweets, mentions, reach and more</p>
+        </div>
+        <div class="feature-steps__step">
+          <div></div>
+          <h3>Track your best posts</h3>
+          <p>See which of your posts are porforming best, so you can do more of what works best and increase engagement</p>
+        </div>
+        <div class="feature-steps__step">
+          <div></div>
+          <h3>Reporting made easy</h3>
+          <p>Get all the data you need to see and inspect how your content is performing</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="footer">
+  <a href=""><img src="dist/images/logo.png"></a>
+  <p>&copy; FlowHub @DateTime.Now.Year. All rights reserved</p>
+</div>
