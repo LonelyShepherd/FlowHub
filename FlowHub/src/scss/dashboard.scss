@@ -1,0 +1,110 @@
+@import "partials/reset";
+@import "partials/global";
+@import "partials/form";
+
+body {
+  width: 100%;
+  min-height: 100%;
+  background-color: #f9fbfd;
+}
+
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100%;
+  background: #fff;
+  border-right: 1px solid #e1e1e1;
+  padding: 0 25px;
+  overflow-y: auto;
+  font-size: 14px;
+  color: $light-gray;
+
+  a:not(.nav__menu__logo) {
+    display: block;
+    color: $light-gray;
+    padding: .5em 0;
+
+    &:hover {
+      color: $dark-gray;
+    }
+  }
+
+}
+
+.nav__menu__logo {
+  display: table;
+  margin: 20px auto;
+  
+  img {
+    width: 150px;
+  }
+}
+
+.nav__section-separator {
+  border: none;
+  height: 1px;
+  background: #e1e1e1;
+  margin: 15px 0;
+}
+
+.nav__user-info__section-title {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  display: table;
+  padding: .5em 0;
+}
+
+.nav__user-info__user {
+  display: table;
+  margin: 1em 0;
+}
+
+.user__avatar, .user__info {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.user__avatar {
+  img {
+    width: 30px;
+    vertical-align: middle;
+  }
+}
+
+.user__info {
+  padding-left: 7.5px;
+}
+
+.user__info__name {
+  color: $dark-gray;
+}
+
+.user__info__email {
+  font-size: 11px;
+  margin-top: -5px;
+}
+
+.nav__user-info__sign-out {
+  color: $light-red !important;
+
+  &:hover {
+    color: $red !important;
+  }
+}
+
+.main {
+  width: 100%;
+  padding-left: 250px;
+}
+
+.dashboard-section {
+  padding: 0 100px;
+  margin-top: 30px;
+
+  &:last-child {
+    margin-bottom: 30px;
+  }
+}

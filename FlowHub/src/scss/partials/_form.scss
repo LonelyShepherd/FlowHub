@@ -16,7 +16,8 @@
     margin-top: 10px;
   }
 
-  input {
+  input, textarea {
+    font-family: $default-font-set;
     width: 100%;
     padding: 10px;
     border-radius: 4px;
@@ -24,7 +25,7 @@
     transition: .2s;
   }
 
-  input:focus {
+  input:focus, textarea:focus {
     border-color: $light-blue;
     box-shadow: 0 0 20px rgba(0,0,0,.06);
   }

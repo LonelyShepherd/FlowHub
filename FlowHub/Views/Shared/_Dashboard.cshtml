@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>@("FlowHub | " + ViewBag.Title)</title>
+  <meta name="viewport" content="with=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" type="image/ico" href="~/dist/images/favicon.ico">
+  <link rel="stylesheet" type="text/css" href="~/dist/css/dashboard.css">
+</head>
+<body>
+  <div class="nav">
+    <ul class="nav__menu">
+      <li><a href="" class="nav__menu__logo"><img src="~/dist/images/logo.png"></a></li>
+      <li><a href="">Home</a></li>
+      <li><a href="">Accounts</a></li>
+      <li><a href="">Teams</a></li>
+    </ul>
+    <hr class="nav__section-separator">
+    <div class="nav__user-info">
+      <span class="nav__user-info__section-title">Personal</span>
+      <div class="nav__user-info__user">
+        <div  class="user__avatar">
+          <img src="~/dist/images/avatar.png">
+        </div>
+        <div class="user__info">
+          <div class="user__info__name">John Smith</div>
+          <div class="user__info__email">johnsmith@gmail.com</div>
+        </div>
+      </div>
+      <ul>
+        <li><a href="">Settings</a></li>
+        <li><a href="" class="nav__user-info__sign-out">Sign out</a></li>
+      </ul>
+      <ul></ul>
+    </div>
+  </div>
+  <div class="main">
+    <div class="content">
+      @RenderBody()
+    </div>
+  </div>
+  @RenderSection("scripts", required: false)
+</body>
+</html>
