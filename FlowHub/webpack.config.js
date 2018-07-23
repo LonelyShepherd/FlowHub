@@ -2,7 +2,7 @@ const path = require('path');
 const dist = path.resolve(__dirname, './dist/');
 
 const scssFilename = 'main';
-const jsFilename = 'main';
+const jsFilename = 'adapt';
 
 module.exports = {
   entry: [

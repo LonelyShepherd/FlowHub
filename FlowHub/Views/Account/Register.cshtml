@@ -1,6 +1,6 @@
 ﻿@model FlowHub.Models.RegisterViewModel
 @{
-  ViewBag.Title = "FlowHub | Register";
+  ViewBag.Title = "FlowHub | Sign up";
   Layout = "~/Views/Shared/_Landing.cshtml";
 }
 
@@ -31,5 +31,6 @@
 </div>
 
 @section Scripts {
-    @Scripts.Render("~/bundles/validate")
+  @Scripts.Render("~/bundles/validate")
+  @Scripts.Render("~/dist/js/adapt.js")
 }
