@@ -5,29 +5,44 @@
 }
 
 <div class="sign-container">
-  @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form" }))
-  {
-    @Html.AntiForgeryToken()
-    <h1>Welcome to <strong>FlowHub</strong></h1>
-    <p>Fill out the form to get started</p>
-    <div class="form-group">
-      @Html.LabelFor(m => m.Email)
-      @Html.TextBoxFor(m => m.Email, new { placeholder = "johnsmith@mail.com" })
-      @Html.ValidationMessageFor(m => m.Email, "", new { @class = "validation-error-message" })
-    </div>
-    <div class="form-group">
-      @Html.LabelFor(m => m.Password)
-      @Html.PasswordFor(m => m.Password, new { placeholder = "●●●●●●●●" })
-      @Html.ValidationMessageFor(m => m.Password, "", new { @class = "validation-error-message" })
-    </div>
-    <div class="form-group">
-      @Html.LabelFor(m => m.ConfirmPassword)
-      @Html.PasswordFor(m => m.ConfirmPassword, new { placeholder = "●●●●●●●●" })
-      @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "validation-error-message" })
-    </div>
-    <span>Already have an account? <a href="@Url.Action("Login", "Account")">Sign in</a></span>
-    <input type="submit" value="Get started" class="btn btn-bolded btn-medium btn-default">
-  }
+    @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        <h1>Welcome to <strong>FlowHub</strong></h1>
+        <p>Fill out the form to get started</p>
+        <div class="form-group">
+            @Html.LabelFor(m => m.Name)
+            @Html.TextBoxFor(m => m.Name, new { placeholder = "John" })
+            @Html.ValidationMessageFor(m => m.Name, "", new { @class = "validation-error-message" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.Surname)
+            @Html.TextBoxFor(m => m.Surname, new { placeholder = "Smith" })
+            @Html.ValidationMessageFor(m => m.Surname, "", new { @class = "validation-error-message" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.Email)
+            @Html.TextBoxFor(m => m.Email, new { placeholder = "johnsmith@mail.com" })
+            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "validation-error-message" })
+        </div>
+        @*<div class="form-group">
+            @Html.LabelFor(m => m.Email)
+            @Html.TextBoxFor(m => m.Email, new { placeholder = "johnsmith@mail.com" })
+            @Html.ValidationMessageFor(m => m.Email, "", new { @class = "validation-error-message" })
+        </div>*@
+        <div class="form-group">
+            @Html.LabelFor(m => m.Password)
+            @Html.PasswordFor(m => m.Password, new { placeholder = "●●●●●●●●" })
+            @Html.ValidationMessageFor(m => m.Password, "", new { @class = "validation-error-message" })
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(m => m.ConfirmPassword)
+            @Html.PasswordFor(m => m.ConfirmPassword, new { placeholder = "●●●●●●●●" })
+            @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "validation-error-message" })
+        </div>
+        <span>Already have an account? <a href="@Url.Action("Login", "Account")">Sign in</a></span>
+        <input type="submit" value="Get started" class="btn btn-bolded btn-medium btn-default">
+    }
 </div>
 
 @section Scripts {
