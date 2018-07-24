@@ -83,6 +83,7 @@ namespace FlowHub.Models
 
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{6,}$", ErrorMessage = "The password must be at least 6 characters long, consisting of uppercase and lowercase letters, digits and special characters")]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; }
