@@ -210,10 +210,23 @@
     <Compile Include="Migrations\201807231906276_AddNameAndSurnameToApplicationUser.Designer.cs">
       <DependentUpon>201807231906276_AddNameAndSurnameToApplicationUser.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201807241844285_AddAvatarAndInfoToApplicationUser.cs" />
+    <Compile Include="Migrations\201807241844285_AddAvatarAndInfoToApplicationUser.Designer.cs">
+      <DependentUpon>201807241844285_AddAvatarAndInfoToApplicationUser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201807241915441_CreatingTeamsTable.cs" />
+    <Compile Include="Migrations\201807241915441_CreatingTeamsTable.Designer.cs">
+      <DependentUpon>201807241915441_CreatingTeamsTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201807241918132_AddingTeamToApplicationUser.cs" />
+    <Compile Include="Migrations\201807241918132_AddingTeamToApplicationUser.Designer.cs">
+      <DependentUpon>201807241918132_AddingTeamToApplicationUser.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\Team.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -302,6 +315,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201807231906276_AddNameAndSurnameToApplicationUser.resx">
       <DependentUpon>201807231906276_AddNameAndSurnameToApplicationUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807241844285_AddAvatarAndInfoToApplicationUser.resx">
+      <DependentUpon>201807241844285_AddAvatarAndInfoToApplicationUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807241915441_CreatingTeamsTable.resx">
+      <DependentUpon>201807241915441_CreatingTeamsTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807241918132_AddingTeamToApplicationUser.resx">
+      <DependentUpon>201807241918132_AddingTeamToApplicationUser.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
