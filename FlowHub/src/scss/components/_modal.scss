@@ -1,0 +1,62 @@
+.fh-modal__overlay {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  background: rgba(0,0,0,.3);
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.fh-modal__content {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  z-index: 2;
+  background: rgb(250, 250, 250);
+  box-shadow: 0 0 15px rgba(0,0,0,.1);
+}
+
+.fh-modal__content__header, .fh-modal__content__body {
+  padding: 10px 20px;
+}
+
+.fh-modal__content__body {
+  overflow-y: auto;
+}
+
+.fh-modal__content__header h3 {
+  font-weight: 600;
+}
+
+.fh-modal__content__footer {
+  padding: 20px;
+
+  &:after {
+    @extend %clearfix;
+  } 
+}
+
+.fh-modal__content__footer > div {
+  float: right;
+}
+
+.fh-modal__close {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  display: block;
+  width: 25px;
+  height: 25px;
+  background-image: url('../images/close-btn.png');
+  background-repeat: no-repeat;
+  background-position: top;
+  transition: .2s;
+
+  &:hover {
+    background-position-y: -25px;
+  }
+}

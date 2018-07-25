@@ -1,8 +1,8 @@
 const path = require('path');
 const dist = path.resolve(__dirname, './dist/');
 
-const scssFilename = 'main';
-const jsFilename = 'adapt';
+const scssFilename = 'dashboard';
+const jsFilename = 'teams';
 
 module.exports = {
   entry: [

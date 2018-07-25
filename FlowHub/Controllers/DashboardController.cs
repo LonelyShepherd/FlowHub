@@ -23,6 +23,18 @@ namespace FlowHub.Controllers
       return View();
     }
 
+		// GET: Dashboard/Teams
+		public ActionResult Teams()
+		{
+			return View();
+		}
+
+		// GET: Dashboard/CreateTeam
+		public ActionResult CreateTeam()
+		{
+			return PartialView("~/Views/Components/_CreateTeamModal.cshtml");
+		}
+
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)

@@ -10,10 +10,10 @@
 <body>
   <div class="nav">
     <ul class="nav__menu">
-      <li><a href="" class="nav__menu__logo"><img src="~/dist/images/logo.png"></a></li>
-      <li><a href="">Home</a></li>
+      <li><a href="@Url.Action("Index", "Dashboard")" class="nav__menu__logo"><img src="~/dist/images/logo.png"></a></li>
+      <li><a href="@Url.Action("Index", "Dashboard")">Home</a></li>
       <li><a href="">Accounts</a></li>
-      <li><a href="">Teams</a></li>
+      <li><a href="@Url.Action("Teams", "Dashboard")">Teams</a></li>
     </ul>
     <hr class="nav__section-separator">
     <div class="nav__user-info">

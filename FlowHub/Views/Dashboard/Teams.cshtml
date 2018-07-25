@@ -1,0 +1,16 @@
+﻿@{
+  ViewBag.Title = "Teams";
+  Layout = "~/Views/Shared/_Dashboard.cshtml";
+}
+
+<div class="dashboard-section dashboard-section--head clearfix">
+  <h2>Teams</h2>
+  <div>
+    <button class="btn btn-bolded btn-success create-team-btn">Create team</button>
+  </div>  
+</div>
+
+@section Scripts {
+  @Scripts.Render("~/Scripts/jquery-3.3.1.min.js")
+  @Scripts.Render("~/dist/js/teams.js")
+}

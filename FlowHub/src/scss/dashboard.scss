@@ -1,6 +1,7 @@
 @import "partials/reset";
 @import "partials/global";
 @import "partials/form";
+@import "partials/createTeam";
 
 body {
   width: 100%;
@@ -106,5 +107,21 @@ body {
 
   &:last-child {
     margin-bottom: 30px;
+  }
+}
+
+.dashboard-section--head {
+  h2 {
+    display: inline;
+  }
+
+  & > div {
+    display: table;
+    float: right;
+
+    .btn {
+      display: table-cell;
+      vertical-align: middle;
+    }
   }
 }

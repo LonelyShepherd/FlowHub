@@ -40,14 +40,38 @@ body {
 
 .btn-default {
   background: $blue;
+
+  &:hover {
+    background: $light-blue;
+  }
 }
 
-.btn-default:hover {
-  background: $light-blue;
+.btn-success {
+  background: $green;
+
+  &:hover {
+    background: $light-green;
+  }
 }
 
-.clearfix:after {
+.btn-default-outlined {
+  border: 1px solid $blue;
+  color: $blue;
+  background: transparent;
+  line-height: 28px;
+
+  &:hover {
+    border-color: $light-blue;
+    color: $light-blue;
+  }
+}
+
+%clearfix {
   content: "";
   display: table;
   clear: both;
+}
+
+.clearfix:after {
+  @extend %clearfix;
 }
