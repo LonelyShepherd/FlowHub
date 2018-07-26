@@ -1,4 +1,6 @@
-﻿<div class="fh-modal__content__image-upload">
+﻿@model FlowHub.Models.Team
+
+<div class="fh-modal__content__image-upload">
   <div>  
     <img src="~/dist/images/team-logo.png">
     <label for="image-upload" class="btn">Upload
@@ -17,12 +19,12 @@
         <div class="fh-multistep__steps__step">
           <div class="team__info">
             <div class="form-group form-group--small form-group--no-validation form-group--fancy-labels">
-              <label>Name</label>
-              <input type="text" placeholder="My Team">
+              <label>@Html.LabelFor(m => m.Name)</label>
+              @Html.TextBoxFor(m => m.Name)
             </div>
             <div class="form-group form-group--small form-group--no-validation form-group--fancy-labels">
-              <label>Bio</label>
-              <textarea class="not-resizable"></textarea>
+              <label>@Html.LabelFor(m => m.Info)</label>
+              @Html.TextAreaFor(m => m.Info, new { @class = "not-resizable" })
             </div>
           </div>
         </div>

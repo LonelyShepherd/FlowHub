@@ -222,6 +222,14 @@
     <Compile Include="Migrations\201807241918132_AddingTeamToApplicationUser.Designer.cs">
       <DependentUpon>201807241918132_AddingTeamToApplicationUser.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201807252043208_TeamsTableUpdate.cs" />
+    <Compile Include="Migrations\201807252043208_TeamsTableUpdate.Designer.cs">
+      <DependentUpon>201807252043208_TeamsTableUpdate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201807252107569_NullableTeamId.cs" />
+    <Compile Include="Migrations\201807252107569_NullableTeamId.Designer.cs">
+      <DependentUpon>201807252107569_NullableTeamId.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
@@ -229,6 +237,7 @@
     <Compile Include="Models\Team.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="ViewModels\DashboardViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-theme.css" />
@@ -326,6 +335,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201807241918132_AddingTeamToApplicationUser.resx">
       <DependentUpon>201807241918132_AddingTeamToApplicationUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807252043208_TeamsTableUpdate.resx">
+      <DependentUpon>201807252043208_TeamsTableUpdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807252107569_NullableTeamId.resx">
+      <DependentUpon>201807252107569_NullableTeamId.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

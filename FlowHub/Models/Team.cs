@@ -18,7 +18,6 @@ namespace FlowHub.Models
         [ForeignKey("LeaderId")]
         public virtual ApplicationUser Leader { get; set; }
 
-        [Required]
         public string Name { get; set; }
         public string Avatar { get; set; }
         public string Info { get; set; }

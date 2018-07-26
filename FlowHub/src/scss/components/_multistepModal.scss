@@ -47,7 +47,7 @@
 
 .fh-multistep__steps {
   padding: 0 15px;
-  overflow-y: auto;
+  //overflow-y: auto;
 
   &:after {
     @extend %clearfix;

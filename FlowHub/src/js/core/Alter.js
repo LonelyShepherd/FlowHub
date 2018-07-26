@@ -7,6 +7,10 @@ class Alter {
     refChild.parentNode.insertBefore(newChild, refChild);
   }
 
+  static after(newChild, refChild) {
+    refChild.parentNode.insertBefore(newChild, refChild.nextSibling);
+  }
+
   static unmount(element) {
     element.parentNode.removeChild(element);
   }

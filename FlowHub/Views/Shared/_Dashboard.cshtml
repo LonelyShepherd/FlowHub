@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@using FlowHub.Models
+@using FlowHub.ViewModels
+@model DashboardViewModel<ApplicationUser>
+
+<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
@@ -23,8 +27,8 @@
           <img src="~/dist/images/avatar.png">
         </div>
         <div class="user__info">
-          <div class="user__info__name">John Smith</div>
-          <div class="user__info__email">johnsmith@gmail.com</div>
+          <div class="user__info__name">@(Model.Model.Name + " " + Model.Model.Surname)</div>
+          <div class="user__info__email">@Model.Model.Email</div>
         </div>
       </div>
       <ul>
