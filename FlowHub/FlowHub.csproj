@@ -191,6 +191,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Api_Managers\FacebookClient.cs" />
+    <Compile Include="Api_Managers\FacebookOAuthLogin.cs" />
+    <Compile Include="Api_Managers\FacebookPostsApi .cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\IdentityConfig.cs" />

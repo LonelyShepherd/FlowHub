@@ -15,8 +15,10 @@ namespace FlowHub.Api_Managers
         // See if you can make it neat
         Task<string> GetAsync(string endpoint, string fields);
         Task<string> PostAsync(string endpoint, string fields);
+        Task<string> DeleteAsync(string endpoint, string fields);
     }
 
+    // Do NOT Dispose HttpClient
 
     public class FacebookClient : IFacebookClient, IDisposable
     {
@@ -26,15 +28,15 @@ namespace FlowHub.Api_Managers
         public FacebookClient()
         {
             _client.DefaultRequestHeaders.Accept.Clear();
-            _client.BaseAddress = new Uri("https://graph.facebook.com/");
+            _client.BaseAddress = new Uri("https://graph.facebook.com");
             _client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-            //BaseUri = "https://graph.facebook.com/";
+            //BaseUri = "https://graph.facebook.com";
         }
 
         public async Task<string> GetAsync(string endpoint, string fields)
         {
             //Uri uriString = new Uri(String.Format("{0}{1}", BaseUri, endpoint));
-            Uri uriString = new Uri(String.Format("{0}", endpoint));
+            string uriString = String.Format("{0}{1}", endpoint, fields);
 
             string response = await _client.GetStringAsync(uriString);
 
@@ -44,7 +46,7 @@ namespace FlowHub.Api_Managers
         public async Task<string> PostAsync(string endpoint, string fields)
         {
             //Uri uriString = new Uri(String.Format("{0}{1}{2}", BaseUri, endpoint, fields));
-            Uri uriString = new Uri(String.Format("{0}{1}", endpoint, fields));
+            string uriString = String.Format("{0}{1}", endpoint, fields);
             var values = DictionaryFromFields(fields);
 
             var content = new FormUrlEncodedContent(values);
@@ -55,9 +57,15 @@ namespace FlowHub.Api_Managers
             return responseString;
         }
 
-        public void Dispose()
+        public async Task<string> DeleteAsync(string endpoint, string fields)
         {
-            _client.Dispose();
+            //Uri uriString = new Uri(String.Format("{0}{1}", BaseUri, endpoint));
+            string uriString = String.Format("{0}{1}", endpoint, fields);
+
+            HttpResponseMessage response = await _client.DeleteAsync(uriString);
+            var responseString = await response.Content.ReadAsStringAsync(); 
+
+            return responseString;
         }
 
         private Dictionary<string, string> DictionaryFromFields(string fields)
@@ -66,6 +74,11 @@ namespace FlowHub.Api_Managers
             Dictionary<string, string> EscapedValues = parts.ToDictionary(x => x.Split('=')[0], y => y.Split('=')[1]);
 
             return EscapedValues.ToDictionary(a => a.Key, b => Uri.UnescapeDataString(b.Value));
+        }
+
+        public void Dispose()
+        {
+            _client.Dispose();
         }
     }
 }
