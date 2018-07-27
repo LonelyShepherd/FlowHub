@@ -98,7 +98,7 @@ let sequentialAdd = new SequentialAdd(null, {
           result.appendChild(fragment);
         },
         onRegisterSelected: (instance, selected) => {    
-          instance.container.innerHTML = selected.innerHTML;
+          instance.trigger.innerHTML = selected.innerHTML;
     
           instance.hideResult();
         }
