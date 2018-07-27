@@ -264,3 +264,6 @@ paket-files/
 __pycache__/
 *.pyc
 
+# EntityFramework database files
+*.mdf
+*.ldf
