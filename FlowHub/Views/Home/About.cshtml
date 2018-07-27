@@ -5,3 +5,8 @@
 <h3>@ViewBag.Message</h3>
 
 <p>Use this area to provide additional information.</p>
+
+@* Facebook Api Testing Area *@
+
+@Html.ActionLink("Post", "PostToFacebook", "Home", null, new { @class = "btn btn-default" })
+@Html.ActionLink("Get Token", "GetToken", "Home", null, new { @class = "btn btn-default" })
