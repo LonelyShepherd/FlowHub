@@ -57,6 +57,9 @@ namespace FlowHub.Controllers
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
+						if (User.Identity.IsAuthenticated)
+							return RedirectToAction("Index", "Dashboard");
+
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
@@ -79,7 +82,7 @@ namespace FlowHub.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
-                    return RedirectToLocal(returnUrl);
+                    return RedirectToAction("Index", "Dashboard");
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
@@ -139,6 +142,9 @@ namespace FlowHub.Controllers
         [AllowAnonymous]
         public ActionResult Register()
         {
+						if (User.Identity.IsAuthenticated)
+							return RedirectToAction("Index", "Dashboard");
+
             return View();
         }
 
@@ -169,7 +175,7 @@ namespace FlowHub.Controllers
                     // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                     // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "Dashboard");
                 }
                 AddErrors(result);
             }

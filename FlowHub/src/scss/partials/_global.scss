@@ -3,6 +3,20 @@
 
 $default-font-set: 'Poppins', sans-serif, arial;
 
+%dispose-button {
+  display: block;
+  width: 25px;
+  height: 25px;
+  background-image: url('../images/close-btn.png');
+  background-repeat: no-repeat;
+  background-position: top;
+  transition: .2s;
+}
+
+%dispose-button-hover {
+  background-position-y: -25px;
+}
+
 body {
   font-family: $default-font-set;
 }
@@ -40,14 +54,38 @@ body {
 
 .btn-default {
   background: $blue;
+
+  &:hover {
+    background: $light-blue;
+  }
 }
 
-.btn-default:hover {
-  background: $light-blue;
+.btn-success {
+  background: $green;
+
+  &:hover {
+    background: $light-green;
+  }
 }
 
-.clearfix:after {
+.btn-default-outlined {
+  border: 1px solid $blue;
+  color: $blue;
+  background: transparent;
+  line-height: 28px;
+
+  &:hover {
+    border-color: $light-blue;
+    color: $light-blue;
+  }
+}
+
+%clearfix {
   content: "";
   display: table;
   clear: both;
+}
+
+.clearfix:after {
+  @extend %clearfix;
 }

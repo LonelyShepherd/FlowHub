@@ -1,0 +1,81 @@
+@import "../components/modal";
+@import "../components/multiStepModal";
+@import "../components/sequentialAdd";
+@import "../components/select";
+@import "../components/autoComplete";
+
+.fh-modal__content__image-upload {
+  float: left;
+  width: 300px;
+  background: #f3f3f3;
+  height: 100%;
+  display: table;
+
+  & > div {
+    display: table-cell;
+    vertical-align: middle;
+  }
+
+  img {
+    display: block;
+    margin: 0 auto;
+    width: 80px;
+    padding: 2px;
+    border: 1px solid $light-gray;
+    border-radius: 50%;
+  }
+
+  p {
+    text-align: center;
+    padding: 0 20px;
+    font-size: 13px;
+    color: $light-gray;
+  }
+
+  label {
+    cursor: pointer;
+    display: table;
+    margin: 5px auto 10px auto;
+    color: $green;
+
+    input {
+      display: none;
+    }
+  }
+}
+
+.fh-modal__content__wrapper {
+  float: left;
+  width: 400px;
+}
+
+.fh-modal__content__footer {
+  .btn:last-of-type {
+    margin-left: 5px;
+  }
+}
+
+.fh-sequential-add__added--custom {
+  & > div {
+    float: left;
+
+    div:nth-of-type(2) {
+      margin-top: -4px;
+      font-size: 11px;
+      color: $light-gray;
+    }
+  }
+
+  &:after {
+    @extend %clearfix;
+  }
+
+  .fh-select {
+    float: right;
+    width: 130px;
+    position: absolute;
+    top: 50%;
+    margin-top: -15px;
+    right: 35px;
+  }
+}

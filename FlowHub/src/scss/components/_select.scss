@@ -1,0 +1,64 @@
+.fh-select {
+  width: 160px;
+  position: relative;
+
+  & > button {
+    border-radius: 3px;
+    height: 30px;
+    border: 1px solid #ccc;
+    padding: 0 7.5px;
+    display: block;
+    width: 100%;
+    line-height: 28px;
+    text-align: left;
+    padding-right: 25px;
+    background: #fff url('../images/select.png') no-repeat right -1px;
+    color:  $dark-gray;
+
+    &:hover {
+      border-color: $light-blue;
+      background-position-y: -31px;
+    }
+  }
+
+  & > .fh-select__result {
+    max-height: 200px;
+  }
+}
+
+.fh-select__result {
+  background: #fff;
+  margin-top: 5px;
+  max-height: 300px;
+  width: 100%;
+  position: absolute;
+  box-shadow: 0 2px 5px rgba(0,0,0,.1);
+  border-radius: 3px;
+  font-weight: normal;
+  z-index: 2;
+  overflow-y: auto;
+  left: 0;
+}
+
+.fh-select__result__item {
+  font-size: 13px;
+  padding: 5px 10px;
+  width: 100%;
+  color: $dark-gray;
+  cursor: pointer;
+
+  div:last-of-type {
+    font-size: 11px;
+    color: $light-gray;
+    margin-top: -4px;
+  }
+
+}
+.fh-select__result__item:hover, .fh-select__result__item--selected {
+    background: $blue;
+    color: #fff;
+
+    div:last-of-type {
+      color: rgba(255,255,255,.6);
+    }
+  }

@@ -20,7 +20,7 @@ namespace FlowHub.Models
         public string Avatar { get; set; }
         public string Info { get; set; }
 
-        public int TeamId { get; set; }
+        public int? TeamId { get; set; }
         [ForeignKey("TeamId")]
         public virtual Team Team { get; set; }
 
