@@ -3,3 +3,22 @@
   padding-left: 35px;
   color: $blue;
 }
+
+.fh-sequential-add__added {
+  font-size: 13px;
+  color: $dark-gray;
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.fh-sequential-add__added__remove {
+  @extend %dispose-button;
+  position: absolute;
+  top: 50%;
+  margin-top: -(25px / 2);
+  right: 0;
+
+  &:hover {
+    @extend %dispose-button-hover;
+  }
+}

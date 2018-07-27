@@ -14,6 +14,10 @@ class Alter {
   static unmount(element) {
     element.parentNode.removeChild(element);
   }
+
+  static replace(newChild, oldChild) {
+    oldChild.parentNode.replaceChild(newChild, oldChild);
+  }
 }
 
 export default Alter;

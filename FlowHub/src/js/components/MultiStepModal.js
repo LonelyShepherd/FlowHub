@@ -9,7 +9,7 @@ class MultiStepModal extends Modal {
 
     this.steps = steps;
     this.current = 0;
-    this.stepTitle = '';
+    this.stepTitle = undefined;
     this.stepPoints = [];
     this.stepSections = [];
     this.actions = undefined;

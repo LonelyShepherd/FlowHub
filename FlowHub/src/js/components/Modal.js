@@ -51,6 +51,7 @@ class Modal {
     }, { visibility: 'hidden' });
     Alter.prepend(this.modal, document.body);
 
+    
     let modalContent;
     let fragment = document.createDocumentFragment();
     
@@ -70,9 +71,12 @@ class Modal {
     this.modalClose = Utils.createElement('button', { className: 'fh-modal__close' })
     modalContent.appendChild(this.modalClose);
     
-    fragment.appendChild(modalContent);
+    let modalContentPlaceholder = Utils.createElement('div', { className: 'fh-modal__placeholder' });
+    modalContentPlaceholder.appendChild(modalContent);
+
+    fragment.appendChild(modalContentPlaceholder);
     this.modal.appendChild(fragment);    
-    
+
     let modalContentBody = modalContent.querySelector('.fh-modal__content__body');
     let modalContentHeader = window.getComputedStyle(modalContent.querySelector('.fh-modal__content__header'));
     let modalContentFooter = window.getComputedStyle(modalContent.querySelector('.fh-modal__content__footer'));

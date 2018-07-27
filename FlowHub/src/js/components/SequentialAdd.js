@@ -1,9 +1,13 @@
+import Component from './Component';
 import Traversal from '../core/Traversal';
 import Utils from '../core/Utils';
-import AutoComplete from './AutoComplete';
+import Alter from '../core/Alter';
+import { SEQUENTIAL_ADD } from '../helpers/common';
 
-class SequentialAdd {
-  constructor(trigger) {
+class SequentialAdd extends Component {
+  constructor(trigger, settings) {
+    super(settings);
+
     this.trigger = trigger;
     this.container = undefined;
   }
@@ -13,56 +17,19 @@ class SequentialAdd {
   }
 
   add() {
-    let formGroup = Utils.createElement('div', {
-      className: 'form-group form-group--small form-group--no-validation',
-      innerHTML: '<input type="text" placeholder="johnsmith@mail.com">',
-    });
-
-    let autoComplete = new AutoComplete({
-      reference: this.trigger,
-      layout: formGroup,
-      onAdd: () => {
-        formGroup.querySelector('input').focus();
-      },
-      onInput: (input, result) => {
-        $.ajax({
-          url: '/Dashboard/SearchUsers',
-          data: `q=${input.value}`,
-          dataType: 'json'
-        }).done((data) => {
-          let fragment = document.createDocumentFragment();
-
-          if(data.result.length !== 0) {
-            for(let i = 0; i < data.result.length; i++) {
-              let name = data.result[i].Name + data.result[i].Surname;
-
-              let li = Utils.createElement('li', {
-                innerHTML: `<div>${name}</div>
-                            <div>${data.result[i].Email}</div>`,
-                className: 'fh-autocomplete__result__item'
-              });
-
-              fragment.appendChild(li);
-            }
-          } else {
-            let noMatch = Utils.createElement('li', { 
-              innerHTML: `${input.value} isn't a FlowHub user`, 
-              className: 'fh-autocomplete__result__item' 
-            });
-            fragment.appendChild(noMatch);
-          }
-
-          result.innerHTML = '';
-          result.appendChild(fragment);
-        });
-      }
-    })
-    .add();
+    this.settings.addElement(this);
   }
 
   attachEvents() {
-    this.trigger.addEventListener('click', () => {
-      this.add();
+    this.container.addEventListener('click', e => {
+      let action = e.target;
+
+      if(Utils.hasClass(action, SEQUENTIAL_ADD.TRIGGER))
+        this.add();
+      if(Utils.hasClass(action, SEQUENTIAL_ADD.ITEM_REMOVE)) {
+        let parent = Traversal.parents(e.target, '.' + SEQUENTIAL_ADD.ITEM_ADDED);
+        parent && Alter.unmount(parent);
+      }
     });
   }
 

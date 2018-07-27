@@ -1,3 +1,14 @@
+.fh-modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  z-index: 4;
+  display: table
+}
+
 .fh-modal__overlay {
   width: 100%;
   height: 100%;
@@ -5,17 +16,18 @@
   background: rgba(0,0,0,.3);
   top: 0;
   left: 0;
-  z-index: 1;
+  z-index: 5;
+}
+
+.fh-modal__placeholder {
+  display: table-cell;
+  vertical-align: middle;
 }
 
 .fh-modal__content {
-  position: fixed;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  margin: auto;
-  z-index: 2;
+  position: relative;
+  z-index: 6;
+  margin: 30px auto;
   background: rgb(250, 250, 250);
   box-shadow: 0 0 15px rgba(0,0,0,.1);
 }
@@ -48,15 +60,9 @@
   position: absolute;
   top: 5px;
   right: 5px;
-  display: block;
-  width: 25px;
-  height: 25px;
-  background-image: url('../images/close-btn.png');
-  background-repeat: no-repeat;
-  background-position: top;
-  transition: .2s;
+  @extend %dispose-button;
 
   &:hover {
-    background-position-y: -25px;
+    @extend %dispose-button-hover;
   }
 }

@@ -3,6 +3,20 @@
 
 $default-font-set: 'Poppins', sans-serif, arial;
 
+%dispose-button {
+  display: block;
+  width: 25px;
+  height: 25px;
+  background-image: url('../images/close-btn.png');
+  background-repeat: no-repeat;
+  background-position: top;
+  transition: .2s;
+}
+
+%dispose-button-hover {
+  background-position-y: -25px;
+}
+
 body {
   font-family: $default-font-set;
 }

@@ -44,7 +44,7 @@ namespace FlowHub.Controllers
 		{
 			var users =
 				from user in _context.Users.AsEnumerable()
-				where user.Email.StartsWith(q, StringComparison.InvariantCultureIgnoreCase)
+				where user.Email.StartsWith(q.Trim(), StringComparison.InvariantCultureIgnoreCase)
 				select user;
 
 			return Json(new { result = users?.ToArray() }, JsonRequestBehavior.AllowGet);
