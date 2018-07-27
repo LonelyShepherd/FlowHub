@@ -27,44 +27,45 @@ let MSModal = new MultiStepModal({
   ]});
 
 let sequentialAdd = new SequentialAdd(null, {
-  addElement: instance => new AutoComplete({
-    reference: instance.trigger,
+  element: instance => new AutoComplete({
     customClass: SEQUENTIAL_ADD.ITEM_ADD_NEW,
     placeholder: 'johnsmith@mail.com',
-    onAdd: input => {
-      input.focus();
+    reference: {
+      element: instance.trigger,
+      add: 'before'
     },
-    onInput: (input, result) => {
+    onMount: instance => {
+      instance.trigger.focus();
+    },
+    onInput: instance => {
       $.ajax({
         url: '/Dashboard/SearchUsers',
-        data: `q=${input.value}`,
+        data: `q=${instance.trigger.value}`,
         dataType: 'json'
-      }).done((data) => {
+      }).done(data => {
         let fragment = document.createDocumentFragment();
 
         if(data.result.length !== 0) {
           for(let i = 0; i < data.result.length; i++) {
-            let name = data.result[i].Name + ' ' + data.result[i].Surname;
-
             let li = Utils.createElement('li', {
-              innerHTML: `<div>${name}</div>
+              id: `result-option-${i}`,
+              className: SELECT.RESULT_ITEM,
+              innerHTML: `<div>${data.result[i].Name + ' ' + data.result[i].Surname}</div>
                           <div>${data.result[i].Email}</div>`,
-              className: 'fh-select__result__item',
-              id: `result-option-${i}`
             });
 
             fragment.appendChild(li);
           }
         } else {
           let noMatch = Utils.createElement('li', { 
-            innerHTML: `${input.value} isn't a FlowHub user`, 
-            className: 'fh-select__result__item' 
+            className: SELECT.RESULT_ITEM, 
+            innerHTML: `${instance.trigger.value} isn't a FlowHub user`
           });
           fragment.appendChild(noMatch);
         }
 
-        result.innerHTML = '';
-        result.appendChild(fragment);
+        instance.result.innerHTML = '';
+        instance.result.appendChild(fragment);
       });
     },
     onRegisterSelected: (instance, selected) => {
@@ -73,17 +74,11 @@ let sequentialAdd = new SequentialAdd(null, {
         className: `${SEQUENTIAL_ADD.ITEM_ADDED + ' ' + SEQUENTIAL_ADD.ITEM_ADDED}--custom`
       });
 
-      let remove = Utils.createElement('button', {
-        type: 'button',
-        className: SEQUENTIAL_ADD.ITEM_REMOVE
-      });
-
       let select = new Select({
         returnCreated: true,
         initialValue: 'Select role',
         displayData: result => {
           let roles = ['Administrator', 'Moderator', 'Editor'];
-
           let fragment = document.createDocumentFragment();
 
           for(let i = 0; i < roles.length; i++) {
@@ -99,10 +94,14 @@ let sequentialAdd = new SequentialAdd(null, {
         },
         onRegisterSelected: (instance, selected) => {    
           instance.trigger.innerHTML = selected.innerHTML;
-    
           instance.hideResult();
         }
       }).init();
+
+      let remove = Utils.createElement('button', {
+        type: 'button',
+        className: SEQUENTIAL_ADD.ITEM_REMOVE
+      });
 
       selectedResult.appendChild(select);
       selectedResult.appendChild(remove);
@@ -116,7 +115,7 @@ createTeam.addEventListener('click', () => {
   $.ajax({
     url: '/Dashboard/CreateTeam',
     dataType: 'html'
-  }).done((data) => {
+  }).done(data => {
     MSModal.configure(content => { content.html = data });
     MSModal.init();
     MSModal.open();

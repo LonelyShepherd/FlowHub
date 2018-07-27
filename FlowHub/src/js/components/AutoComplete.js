@@ -1,7 +1,6 @@
-import Alter from '../core/Alter';
 import Utils from '../core/Utils';
 import Select from './Select';
-import { AUTOCOMPLETE } from '../helpers/common';
+import { AUTOCOMPLETE, SELECT } from '../helpers/common';
 
 class AutoComplete extends Select {
   constructor(settings) {
@@ -10,6 +9,11 @@ class AutoComplete extends Select {
     this.trigger = Utils.createElement('input', {
       type: 'text',
       placeholder: this.settings.placeholder
+    });
+    this.result = Utils.createElement('ul', {
+      className: SELECT.RESULT
+    }, {
+      display: 'block'
     });
     this.selectable = false;
     this.persistSelected = false;
@@ -45,7 +49,7 @@ class AutoComplete extends Select {
     
     let self = this;
     function doneTyping() {
-      self.settings.onInput(self.trigger, self.result);
+      self.settings.onInput(self);
       self.deselect();
     }
 
@@ -57,16 +61,12 @@ class AutoComplete extends Select {
       + ' form-group form-group--small form-group--no-validation';
     this.layout.appendChild(this.trigger);
 
-    if(this.settings.customClass)
-      Utils.addClass(this.layout, this.settings.customClass);
+    this.settings.customClass 
+      && Utils.addClass(this.layout, this.settings.customClass);
 
-    if(this.settings.context)
-      Alter.prepend(this.layout, this.settings.context);
-    else if(this.settings.reference)
-      Alter.before(this.layout, this.settings.reference);
-    
-    if(this.settings.onAdd) this.settings.onAdd(this.trigger);
     this.attachEvents();
+
+    return this.settings.returnCreated ? this.layout : this.mount();
   }
 }
 

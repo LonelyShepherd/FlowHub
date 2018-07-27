@@ -17,15 +17,15 @@ class SequentialAdd extends Component {
   }
 
   add() {
-    this.settings.addElement(this);
+    this.settings.element
+      && this.settings.element(this);
   }
 
   attachEvents() {
     this.container.addEventListener('click', e => {
       let action = e.target;
 
-      if(Utils.hasClass(action, SEQUENTIAL_ADD.TRIGGER))
-        this.add();
+      Utils.hasClass(action, SEQUENTIAL_ADD.TRIGGER) && this.add();
       if(Utils.hasClass(action, SEQUENTIAL_ADD.ITEM_REMOVE)) {
         let parent = Traversal.parents(e.target, '.' + SEQUENTIAL_ADD.ITEM_ADDED);
         parent && Alter.unmount(parent);
@@ -34,7 +34,7 @@ class SequentialAdd extends Component {
   }
 
   init() {
-    this.container = Traversal.parents(this.trigger, '.fh-sequential-add');
+    this.container = Traversal.parents(this.trigger, '.' + SEQUENTIAL_ADD.CONTAINER);
     this.attachEvents();
   }
 }
