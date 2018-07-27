@@ -16,11 +16,38 @@ class Select extends Component {
     });
     this.result = Utils.createElement('ul', {
       className: SELECT.RESULT
+    }, {
+      display: 'none'
     });
     this.selected = undefined;
     this.hasResult = false;
     this.mouseDown = false;
     this.selectable = true;
+  }
+
+  mount() {
+    if(this.settings.reference) {
+      switch(this.settings.reference.add) {
+        case 'before':
+          Alter.before(this.layout, this.settings.reference.element);
+          break;
+        case 'after':
+          Alter.after(this.layout, this.settings.reference.element);
+          break;
+      }
+    } else if(this.settings.context) {
+      switch(this.settings.context.method) {
+        case 'prepend':
+          Alter.prepend(this.layout, this.settings.context.element);
+          break;
+        case 'append':
+          this.settings.context.element.appendChild(this.layout);
+          break;
+      }
+    }
+
+    this.settings.onMount 
+      && this.settings.onMount(this);
   }
 
   select(element) {
@@ -59,6 +86,8 @@ class Select extends Component {
     if(!this.hasResult) {
       Alter.after(this.result, this.trigger);
       this.hasResult = true;
+
+      return;
     } 
   
     this.result.style.display = 'block';
@@ -85,7 +114,7 @@ class Select extends Component {
           if(this.result.style.display !== 'none')
             this.selected 
               ? this.select(this.selected.previousElementSibling) 
-              : this.select(this.result.querySelector('li:last-of-type'));
+              : this.select(this.result.lastElementChild);
           arrowsUsed = true;
           break;
         case 'ArrowDown':
@@ -93,7 +122,7 @@ class Select extends Component {
           if(this.result.style.display !== 'none')
             this.selected 
               ? this.select(this.selected.nextElementSibling) 
-              : this.select(this.result.querySelector('li'));
+              : this.select(this.result.firstElementChild);
           arrowsUsed = true;
           break;
         case 'Enter':
@@ -143,10 +172,8 @@ class Select extends Component {
     this.settings.customClass && Utils.addClass(this.layout, this.settings.customClass);
     this.settings.displayData && this.settings.displayData(this.result);
 
-    this.result.style.display = 'none';
-    this.layout.appendChild(this.result);
-    this.hasResult = true;
-
+    this.showResult();
+    
     if(this.settings.initialValue) {
       this.trigger.innerHTML = this.settings.initialValue;
       Alter.prepend(Utils.createElement('li', {
@@ -159,7 +186,7 @@ class Select extends Component {
 
     this.attachEvents();
 
-    if(this.settings.returnCreated) return this.layout;
+    return this.settings.returnCreated ? this.layout : this.mount();
   }
 }
 

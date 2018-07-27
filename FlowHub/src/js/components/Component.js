@@ -3,11 +3,15 @@ class Component {
     this.settings = settings;
   }
 
+  configure(fn) {
+    fn(this.settings);
+  }
+
   attachEvents() {}
 
   init() {}
 
-  detach() {}
+  dispose() {}
 }
 
 export default Component;
