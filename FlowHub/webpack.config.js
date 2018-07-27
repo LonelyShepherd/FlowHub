@@ -13,7 +13,7 @@ module.exports = {
     path: dist,
     filename: 'js/' + jsFilename + '.js'
   },
-  mode: 'production',
+  mode: 'development',
   watch: true,
   module: {
     rules: [
