@@ -1,41 +1,69 @@
-import Component from './Component';
 import Traversal from '../core/Traversal';
 import Utils from '../core/Utils';
 import Alter from '../core/Alter';
+import Component from '../components/Component';
 import { SEQUENTIAL_ADD } from '../helpers/common';
 
 class SequentialAdd extends Component {
-  constructor(trigger, settings) {
+  constructor(settings) {
     super(settings);
 
-    this.trigger = trigger;
-    this.container = undefined;
+    this._component = Utils.createElement('div', {
+      className: SEQUENTIAL_ADD.CONTAINER + (this._settings.customClass ? ' ' + this._settings.customClass : ''),
+      innerHTML: '<button type="button" class="btn ' + SEQUENTIAL_ADD.TRIGGER + '">'
+               +  this._settings.trigger.text
+               + '</button>'
+    });
+    this._elements = Utils.createElement('div', {
+      className: SEQUENTIAL_ADD.ELEMENTS,
+    });
+    Alter.before(this._elements, this._component.querySelector('.' + SEQUENTIAL_ADD.TRIGGER));
+
+    this._init();
   }
 
-  setTrigger(trigger) {
-    this.trigger = trigger;
+  _add() {
+    let element = this._settings.element();
+    if(element instanceof Component) element = element.get();
+
+    let added = Utils.createElement('div', {
+      className: SEQUENTIAL_ADD.ITEM_ADDED
+    })
+    .appendChild(element);
+
+    this._elements.appendChild(added);
+  
+    this._settings.onAdd
+      && this._settings.onAdd(element);
   }
 
-  add() {
-    this.settings.element
-      && this.settings.element(this);
+  clear() {
+    this._elements.innerHTML = '';
   }
 
-  attachEvents() {
-    this.container.addEventListener('click', e => {
+  _init() {
+    this._component.addEventListener('click', e => {
       let action = e.target;
 
-      Utils.hasClass(action, SEQUENTIAL_ADD.TRIGGER) && this.add();
+      Utils.hasClass(action, SEQUENTIAL_ADD.TRIGGER) && this._add();
+  
       if(Utils.hasClass(action, SEQUENTIAL_ADD.ITEM_REMOVE)) {
-        let parent = Traversal.parents(e.target, '.' + SEQUENTIAL_ADD.ITEM_ADDED);
+        let parent = Traversal.parents(action, '.' + SEQUENTIAL_ADD.ITEM_ADDED);
         parent && Alter.unmount(parent);
+  
+        this._settings.onRemove
+          && this._settings.onRemove();
       }
     });
+
+    this._insert();
   }
 
-  init() {
-    this.container = Traversal.parents(this.trigger, '.' + SEQUENTIAL_ADD.CONTAINER);
-    this.attachEvents();
+  dispose() {
+    super.dispose();
+
+    this._component = null;
+    this._elements = null;
   }
 }
 

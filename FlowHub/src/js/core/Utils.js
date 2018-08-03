@@ -33,6 +33,27 @@ class Utils {
 
     return element;
   }
+
+  static URLToImage(input, display) {
+    if(input.files && input.files[0]) {
+      if(new RegExp(/^image\/(jpeg|png|tiff)$/).test(input.files[0].type)) {
+        let reader = new FileReader();
+        
+        reader.onload = e => 
+          display.src = e.target.result;
+
+        reader.readAsDataURL(input.files[0]);
+
+        return true;
+      } 
+      
+      return false;
+    }
+  }
+
+  static isFunction(f) {
+    return f && {}.toString.call(f) === '[object Function]';
+  }
 }
 
 export default Utils;

@@ -21,3 +21,9 @@ button, input[type="submit"] {
   cursor: pointer;
   border: none;
 }
+
+button, input, textarea {
+  &, &:focus {
+    outline: 0;
+  }
+}

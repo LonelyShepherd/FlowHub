@@ -1,73 +1,59 @@
 import Utils from '../core/Utils';
-import Select from './Select';
-import { AUTOCOMPLETE, SELECT } from '../helpers/common';
+import Select from '../components/Select';
+import { AUTOCOMPLETE } from '../helpers/common';
 
-class AutoComplete extends Select {
+class Autocomplete extends Select {
   constructor(settings) {
-    super(settings);
+    super(settings, false);
+    this._result.style.display = 'block';
 
-    this.trigger = Utils.createElement('input', {
-      type: 'text',
-      placeholder: this.settings.placeholder
-    });
-    this.result = Utils.createElement('ul', {
-      className: SELECT.RESULT
-    }, {
-      display: 'block'
-    });
-    this.selectable = false;
-    this.persistSelected = false;
+    this._init();
   }
 
-  showResult() {
-    if(!this.selectable && !this.trigger.value.trim())
+  _showResult() {
+    if(!this._selectable && !this._trigger.value.trim())
       return;
 
-    super.showResult();
+    super._showResult();
   }
 
-  hideResult() {
-    super.hideResult();
-
-    !this.persistSelected && this.deselect();
+  _hideResult() {
+    super._hideResult();
+    this._deselect();
   }
 
-  attachEvents() {
-    let typingTimer;
-
-    this.trigger.addEventListener('focus', () => this.showResult());
+  _init() {
+    this._component.className = AUTOCOMPLETE.CONTAINER 
+    + ' form-group form-group--small form-group--no-validation';
     
-    this.trigger.addEventListener('input', () => {
-      this.showResult();      
+    this._trigger = Utils.createElement('input', {
+      type: 'text',
+      placeholder: this._settings.placeholder
+    });
+    this._component.appendChild(this._trigger);
+    
+    super._init();
+    
+    this._trigger.addEventListener('focus', () => this._showResult());
+    
+    let typingTimer;
+    
+    this._trigger.addEventListener('input', () => {
+      this._showResult();      
       clearTimeout(typingTimer);
       
-      if(this.trigger.value.trim())
-      typingTimer = setTimeout(doneTyping, 300);
+      if(this._trigger.value.trim())
+        typingTimer = setTimeout(doneTyping, 300);
       else
-      this.hideResult();
+        this._hideResult();
     });
     
     let self = this;
     function doneTyping() {
-      self.settings.onInput(self);
-      self.deselect();
-    }
-
-    super.attachEvents();
-  }
-  
-  init() {
-    this.layout.className = AUTOCOMPLETE.CONTAINER 
-      + ' form-group form-group--small form-group--no-validation';
-    this.layout.appendChild(this.trigger);
-
-    this.settings.customClass 
-      && Utils.addClass(this.layout, this.settings.customClass);
-
-    this.attachEvents();
-
-    return this.settings.returnCreated ? this.layout : this.mount();
+      self._settings.onInput(self);
+      self._deselect();
+    }   
   }
 }
 
-export default AutoComplete;
+export default Autocomplete;

@@ -31,14 +31,16 @@
   background: #fff;
   margin-top: 5px;
   max-height: 300px;
-  width: 100%;
   position: absolute;
-  box-shadow: 0 2px 5px rgba(0,0,0,.1);
+  margin-top: 5px;
+  width: 100%;
+  box-shadow: 0 1px 7px rgba(0,0,0,.1);
   border-radius: 3px;
   font-weight: normal;
   z-index: 2;
   overflow-y: auto;
   left: 0;
+  margin-bottom: 15px;
 }
 
 .fh-select__result__item {

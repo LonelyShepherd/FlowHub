@@ -35,6 +35,10 @@
     border-color: $light-red;
   }
 
+  textarea {
+    min-height: 90px;
+  }
+
   .checkbox {
     display: table;
 
