@@ -4,14 +4,15 @@
   color: $blue;
 }
 
-.fh-sequential-add__added {
+.fh-sequential-add__element-added {
   font-size: 13px;
   color: $dark-gray;
   position: relative;
   margin-bottom: 15px;
+  min-height: 30px;
 }
 
-.fh-sequential-add__added__remove {
+.fh-sequential-add__element-added__remove {
   @extend %dispose-button;
   position: absolute;
   top: 50%;

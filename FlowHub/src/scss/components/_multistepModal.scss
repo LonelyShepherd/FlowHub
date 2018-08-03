@@ -1,10 +1,11 @@
 .fh-multistep {
-  overflow-y: visible;
+  padding: 0 15px;
 }
 
 .fh-multistep__progress {
   width: 100%;
   height: 25px;
+  margin: 0 20px;
   margin-bottom: 20px;
   position: relative;
 }
@@ -42,12 +43,11 @@
 .fh-multistep__step-title {
   margin-bottom: 20px;
   font-weight: 600;
-  padding: 0 15px;
+  padding: 0 20px;
 }
 
 .fh-multistep__steps {
   padding: 0 15px;
-  //overflow-y: auto;
 
   &:after {
     @extend %clearfix;

@@ -1,29 +1,74 @@
 import Alter from '../core/Alter';
 import Utils from '../core/Utils';
+import Traversal from '../core/Traversal';
+import Component from '../components/Component';
+import { MODAL } from '../helpers/common';
 
-class Modal {
-  constructor(content, options) {
-    this.content = content;
-    this.options = options;
+let zIndex = 100;
+
+class Modal extends Component {
+  constructor(settings, preventOriginal) {
+    super(settings);
+
+    this._component = Utils.createElement('div', {
+      className: MODAL.CONTAINER + (this._settings.customClass ? ' ' + this._settings.customClass : ''),
+      innerHTML: '<div class="' + MODAL.CONTENT_CONTAINER + '">'
+               +  '<div class="' + MODAL.CONTENT_PLACEHOLDER + ' ">'
+               +    '<div class="' + MODAL.CONTENT + '">'
+               +      '<div class="' + MODAL.HEADER + '">'
+               +        this._settings.title
+               +      '</div>'
+               +      '<div class="' + MODAL.BODY + '">'
+               +      '</div>'
+               +      '<div class="' + MODAL.FOOTER + '">'
+               +      '</div>'
+               +    '</div>'   
+               +  '</div>'
+               + '</div>' 
+    }, {
+      zIndex: zIndex++,
+      visibility: 'hidden'
+    });
     this.opened = false;
-    this.modal = undefined;
-    this.modalOverlay = undefined;
-    this.modalClose = undefined;
-  }
+    this._initialized = false;
+    this._openWhenReady = false;
 
-  getModal() {
-    return this.modal;
-  }
+    if(!preventOriginal) {
+      console.log(preventOriginal);
+      console.log('pero');
+      let body = this._component.querySelector('.' + MODAL.BODY);
 
-  configure(fn) {
-    fn(this.content, this.options);
+      if(Utils.isFunction(this._settings.body.content)) {
+        this._settings.body.async
+          ? this._settings.body.content(body, this)
+          : this._settings.body.content(body); 
+      } else { 
+        this._settings.body.isRaw || this._settings.body.isRaw === 'undefined'
+          ? body.innerHTML = this._settings.body.content
+          : body.appendChild(this._settings.body.content); 
+
+        this.init();
+      }
+    }
   }
 
   open() {
     if(this.opened)
       return;
 
-    this.modal.style.visibility = 'visible';
+    if(!this._initialized) {
+      console.log('pero');
+      this._openWhenReady = true;
+      return;
+    }
+    
+    this._settings.beforeOpen
+      && this._settings.beforeOpen(this);
+
+    this._component.style.visibility === 'hidden' 
+      ? this._component.style.visibility = 'visible'
+      : Alter.prepend(this._component, document.body);
+    document.body.style.overflow = 'hidden';
     this.opened = true;
   }
 
@@ -31,65 +76,87 @@ class Modal {
     if(!this.opened)
       return;
 
-    Alter.unmount(this.modal);
+    this._settings.beforeClose(this);
+
+    Alter.unmount(this._component);
+    document.body.style.overflow = 'auto';
     this.opened = false;
   }
 
-  attachEvents() {
-    this.modalOverlay.addEventListener('click', () => {
-      this.close();
-    });
-
-    this.modalClose.addEventListener('click', () => {
-      this.close();
-    });
+  toTop() {
+    this._component.style.zIndex = ++zIndex;
   }
 
-  createModal() {
-    this.modal = Utils.createElement('div', {
-      className: 'fh-modal' + (this.options.customClass ? ' ' + this.options.customClass : '')
-    }, { visibility: 'hidden' });
-    Alter.prepend(this.modal, document.body);
-
-    
-    let modalContent;
-    let fragment = document.createDocumentFragment();
-    
-    if(this.options.modalOverlay) {
-      this.modalOverlay = Utils.createElement('div', { className: 'fh-modal__overlay' })
-      fragment.appendChild(this.modalOverlay);
+  _init() {
+    let content = this._component.querySelector('.' + MODAL.CONTENT)
+      , body = this._component.querySelector('.' + MODAL.BODY)
+      , footer = Traversal.next(body, '.' + MODAL.FOOTER)
+      , close = Utils.createElement('button', { 
+          className: MODAL.CLOSE
+        });
+  
+    if(this._settings.outsideWillClose || this._settings.outsideWillClose === undefined) {
+      this._component.querySelector('.' + MODAL.CONTENT_PLACEHOLDER)
+      .addEventListener('click', () => {
+        this.close();
+      });
+      
+      content.addEventListener('click', e => {
+        e.stopPropagation();
+      });
     }
     
-    if(this.content.isBody) {
-      modalContent = Utils.createElement('div', {
-        className: 'fh-modal__content',
-        innerHTML: this.content.html
+    if(this._settings.closeButton === undefined || this._settings.closeButton) { // has close button, by default
+      Alter.prepend(close, content);
+  
+      close.addEventListener('click', () => {
+        this.close();
       });
-    } else modalContent = this.content.html;
-    modalContent.style = `width: ${this.options.width || 600}px; height: ${this.options.height || 450}px;`;
+    }
+  
+    if(this._settings.buttons !== undefined || JSON.stringify(this._settings.buttons) !== JSON.stringify({})) {
+      let fragment = document.createDocumentFragment()
+      for(let key in this._settings.buttons) {
+        let button = Utils.createElement('button', {
+          innerHTML: key,
+          className: 'btn' + (this._settings.buttons[key].customClass ? ' ' + this._settings.buttons[key].customClass : '')
+        });
+
+        button.addEventListener('click', () => {
+          this._settings.buttons[key].handler(this);
+        });
+  
+        fragment.appendChild(button);
+      };
+
+      footer.appendChild(fragment);
+    } 
+  
+    Alter.prepend(this._component, document.body);
+  
+    let header = Traversal.prev(body, '.' + MODAL.HEADER)
+      , headerCSS = window.getComputedStyle(header)
+      , footerCSS = window.getComputedStyle(footer)
+      , footerHeight = footer.offsetHeight 
+        + parseInt(footerCSS.marginTop) 
+        + parseInt(footerCSS.marginBottom)
+      , headerHeight = header.offsetHeight 
+        + parseInt(headerCSS.marginTop) 
+        + parseInt(headerCSS.marginBottom);
     
-    this.modalClose = Utils.createElement('button', { className: 'fh-modal__close' })
-    modalContent.appendChild(this.modalClose);
-    
-    let modalContentPlaceholder = Utils.createElement('div', { className: 'fh-modal__placeholder' });
-    modalContentPlaceholder.appendChild(modalContent);
+    body.style.height = 
+      content.offsetHeight - footerHeight - headerHeight + 'px';
 
-    fragment.appendChild(modalContentPlaceholder);
-    this.modal.appendChild(fragment);    
-
-    let modalContentBody = modalContent.querySelector('.fh-modal__content__body');
-    let modalContentHeader = window.getComputedStyle(modalContent.querySelector('.fh-modal__content__header'));
-    let modalContentFooter = window.getComputedStyle(modalContent.querySelector('.fh-modal__content__footer'));
-    let modalContentFooterH = parseInt(modalContentFooter.height) + parseInt(modalContentFooter.marginTop) + parseInt(modalContentFooter.marginBottom);
-    let modalContentHeaderH = parseInt(modalContentHeader.height) + parseInt(modalContentHeader.marginTop) + parseInt(modalContentHeader.marginBottom);
-
-    modalContentBody.style.height = modalContent.offsetHeight - modalContentFooterH - modalContentHeaderH + 'px';
+    this._initialized = true;
+    if(this._openWhenReady)
+      this.open();
   }
 
-  init() {
-    this.createModal();
+  dispose() {
+    super.dispose();
 
-    this.attachEvents();
+    this._component = null;
+    this.opened = false;
   }
 }
 

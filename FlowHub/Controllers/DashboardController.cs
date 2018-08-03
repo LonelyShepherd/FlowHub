@@ -33,19 +33,23 @@ namespace FlowHub.Controllers
 			return View(new DashboardViewModel<Team, ApplicationUser>(user.Team, user));
 		}
 
-		// GET: Dashboard/CreateTeam
-		public ActionResult CreateTeam()
-		{
-			return PartialView("~/Views/Components/_CreateTeamModal.cshtml", new Team());
-		}
-
 		// GET: Dashboard/SearchUsers
 		public ActionResult SearchUsers(string q)
 		{
+			GetUser(out string id, out _);
+
 			var users =
 				from user in _context.Users.AsEnumerable()
+				where user.Id != id
 				where user.Email.StartsWith(q.Trim(), StringComparison.InvariantCultureIgnoreCase)
-				select user;
+				select new UserViewModel
+				{
+					Id = user.Id,
+					Name = user.Name,
+					Surname = user.Surname,
+					FullName = user.Name + " " + user.Surname,
+					Email = user.Email
+				};
 
 			return Json(new { result = users?.ToArray() }, JsonRequestBehavior.AllowGet);
 		}
