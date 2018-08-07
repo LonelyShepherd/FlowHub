@@ -50,9 +50,14 @@ namespace FlowHub.Controllers
             }
         }
 
-        //
-        // GET: /Manage/Index
-        public async Task<ActionResult> Index(ManageMessageId? message)
+				public ActionResult Settings()
+				{
+					return View();
+				}
+
+				//
+				// GET: /Manage/Index
+				public async Task<ActionResult> Index(ManageMessageId? message)
         {
             ViewBag.StatusMessage =
                 message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."

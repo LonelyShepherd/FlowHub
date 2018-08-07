@@ -26,8 +26,14 @@ namespace FlowHub.Controllers
 			return View(new DashboardViewModel<ApplicationUser>(user));
     }
 
+		public ActionResult Accounts()
+		{
+			GetUser(out _, out ApplicationUser user);
+			return View(new DashboardViewModel<Team, ApplicationUser>(user.Team, user));
+		}
+
 		// GET: Dashboard/Teams
-		public ActionResult Teams()
+		public ActionResult Team()
 		{
 			GetUser(out _, out ApplicationUser user);
 			return View(new DashboardViewModel<Team, ApplicationUser>(user.Team, user));
@@ -41,6 +47,7 @@ namespace FlowHub.Controllers
 			var users =
 				from user in _context.Users.AsEnumerable()
 				where user.Id != id
+				where user.TeamId == null
 				where user.Email.StartsWith(q.Trim(), StringComparison.InvariantCultureIgnoreCase)
 				select new UserViewModel
 				{

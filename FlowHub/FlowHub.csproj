@@ -307,9 +307,15 @@
     <Content Include="Views\Shared\_Landing.cshtml" />
     <Content Include="Views\Dashboard\Index.cshtml" />
     <Content Include="Views\Shared\_Dashboard.cshtml" />
-    <Content Include="Views\Dashboard\Teams.cshtml" />
+    <Content Include="Views\Dashboard\Team.cshtml" />
     <Content Include="Views\Components\_CreateTeamModal.cshtml" />
     <Content Include="Views\Team\Partials\_NewTeam.cshtml" />
+    <Content Include="Views\Dashboard\Accounts.cshtml" />
+    <Content Include="Views\Team\Partials\_Overview.cshtml" />
+    <Content Include="Views\Team\Partials\_Members.cshtml" />
+    <Content Include="Views\Team\Partials\_Settings.cshtml" />
+    <Content Include="Views\Shared\_TeamFormTemplate.cshtml" />
+    <Content Include="Views\Manage\Settings.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

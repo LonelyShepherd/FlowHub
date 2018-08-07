@@ -1,0 +1,60 @@
+﻿@model FlowHub.ViewModels.DashboardViewModel<FlowHub.Models.ApplicationUser, FlowHub.Models.ChangePasswordViewModel>
+
+@{
+  Layout = "~/Views/Shared/_Dashboard.cshtml";
+	ViewBag.Title = "Account Settings";
+}
+
+<div class="dashboard-section dashboard-section--account-settings">
+	<h6>Account</h6>
+	<h2>Settings</h2>
+	<div class="name clearfix">
+		<div class="form-group">
+			@Html.LabelFor(m => m.VModel.Name)
+			@Html.TextBoxFor(m => m.VModel.Name)
+		</div>
+		<div class="form-group">
+			@Html.LabelFor(m => m.VModel.Surname)
+			@Html.TextBoxFor(m => m.VModel.Surname)
+		</div>
+	</div>
+	<div class="form-group email">
+		@Html.LabelFor(m => m.VModel.Email)
+		@Html.TextBoxFor(m => m.VModel.Email)
+	</div>
+	<div class="form-group email">
+		@Html.LabelFor(m => m.VModel.Email)
+		@Html.TextBoxFor(m => m.VModel.Email)
+	</div>
+	<div class="password clearfix">
+		<div>
+			<div class="form-group">
+				@Html.LabelFor(m => m.Model.OldPassword)
+				@Html.TextBoxFor(m => m.Model.OldPassword)
+			</div>
+			<div class="form-group">
+				@Html.LabelFor(m => m.Model.NewPassword)
+				@Html.TextBoxFor(m => m.Model.NewPassword)
+			</div>
+			<div class="form-group">
+				@Html.LabelFor(m => m.Model.ConfirmPassword)
+				@Html.TextBoxFor(m => m.Model.ConfirmPassword)
+			</div>
+		</div>
+		<div class="password-change__note">
+			<h5>Password requirements</h5>
+			<p>To create a new password, you have to meet all of the following requirements::</p>
+			<ul>
+				<li>Minimum 6 characters</li>
+				<li>At least one special character</li>
+				<li>At least one number</li>
+				<li>The new password can't match the old password</li>
+			</ul>
+		</div>
+	</div>
+
+
+	<div class="actions clearfix">
+		<button type="button" class="btn btn-default">Update</button>
+	</div>
+</div>

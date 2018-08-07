@@ -1,0 +1,27 @@
+﻿@model FlowHub.Models.ApplicationUser
+
+<div class="team__body__content team__body__content--raw team__body__content--all-members">
+	<ul>
+		<li>
+			<div>@(Model.Team.Leader.Name + " " + Model.Team.Leader.Surname)</div>
+			<div>@Model.Team.Leader.Email</div>
+		</li>
+		@foreach (var member in Model.Team.ApplicationUsers)
+		{
+			<li>
+				<div>@(member.Name + " " + member.Surname)</div>
+				<div>@member.Email</div>
+			</li>
+		}
+	</ul>
+</div>
+<div class="team__body__sidebar">
+	<div class="sidebar__section sidebar__section--member-stats">
+		<div>
+			<ul>
+				<li>Member count: <span>@(Model.Team.ApplicationUsers.Count + 1)</span></li>
+				<li>Team Leader: <span>@(Model.Team.Leader.Name + " " + Model.Team.Leader.Surname)</span></li>
+			</ul>
+		</div>
+	</div>
+</div>
