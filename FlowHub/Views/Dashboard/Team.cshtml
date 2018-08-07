@@ -1,0 +1,58 @@
+﻿@using FlowHub.Models
+@using FlowHub.ViewModels
+@model DashboardViewModel<Team, ApplicationUser>
+@{
+	/**/
+
+	ViewBag.Title = "Team";
+	Layout = "~/Views/Shared/_Dashboard.cshtml";
+}
+
+@if (Model.Model.Team == null)
+{
+	<div class="dashboard-section dashboard-section--create-team">
+		<img src="~/dist/images/new-team.png">
+		<h2>No team, yet</h2>
+		<p>Assemble your team, and start managing your pages on one place</p>
+		<button type="button" class="btn btn-bolder btn-default create-new">Create?</button>
+	</div>
+
+	@section Scripts {
+		@Scripts.Render("~/Scripts/jquery-3.3.1.min.js")
+		@Scripts.Render("~/dist/js/teams.js")
+	}
+}
+else
+{
+	<div class="team">
+		<div class="team__header">
+			<div class="team__header__info">
+				<img src="~/Avatars/@Model.Model.Team.Avatar" />
+				<h3>@Model.Model.Team.Name</h3>
+				<p>@Model.Model.Team.Info</p>
+			</div>
+			<div class="team__header__nav">
+				<ul class="clearfix">
+					<li><a href="javascript:;" data-href="overview" class="active">Overview</a></li>
+					<li><a href="javascript:;" data-href="members">Members</a></li>
+					@if (Model.Model.Team.LeaderId == Model.Model.Id)
+					{
+						<li><a href="javascript:;" data-href="settings">Settings</a></li>
+					}
+				</ul>
+			</div>
+		</div>
+		<div class="team__body clearfix">
+			@{Html.RenderPartial("~/Views/Team/Partials/_Overview.cshtml", Model.Model);}
+		</div>
+	</div>
+
+	@section Styles {
+		<link href="@Url.Content("~/dist/css/teams.css")" rel="stylesheet" type="text/css" />
+	}
+
+	@section Scripts {
+		@Scripts.Render("~/Scripts/jquery-3.3.1.min.js")
+		@Scripts.Render("~/dist/js/manage.js")
+	}
+}

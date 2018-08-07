@@ -10,33 +10,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="shortcut icon" type="image/ico" href="~/dist/images/favicon.ico">
   <link rel="stylesheet" type="text/css" href="~/dist/css/dashboard.css">
+	@RenderSection("Styles", false)
 </head>
 <body>
   <div class="nav">
     <ul class="nav__menu">
       <li><a href="@Url.Action("Index", "Dashboard")" class="nav__menu__logo"><img src="~/dist/images/logo.png"></a></li>
       <li><a href="@Url.Action("Index", "Dashboard")">Home</a></li>
-      <li><a href="">Accounts</a></li>
-      <li><a href="@Url.Action("Teams", "Dashboard")">Team</a></li>
+      <li><a href="@Url.Action("Accounts", "Dashboard")">Accounts</a></li>
+      <li><a href="@Url.Action("Team", "Dashboard")">Team</a></li>
     </ul>
-    <hr class="nav__section-separator">
-    <div class="nav__user-info">
-      <span class="nav__user-info__section-title">Personal</span>
-      <div class="nav__user-info__user">
-        <div  class="user__avatar">
-          <img src="~/dist/images/avatar.png">
-        </div>
-        <div class="user__info">
-          <div class="user__info__name">@(Model.Model.Name + " " + Model.Model.Surname)</div>
-          <div class="user__info__email">@Model.Model.Email</div>
-        </div>
-      </div>
-      <ul>
-        <li><a href="">Settings</a></li>
-        <li><a href="" class="nav__user-info__sign-out">Sign out</a></li>
-      </ul>
-      <ul></ul>
-    </div>
+		<div class="nav__actions">
+			<div>
+				<a href="@Url.Action("Settings", "Manage")" title="Settings"></a>
+				<img src="~/dist/images/avatar.png">
+				@using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "sign-out" }))
+				{
+					@Html.AntiForgeryToken()
+					<a href="javascript:document.getElementById('sign-out').submit()" title="Sign out"></a>
+				}
+				
+			</div>
+		</div>
   </div>
   <div class="main">
     <div class="content">

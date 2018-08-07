@@ -31,7 +31,7 @@ body {
   border-radius: 3px;
   padding: 0 20px;
   height: 30px;
-  line-height: 30px;
+  line-height: 28px;
   font-size: 14px;
   border: none;
   color: #fff;
@@ -53,18 +53,47 @@ body {
 }
 
 .btn-default {
-  background: $blue;
+  color: #fff;
+  border: 1px solid rgb(0, 113, 224);
+  background: linear-gradient(rgb(0, 150, 255), rgb(0, 93, 255));
 
   &:hover {
-    background: $light-blue;
+    background: linear-gradient(#008aea, #024dcf);
+    border-color: #0055a7;
+  }
+
+  &:active {
+    background: #2574c1;
   }
 }
 
 .btn-success {
-  background: $green;
+  color: #fff;
+  border: 1px solid #269c42;
+  background: linear-gradient(#34d058 0%, #28a745 90%);
 
   &:hover {
-    background: $light-green;
+    background: linear-gradient(#2fcb53 0%, #269f42 90%);
+    border-color: #1b7130;
+  }
+
+  &:active {
+    background: #30b54f;
+  }
+}
+
+.btn-danger {
+  color: #fff;
+  border: 1px solid #9c2118;
+  background: linear-gradient(#eb3845, #d9030a);
+
+  &:hover {
+    border-color: #80211b;
+    background: linear-gradient(#e23642, #c3030a);
+  }
+
+  &:active {
+    background: #bf2c22;
   }
 }
 

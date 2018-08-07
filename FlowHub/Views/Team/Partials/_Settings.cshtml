@@ -1,0 +1,57 @@
+﻿@model FlowHub.Models.ApplicationUser
+
+<div class="team__body__sidebar team__body__sidebar--left team__body__sidebar--nav">
+	<div class="sidebar__section">
+		<ul>
+			<li><a id="1" href="javascript:;" class="active-subsection">Team</a></li>
+			<li><a id="2" href="javascript:;">Members</a></li>
+		</ul>
+	</div>
+</div>
+<div class="team__body__content team__body__content--raw team__body__content--settings">
+	<div class="subsection subsection-1">
+		<div class="basic">
+			<h2>Basic</h2>
+			@{Html.RenderPartial("~/Views/Shared/_TeamFormTemplate.cshtml", Model.Team);}
+			<div class="actions clearfix">
+				<button type="button" class="btn btn-default update-team">Update</button>
+			</div>
+		</div>
+		<div class="team-deletion">
+			<h2>Delete team</h2>
+			<div>
+				<div><p>Once you delete your team, there is no going back. Please be certain of the actions you plan to make.</p></div>
+				<div><button type="button" class="btn btn-danger delete-team">Delete</button></div>
+			</div>
+		</div>
+	</div>
+	<div class="subsection subsection-2" style="display: none;">
+		<div class="add-members clearfix">
+			<h2>Add members</h2>
+			<button type="button" class="btn btn-default add-members-team">Add</button>
+		</div>
+		<div class="remove-members clearfix">
+			<h2>Remove members</h2>
+			<p>Select the members you want to remove from the team</p>
+			<ul>
+				@if(Model.Team.ApplicationUsers.Count == 0)
+				{
+					<li class="no-members">There are currently no other members in your team to remove</li>
+				}
+				@foreach (var member in Model.Team.ApplicationUsers)
+				{
+					<li>
+						<div>
+							<div>@(member.Name + " " + member.Surname)</div>
+							<div class="user-email">@member.Email</div>
+						</div>
+						<div><button type="button" class="remove-member"></button></div>
+					</li>
+				}
+			</ul>
+			<button type="button" class="btn btn-default remove-members-team">Remove</button>
+		</div>
+	</div>
+	<div class="subsection subsection-3">
+	</div>
+</div>

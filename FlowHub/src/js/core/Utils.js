@@ -54,6 +54,16 @@ class Utils {
   static isFunction(f) {
     return f && {}.toString.call(f) === '[object Function]';
   }
+
+  static uniqueEmails(source) {
+    let emails = [];
+  
+    [].forEach.call(source, element => {
+      emails.push(element.querySelector('.user-email').innerHTML);
+    });
+    
+    return emails.filter((email, index, self) => self.indexOf(email) === index);
+  }
 }
 
 export default Utils;

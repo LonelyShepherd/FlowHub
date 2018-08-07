@@ -19,10 +19,10 @@ namespace FlowHub.Common
 
 			var type = Image.ContentType;
 			var pattern = @"(jpeg|png|tiff)$";
+
 			if (!Regex.IsMatch(type, pattern))
 				return null;
 
-			Console.Write("OKE");
 			var extension = Path.GetExtension(Image.FileName);
 			var fileName = String.Join("", 
 				Guid.NewGuid()
@@ -40,6 +40,17 @@ namespace FlowHub.Common
 			}
 
 			return null;
+		}
+
+		static public void Delete(string filename)
+		{
+			if (filename == "default.png")
+				return;
+
+			var image = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/Avatars/"), filename);
+
+			if (File.Exists(image))
+				File.Delete(image);
 		}
 
 		static private void CreateThumbnail(string fileName, int width, int height) 
@@ -90,8 +101,11 @@ namespace FlowHub.Common
 			catch { }
 			finally
 			{
-				if(original != null)
+				if (original != null)
+				{
 					original.Dispose();
+					original = null;
+				}
 			}
 
 			thumbnail.Save(fileName);

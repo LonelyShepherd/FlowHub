@@ -29,7 +29,7 @@ class Component {
     return this._component;
   }
 
-  notify(type, message) {
+  static notify(type, message) {
     function hide(timeout) {
       display = setTimeout(() => {
         Utils.removeClass(notifier, 'fh-notify--pop');

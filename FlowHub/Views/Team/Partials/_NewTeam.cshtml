@@ -3,29 +3,7 @@
 <div class="dashboard-section dashboard-section--new-team">
 	<h6>New team</h6>
 	<h2>Create a new team</h2>
-	<div class="team-logo clearfix">
-		<label for="logo">
-			<span>Upload</span>
-			<input id="logo" type="file" />
-		</label>
-		<div class="team-logo__note">
-			<h5>Note</h5>
-			<p>Before you upload your logo please take the following in consideration:</p>
-			<ul>
-				<li>Only allowed image file formats are .png, .jpeg and .tiff</li>
-				<li>If the uploaded image is larger than 200px * 200px, we will resize it accordingly, so please check the image before uploading</li>
-			</ul>
-		</div>
-	</div>
-	<div class="team-name form-group">
-		@Html.LabelFor(m => m.Name)
-		@Html.TextBoxFor(m => m.Name)
-	</div>
-	<div class="team-info form-group">
-		@Html.LabelFor(m => m.Info)
-		<span>Something that best describes your team</span>
-		@Html.TextAreaFor(m => m.Info, new { @class = "not-resizable" })
-	</div>
+	@{Html.RenderPartial("~/Views/Shared/_TeamFormTemplate.cshtml", Model);}
 	<div class="team-members">
 		<h5>Add members</h5>
 	</div>
