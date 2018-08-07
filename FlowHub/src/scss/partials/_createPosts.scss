@@ -1,0 +1,265 @@
+%side-borders {
+    border-left: 1px solid #d4d7dd;
+    border-right: 1px solid #d4d7dd;
+}
+
+%no-bottom-border {
+    // border-radius: 4px 4px 0 0;
+    // border: 1px solid #d4d7dd;
+    border-bottom-color: transparent;
+}
+
+.post-composer {
+    border: 1px solid #d4d7dd;
+    border-radius: 4px;
+}
+
+.post-composer__content {
+    background: white;
+    border-radius: 4px 4px 0 0;
+
+    textarea {
+        font-family: $default-font-set;
+        display: block;
+        width: 100%;
+        padding: 10px;
+        border-radius: 4px 4px 0 0;
+        border-color: transparent;
+        // border-radius: 4px 4px 0 0;
+        // border: 1px solid #d4d7dd;
+        // border-bottom-color: transparent;
+        // @extend %no-bottom-border;
+        // border-radius: 
+        transition: height .5s;
+        font-size: 13px;
+        resize: none;
+        height: 6em;
+    }
+    textarea:focus {
+        height: 8em;
+    }
+}
+
+.post-composer, 
+.posts-presenter {
+    width: 60%; 
+    // border-radius: 4px;
+}
+
+.post-composer__content__uploader {
+    display: block;
+    // @extend %side-borders;
+    padding: .3em;
+
+    // border-left: 1px solid #d4d7dd;
+    // border-right: 1px solid #d4d7dd;
+    
+    // white-space: nowrap;
+    // position: relative;
+    // overflow-x: auto;
+    // overflow-y: hidden;
+
+    .post-composer__content__uploader--upload, 
+    .post-composer__content__uploader--image {
+        vertical-align: top;
+        display: inline-block;
+        clear: both;
+        width: 100px;
+        height: 100px;
+        margin-left: .3em;
+        margin-top: .3em;
+    }
+
+    .post-composer__content__uploader--upload {
+        // vertical-align: top;
+        // display: inline-block;
+        // clear: both;
+        // width: 100px;
+        // height: 100px;
+        // margin: .3em;
+        border: 2px dashed $soft-blue;
+        
+        background-image: url(../images/add_picture.png);
+        background-position: 50%;
+        background-repeat: no-repeat;
+        background-size: 20px;
+        // display: none;
+
+        &:hover {
+            background-image: url(../images/add_picture_s.png);
+        }
+        
+        label {
+            width: 100%;
+            height: 100%;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        input {
+            display: none;
+        }
+    }
+
+    .post-composer__content__uploader--image {
+        position: relative;
+
+        img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            object-position: 50% 50%;
+        }
+
+        .remove-image {
+            display: none;
+            right: 5px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            position: absolute;
+            background-image: url('../images/remove-image.png');
+            background-position: 0 -182px;
+            cursor: pointer;
+        }
+
+        .remove-image:hover {
+            background-position: 0 -195px;
+        }
+
+        &:hover .remove-image {
+            display: block;
+            z-index: 1;
+        }
+
+        &:after {
+            content: '';
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: all .2s ease-in;
+            background: transparent;
+        }
+
+        &:hover::after {
+            background: rgba(0,0,0,.3);
+        }
+
+        // &:hover > div {
+        //     width: 100%;
+        //     height: 100%;
+        //     position: absolute;
+        //     top: 0;
+        //     left: 0;
+        //     background: rgba(0,0,0,.3);
+        //     visibility: visible;
+        // }
+    }
+
+    // &::-webkit-scrollbar {
+    //     height: 7px;
+    // }
+
+    // &::-webkit-scrollbar-track {
+    //     background-color: transparent;
+    // }
+
+    // &::-webkit-scrollbar-thumb {
+    //     background-color: rgba(0, 0, 0, .3);
+    //     border-radius: 7px;
+    //     height: 7px;
+    //     opacity: 0;
+    //     transition: opacity .3s;
+    // }
+
+    // &:hover::-webkit-scrollbar-thumb {
+    //     background: transparent;
+    // }
+}
+
+.post-composer__footer {
+    background: $soft-blue;
+    border-radius: 0 0 4px 4px;
+    position: relative;
+    padding: 4px;
+
+    // .post-composer__footer__buttons--post 
+    .create-post{
+        display: block;
+        line-height: 20px;
+        float: right;
+
+        .post-btn {
+            background: $soft-dark-blue;
+            height: 20px;
+            line-height: 20px;
+            vertical-align: top;
+            font-size: 12px;
+            // margin: 4px;
+        }
+
+        .post-btn:hover {
+            background: #7591af ;
+        }
+    }
+
+    .actions {
+        float: left;
+    }
+}
+
+.posts-presenter__post {
+    border-radius: 4px;
+    border: 1px solid #d4d7dd;
+    background: white;
+    margin-top: 30px;
+    transition: display 1s;
+    
+    .posts-presenter__post__content {
+        padding: 10px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+
+    .posts-presenter__post__header {
+        background: #edf0f3;
+        border-bottom: 1px solid #d4d7dd;
+        border-radius: 4px 4px 0 0;
+        padding: 5px;
+    }
+
+    .posts-presenter__actions {
+        white-space: nowrap;
+        line-height: 80%;
+        float: right;
+        margin-right: 5px;
+
+        .btn-action {
+            font-size: 11px;
+            font-weight: 400px;
+            color: $light-gray;
+            padding: 0 0;
+            line-height: inherit;
+            vertical-align: top;
+            height: auto;
+            padding-left: 10px;
+            // float: right;
+            // margin: 5px;
+        }
+    }
+
+    .posts-presenter__post__footer {
+        background: #edf0f3;
+        border-top: 1px solid #d4d7dd;
+        border-radius: 0 0 4px 4px;
+        padding: 5px;
+        display: none;
+    }
+}
+
+.showme {
+    display: block;
+}
