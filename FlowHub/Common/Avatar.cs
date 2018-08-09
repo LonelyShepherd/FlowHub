@@ -18,7 +18,7 @@ namespace FlowHub.Common
 			if (Image == null) return null;
 
 			var type = Image.ContentType;
-			var pattern = @"(jpeg|png|tiff)$";
+			var pattern = "(jpeg|png|tiff)$";
 
 			if (!Regex.IsMatch(type, pattern))
 				return null;
@@ -29,7 +29,7 @@ namespace FlowHub.Common
 				.ToString()
 				.Split(new char[] { '-' }, StringSplitOptions.None));
 			fileName = fileName + extension;
-			var path = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/Avatars/"), fileName);
+			var path = Path.Combine(HttpContext.Current.Server.MapPath("~/Avatars/"), fileName);
 
 			Image.SaveAs(path);
 
@@ -44,10 +44,10 @@ namespace FlowHub.Common
 
 		static public void Delete(string filename)
 		{
-			if (filename == "default.png")
+			if (filename == "default.png" || filename == "default-avatar.png")
 				return;
 
-			var image = Path.Combine(System.Web.HttpContext.Current.Server.MapPath("~/Avatars/"), filename);
+			var image = Path.Combine(HttpContext.Current.Server.MapPath("~/Avatars/"), filename);
 
 			if (File.Exists(image))
 				File.Delete(image);

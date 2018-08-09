@@ -138,7 +138,7 @@
   padding: 0; }
   .team__body__content--all-members li {
     float: left;
-    width: calc((100% / 3) - 20px);
+    width: calc((100% / 3) - 7px);
     margin-right: 10px;
     margin-bottom: 10px;
     background: #fff;
@@ -146,6 +146,12 @@
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
     text-align: center;
     border-radius: 3px; }
+    .team__body__content--all-members li img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: block;
+      margin: 0 auto 10px auto; }
     .team__body__content--all-members li > div:last-of-type {
       font-size: 11px;
       color: #77838f; }

@@ -24,20 +24,34 @@
   }
 }
 
+.fh-sequential-add {
+  li, .fh-sequential-add__element-added {
+    padding-left: 47.5px;
+
+    img {
+      width: 30px;
+      height: 30px;
+      border-radius: 3px;
+      top: 50%;
+      left: 7.5px;
+      margin-top: -15px;
+      position: absolute
+    }
+  }
+}
+
 .fh-sequential-add__element-added--member {
   position: relative;
+  padding-left: 40px !important;
+
+  img {
+    left: 0 !important;
+  }
 
   .user-email {
     font-size: 11px;
     color: $light-gray;
     margin-top: -3px;
-  }
-  
-  .fh-select {
-    position: absolute;
-    top: 50%;
-    margin-top: -15px;
-    right: 50px;
   }
 
   .fh-sequential-add__element-added__remove {

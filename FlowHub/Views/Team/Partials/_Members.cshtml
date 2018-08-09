@@ -3,12 +3,14 @@
 <div class="team__body__content team__body__content--raw team__body__content--all-members">
 	<ul>
 		<li>
+			<img src="~/Avatars/@Model.Team.Leader.Avatar" />
 			<div>@(Model.Team.Leader.Name + " " + Model.Team.Leader.Surname)</div>
 			<div>@Model.Team.Leader.Email</div>
 		</li>
 		@foreach (var member in Model.Team.ApplicationUsers)
 		{
 			<li>
+				<img src="~/Avatars/@member.Avatar"/>
 				<div>@(member.Name + " " + member.Surname)</div>
 				<div>@member.Email</div>
 			</li>
