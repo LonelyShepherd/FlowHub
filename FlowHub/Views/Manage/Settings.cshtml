@@ -1,60 +1,91 @@
-﻿@model FlowHub.ViewModels.DashboardViewModel<FlowHub.Models.ApplicationUser, FlowHub.Models.ChangePasswordViewModel>
+﻿@using FlowHub.Models
+@using FlowHub.ViewModels
+@model DashboardViewModel<SettingsViewModel, ApplicationUser>
 
 @{
-  Layout = "~/Views/Shared/_Dashboard.cshtml";
+	Layout = "~/Views/Shared/_Dashboard.cshtml";
 	ViewBag.Title = "Account Settings";
 }
 
-<div class="dashboard-section dashboard-section--account-settings">
-	<h6>Account</h6>
-	<h2>Settings</h2>
-	<div class="name clearfix">
-		<div class="form-group">
-			@Html.LabelFor(m => m.VModel.Name)
-			@Html.TextBoxFor(m => m.VModel.Name)
-		</div>
-		<div class="form-group">
-			@Html.LabelFor(m => m.VModel.Surname)
-			@Html.TextBoxFor(m => m.VModel.Surname)
-		</div>
-	</div>
-	<div class="form-group email">
-		@Html.LabelFor(m => m.VModel.Email)
-		@Html.TextBoxFor(m => m.VModel.Email)
-	</div>
-	<div class="form-group email">
-		@Html.LabelFor(m => m.VModel.Email)
-		@Html.TextBoxFor(m => m.VModel.Email)
-	</div>
-	<div class="password clearfix">
-		<div>
-			<div class="form-group">
-				@Html.LabelFor(m => m.Model.OldPassword)
-				@Html.TextBoxFor(m => m.Model.OldPassword)
-			</div>
-			<div class="form-group">
-				@Html.LabelFor(m => m.Model.NewPassword)
-				@Html.TextBoxFor(m => m.Model.NewPassword)
-			</div>
-			<div class="form-group">
-				@Html.LabelFor(m => m.Model.ConfirmPassword)
-				@Html.TextBoxFor(m => m.Model.ConfirmPassword)
+<form action="javascript:;" id="update-info" novalidate="novalidate">
+	@Html.AntiForgeryToken()
+	<div class="dashboard-section dashboard-section--account-settings">
+		<h6>Account</h6>
+		<h2>Settings</h2>
+		<div class="user-avatar clearfix">
+			<label for="logo">
+				<span>Upload</span>
+				<input id="logo" type="file" />
+				@if (Model.Model.Avatar != null)
+				{
+					<img src="~/Avatars/@Model.Model.Avatar" />
+				}
+				else
+				{
+					<img />
+				}
+			</label>
+			<div class="team-logo__note">
+				<h5>Note</h5>
+				<p>Before you upload your logo please take the following in consideration:</p>
+				<ul>
+					<li>Only allowed image file formats are .png, .jpeg and .tiff</li>
+					<li>If the uploaded image is larger than 200px * 200px, we will resize it accordingly, so please check the image before uploading</li>
+				</ul>
 			</div>
 		</div>
-		<div class="password-change__note">
-			<h5>Password requirements</h5>
-			<p>To create a new password, you have to meet all of the following requirements::</p>
-			<ul>
-				<li>Minimum 6 characters</li>
-				<li>At least one special character</li>
-				<li>At least one number</li>
-				<li>The new password can't match the old password</li>
-			</ul>
+		<div class="name clearfix">
+			<div class="form-group">
+				@Html.LabelFor(m => m.VModel.Name)
+				@Html.TextBoxFor(m => m.VModel.Name)
+			</div>
+			<div class="form-group">
+				@Html.LabelFor(m => m.VModel.Surname)
+				@Html.TextBoxFor(m => m.VModel.Surname)
+			</div>
+		</div>
+		<div class="form-group email">
+			@Html.LabelFor(m => m.VModel.Email)
+			@Html.TextBoxFor(m => m.VModel.Email)
+			@Html.ValidationMessageFor(m => m.VModel.Email, "", new { @class = "validation-error-message" })
+		</div>
+		<div class="password clearfix">
+			<div>
+				<div class="form-group">
+					@Html.LabelFor(m => m.VModel.OldPassword)
+					@Html.PasswordFor(m => m.VModel.OldPassword)
+				</div>
+				<div class="form-group">
+					@Html.LabelFor(m => m.VModel.NewPassword)
+					@Html.PasswordFor(m => m.VModel.NewPassword)
+					@Html.ValidationMessageFor(m => m.VModel.NewPassword, "", new { @class = "validation-error-message" })
+				</div>
+				<div class="form-group">
+					@Html.LabelFor(m => m.VModel.ConfirmPassword)
+					@Html.PasswordFor(m => m.VModel.ConfirmPassword)
+					@Html.ValidationMessageFor(m => m.VModel.ConfirmPassword, "", new { @class = "validation-error-message" })
+				</div>
+			</div>
+			<div class="password-change__note">
+				<h5>Password requirements</h5>
+				<p>To create a new password, you have to meet all of the following requirements:</p>
+				<ul>
+					<li>Minimum 6 characters</li>
+					<li>Uppercase and lowercase letters</li>
+					<li>At least one digit</li>
+					<li>At least one special character</li>
+				</ul>
+			</div>
+		</div>
+		<div class="actions clearfix">
+			<button type="submit" class="btn btn-default">Update</button>
 		</div>
 	</div>
+</form>
 
-
-	<div class="actions clearfix">
-		<button type="button" class="btn btn-default">Update</button>
-	</div>
-</div>
+@section Scripts {
+	<script src="~/Scripts/jquery-3.3.1.min.js" type="text/javascript"></script>
+	<script src="~/Scripts/jquery.validate.min.js" type="text/javascript"></script>
+	<script src="~/Scripts/jquery.validate.unobtrusive.min.js" type="text/javascript"></script>
+	<script src="~/dist/js/account-settings.js" type="text/javascript"></script>
+}

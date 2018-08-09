@@ -148,7 +148,8 @@ body {
     top: 100%;
     left: 0;
     margin-top: 3px;
-    margin-left: 5px; }
+    margin-left: 5px;
+    font-size: 13px; }
     .form-group .validation-error-message, .form-group .validation-error-message span {
       height: auto;
       line-height: normal; }
@@ -402,17 +403,26 @@ body {
     color: #77838f;
     font-size: 13px; }
 
+.fh-sequential-add li, .fh-sequential-add .fh-sequential-add__element-added {
+  padding-left: 47.5px; }
+  .fh-sequential-add li img, .fh-sequential-add .fh-sequential-add__element-added img {
+    width: 30px;
+    height: 30px;
+    border-radius: 3px;
+    top: 50%;
+    left: 7.5px;
+    margin-top: -15px;
+    position: absolute; }
+
 .fh-sequential-add__element-added--member {
-  position: relative; }
+  position: relative;
+  padding-left: 40px !important; }
+  .fh-sequential-add__element-added--member img {
+    left: 0 !important; }
   .fh-sequential-add__element-added--member .user-email {
     font-size: 11px;
     color: #77838f;
     margin-top: -3px; }
-  .fh-sequential-add__element-added--member .fh-select {
-    position: absolute;
-    top: 50%;
-    margin-top: -15px;
-    right: 50px; }
   .fh-sequential-add__element-added--member .fh-sequential-add__element-added__remove {
     background-image: url("../images/remove.png"); }
 
@@ -528,9 +538,9 @@ body {
       float: left;
       margin: 0 5px; }
 
-.team-logo {
+.team-logo, .user-avatar {
   margin-bottom: 30px; }
-  .team-logo label {
+  .team-logo label, .user-avatar label {
     display: block;
     width: 100px;
     height: 100px;
@@ -542,9 +552,9 @@ body {
     background: #fff;
     float: left;
     z-index: 1; }
-    .team-logo label input {
+    .team-logo label input, .user-avatar label input {
       display: none; }
-    .team-logo label span {
+    .team-logo label span, .user-avatar label span {
       display: block;
       height: 100px;
       line-height: 100px;
@@ -556,7 +566,7 @@ body {
       background: rgba(0, 0, 0, 0.3);
       color: #fff;
       text-shadow: 0 0 3px rgba(0, 0, 0, 0.3); }
-    .team-logo label img {
+    .team-logo label img, .user-avatar label img {
       width: 102px;
       height: 102px;
       position: absolute;
@@ -566,10 +576,10 @@ body {
       transition: .2s;
       -o-object-fit: cover;
          object-fit: cover; }
-    .team-logo label:hover span {
+    .team-logo label:hover span, .user-avatar label:hover span {
       z-index: 1;
       opacity: 1; }
-    .team-logo label:hover img {
+    .team-logo label:hover img, .user-avatar label:hover img {
       -webkit-filter: blur(1px);
               filter: blur(1px); }
 
@@ -635,7 +645,8 @@ body {
 .dashboard-section--account-settings .password {
   padding-top: 30px;
   margin-top: 30px;
-  border-top: 1px solid #e1e1e1; }
+  border-top: 1px solid #e9e9e9;
+  margin-bottom: 30px; }
   .dashboard-section--account-settings .password > div:first-of-type {
     float: left;
     width: 300px; }

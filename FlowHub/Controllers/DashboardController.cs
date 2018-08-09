@@ -32,7 +32,7 @@ namespace FlowHub.Controllers
 			return View(new DashboardViewModel<Team, ApplicationUser>(user.Team, user));
 		}
 
-		// GET: Dashboard/Teams
+		// GET: Dashboard/Team
 		public ActionResult Team()
 		{
 			GetUser(out _, out ApplicationUser user);
@@ -55,7 +55,8 @@ namespace FlowHub.Controllers
 					Name = user.Name,
 					Surname = user.Surname,
 					FullName = user.Name + " " + user.Surname,
-					Email = user.Email
+					Email = user.Email,
+					Avatar = "/Avatars/" + user.Avatar
 				};
 
 			return Json(new { result = users?.ToArray() }, JsonRequestBehavior.AllowGet);

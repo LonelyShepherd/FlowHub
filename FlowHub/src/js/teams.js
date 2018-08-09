@@ -31,7 +31,8 @@ let content = document.body.querySelector('.main .content')
       }).done(data => {
         self._populate(data.result, item => {
           return(
-            `<div>${item.FullName}</div>
+            `<img src="${item.Avatar}">
+            <div>${item.FullName}</div>
             <div class="user-email">${item.Email}</div>`
           );
         }, () => `${self._trigger.value} isn't a FlowHub user`);

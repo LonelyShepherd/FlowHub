@@ -71,9 +71,11 @@ sequentialAdd = new SequentialAdd({
         data: `q=${self._trigger.value}`,
         dataType: 'json'
       }).done(data => {
+        console.log(data);
         self._populate(data.result, item => {
           return(
-            `<div>${item.FullName}</div>
+            `<img src="${item.Avatar}">
+            <div>${item.FullName}</div>
             <div class="user-email">${item.Email}</div>`
           );
         }, () => `${self._trigger.value} isn't a FlowHub user`);

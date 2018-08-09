@@ -188,7 +188,7 @@ namespace FlowHub.Controllers
 			foreach (var u in users)
 				u.Team = user.Team;
 
-			user.Team.ApplicationUsers = users?.ToList();
+			user.Team.ApplicationUsers = user.Team.ApplicationUsers?.Union(second: users).ToList();
 
 			_context.SaveChanges();
 
@@ -224,17 +224,10 @@ namespace FlowHub.Controllers
 				where emails.Contains(u.Email)
 				select u;
 
-			var members = user.Team.ApplicationUsers?.ToList();
-
 			foreach (var u in users)
-			{
 				u.Team = null;
 
-				if(members != null)
-					members.Remove(u);
-			}
-
-			user.Team.ApplicationUsers = members;
+			user.Team.ApplicationUsers = user.Team.ApplicationUsers?.Except(second: users).ToList();
 
 			_context.SaveChanges();
 

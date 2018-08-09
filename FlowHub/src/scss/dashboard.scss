@@ -174,7 +174,7 @@ body {
   }
 }
 
-.team-logo {
+.team-logo, .user-avatar {
   margin-bottom: 30px;
 
   label {
@@ -316,7 +316,8 @@ body {
   .password {
     padding-top: 30px;
     margin-top: 30px;
-    border-top: 1px solid #e1e1e1;
+    border-top: 1px solid #e9e9e9;
+    margin-bottom: 30px;
 
     & > div:first-of-type {
       float: left;

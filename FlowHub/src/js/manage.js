@@ -1,6 +1,7 @@
 import Utils from "./core/Utils";
 import Alter from "./core/Alter";
 import Async from "./core/Async";
+import Event from "./core/Event";
 import Component from "./components/Component";
 import { SEQUENTIAL_ADD } from "./helpers/common";
 
@@ -29,6 +30,16 @@ function ajaxHandler(selected) {
   });
 }
 
+function selectTab(trigger) {
+  if(trigger.tagName === 'A') {
+    Utils.removeClass(active, 'active');
+    active = trigger;
+    Utils.addClass(active, 'active');
+    
+    ajaxHandler(trigger.getAttribute('data-href'));
+  }
+}
+
 let body = document.querySelector('.team__body')
   , nav = document.querySelector('.team__header__nav')
   , placeholder = Utils.createElement('div', {}, {
@@ -44,10 +55,11 @@ let body = document.querySelector('.team__body')
   , hName = header.querySelector('h3')
   , hInfo = header.querySelector('p')
   , script
-  , loaded = false;
+  , loaded = false
+  , membersTab = nav.querySelector('li:nth-child(2) a');
 
 body.onclick = e => {
-  if(e.target.tagName !== 'BUTTON')
+  if(e.target.tagName !== 'BUTTON' && e.target.tagName !== 'A')
     return;
 
   if(Utils.hasClass(e.target, 'update-team')) {
@@ -143,19 +155,14 @@ body.onclick = e => {
           removeMembers.innerHTML = '<li class="no-members">There are currently no other members in your team to remove</li>';
       }
     });
-  }      
+  }   
+  if(Utils.hasClass(e.target, 'view-all-members'))
+    selectTab(membersTab);
 };
 
 nav.addEventListener('click', e => {
-  if(e.target.tagName === 'A') {
-    e.preventDefault();
-
-    Utils.removeClass(active, 'active');
-    active = e.target;
-    Utils.addClass(active, 'active');
-    
-    ajaxHandler(e.target.getAttribute('data-href'));
-  }
+  e.preventDefault();
+  selectTab(e.target);
 });
 
 window.addEventListener('scroll', () => {
