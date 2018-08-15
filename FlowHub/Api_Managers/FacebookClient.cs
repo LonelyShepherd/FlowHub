@@ -16,11 +16,12 @@ namespace FlowHub.Api_Managers
         Task<string> GetAsync(string endpoint, string fields);
         Task<string> PostAsync(string endpoint, string fields);
         Task<string> DeleteAsync(string endpoint, string fields);
+        Task<string> PostFileAsync(string endpoint, MultipartFormDataContent content);
     }
 
     // Do NOT Dispose HttpClient
 
-    public class FacebookClient : IFacebookClient, IDisposable
+    public class FacebookClient : IFacebookClient
     {
         private static readonly HttpClient _client = new HttpClient();
         private string BaseUri { get; set; }
@@ -30,6 +31,7 @@ namespace FlowHub.Api_Managers
             _client.DefaultRequestHeaders.Accept.Clear();
             _client.BaseAddress = new Uri("https://graph.facebook.com");
             _client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+            //_client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("multipart/form-data"));
             //BaseUri = "https://graph.facebook.com";
         }
 
@@ -68,17 +70,20 @@ namespace FlowHub.Api_Managers
             return responseString;
         }
 
+        public async Task<string> PostFileAsync(string endpoint, MultipartFormDataContent content)
+        {
+            HttpResponseMessage response = await _client.PostAsync(endpoint, content);
+            var responseString = await response.Content.ReadAsStringAsync();
+
+            return responseString;
+        }
+
         private Dictionary<string, string> DictionaryFromFields(string fields)
         {
             var parts = fields.Remove(0, 1).Split('&');
             Dictionary<string, string> EscapedValues = parts.ToDictionary(x => x.Split('=')[0], y => y.Split('=')[1]);
 
             return EscapedValues.ToDictionary(a => a.Key, b => Uri.UnescapeDataString(b.Value));
-        }
-
-        public void Dispose()
-        {
-            _client.Dispose();
         }
     }
 }

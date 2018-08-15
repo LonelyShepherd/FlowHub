@@ -1,0 +1,12 @@
+﻿@model IEnumerable<FlowHub.ViewModels.CommentViewModel>
+
+@foreach (var comment in Model)
+{
+    <div class="comment-presenter__comment clearfix" data-commentid="@comment.Id">
+        <img src="@comment.ComposerPictureUrl" />
+        <div class="comment-presenter__comment--content">
+            <span>@comment.ComposerName</span>
+            <p>@comment.Message</p>
+        </div>
+    </div>
+}
