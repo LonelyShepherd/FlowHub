@@ -22,7 +22,7 @@ namespace FlowHub.Api_Managers
         public ActionResult LoginDialog(string uriRedirectString) // Default permissions manage_pages ad publish_pages
         {
             var baseUri = "https://www.facebook.com/v3.0";
-            var permissions = "manage_pages,publish_pages"; // If needed pass as argument.
+            var permissions = "manage_pages, publish_pages"; // If needed pass as argument.
             //var redirectUri = ur 
             var oauthRedirectUri = $"{baseUri}/dialog/oauth?client_id={app_id}&scope={permissions}&response_type=code&redirect_uri={uriRedirectString}";// &state={{st=state123abc,ds=123456789}} &scope
 
@@ -46,7 +46,5 @@ namespace FlowHub.Api_Managers
 
             return response;
         }
-
-
     }
 }

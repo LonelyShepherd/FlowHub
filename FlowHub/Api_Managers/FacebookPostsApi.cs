@@ -26,8 +26,11 @@ namespace FlowHub.Api_Managers
 
         public async Task<string> CreatePostAsync(string page_id, string message, HttpFileCollectionBase images, string access_token)
         {
-            var escapedMessage = Uri.EscapeDataString(message);
-            string fields = $"?message={escapedMessage}&access_token={access_token}";
+            var payload = new Dictionary<string, string>
+            {
+                { "message", message },
+                { "access_token", access_token }
+            };
 
             if (images.Count != 0)
             {
@@ -39,23 +42,28 @@ namespace FlowHub.Api_Managers
 
                 for (int i = 0; i < imageIds.Length; i++)
                 {
-                    fields += "&attached_media[" + i + "]={media_fbid:" + imageIds[i] + "}";
+                    payload.Add($"attached_media[{i}]", $"{{media_fbid:{imageIds[i]}}}");
                 }
             }
 
-            string response = await _client.PostAsync($"/{page_id}/feed", fields);
+            string response = await _client.PostAsync($"/{page_id}/feed", payload);
 
             return response;
         }
 
-        // Combine witth previous
+        // Combine with previous
         public async Task<string> CreateScheduledPostAsync(string page_id, string message, string access_token, DateTime time)
         {
-            var escapedMessage = Uri.EscapeDataString(message);
             var unixTimestamp = (new DateTimeOffset(time)).ToUnixTimeSeconds() + 1000;
-            string fields = $"?message={escapedMessage}&access_token={access_token}&published=false&scheduled_publish_time={unixTimestamp}";
+            var payload = new Dictionary<string, string>
+            {
+                { "message", message },
+                { "access_token", access_token },
+                { "published", "false"},
+                { "scheduled_publish_time", $"{unixTimestamp}" }
+            };
 
-            string response = await _client.PostAsync($"/{page_id}/feed", fields);
+            string response = await _client.PostAsync($"/{page_id}/feed", payload);
 
             return response;
         }
@@ -63,25 +71,46 @@ namespace FlowHub.Api_Managers
         public async Task<string> CreatePostCommentAsync(string post_id, string message, string access_token, DateTime time)
         {
             var escapedMessage = Uri.EscapeDataString(message);
-            string fields = $"?message={escapedMessage}&access_token={access_token}";
+            //string fields = $"?message={escapedMessage}&access_token={access_token}";
 
-            string response = await _client.PostAsync($"/{post_id}/feed", fields);
+            var payload = new Dictionary<string, string>
+            {
+                { "message", message },
+                { "access_token", access_token },
+            };
+
+            string response = await _client.PostAsync($"/{post_id}/feed", payload);
 
             return response;
         }
 
         public async Task<string> GetPostedPosts(string page_id, string access_token, int limit = 0, string after_cursor = "")
         {
-            string fields = limit == 0 ? $"?access_token={access_token}" : $"?limit={limit}&after={after_cursor}&access_token={access_token}";
-            string response = await _client.GetAsync($"/{page_id}/feed", fields);
+            var fields = new Dictionary<string, string>
+            {
+                { "access_token", access_token },
+            };
+
+            if (limit != 0)
+            {
+                fields.Add("limit", $"{limit}");
+                fields.Add("after", after_cursor);
+            }
+
+            string response = await _client.GetAsync($"/{page_id}/feed", GetQueryString(fields));
 
             return response;
         }
 
         public async Task<string> GetScheduledPosts(string page_id, string access_token)
         {
-            string fields = $"?is_published=false&access_token={access_token}";
-            string response = await _client.GetAsync($"/{page_id}/promotable_posts", fields);
+            var fields = new Dictionary<string, string>
+            {
+                { "is_published", "false" },
+                { "access_token", access_token }
+            };
+
+            string response = await _client.GetAsync($"/{page_id}/promotable_posts", GetQueryString(fields));
 
             return response;
         }
@@ -102,15 +131,33 @@ namespace FlowHub.Api_Managers
 
         public async Task<string> GetPostComments(string post_id, string access_token, int limit = 0, string after_cursor = "")
         {
-            string fields = limit == 0 ? $"?access_token={access_token}" : $"?limit={limit}&after={after_cursor}&access_token={access_token}";
-            string response = await _client.GetAsync($"/{post_id}/comments", fields);
+            var fields = new Dictionary<string, string>
+            {
+                { "access_token", access_token },
+            };
+
+            if (limit != 0)
+            {
+                fields.Add("limit", $"{limit}");
+                fields.Add("after", after_cursor);
+            }
+
+            string response = await _client.GetAsync($"/{post_id}/comments", GetQueryString(fields));
 
             return response;
         }
 
         public async Task<string> GetPicture(string object_id, string access_token)
         {
-            string response = await _client.GetAsync($"/{object_id}/picture", $"?fields=url&redirect=false&access_token={access_token}");
+            var fields = new Dictionary<string, string>
+            {
+                { "fields", "url" },
+                { "redirect", "false" },
+                { "access_token", access_token },
+            };
+
+
+            string response = await _client.GetAsync($"/{object_id}/picture", GetQueryString(fields));
 
             return response;
         }
@@ -130,11 +177,30 @@ namespace FlowHub.Api_Managers
                 content.Add(new StringContent(message), "message");
                 content.Add(new ByteArrayContent(fileData), "source", "upload");
                 content.Add(new StringContent("false"), "published");
-                
+
                 response = await _client.PostFileAsync($"/{page_id}/photos", content);
             }
 
             return JObject.Parse(response).SelectToken("id").ToString();
         }
+
+        #region query
+        private string GetQueryString(Dictionary<string, string> pairs)
+        {
+            var uriBuilder = new UriBuilder {
+                Port = -1
+            };
+            var query = HttpUtility.ParseQueryString(uriBuilder.Query);
+
+            foreach (var pair in pairs)
+            {
+                query[pair.Key] = pair.Value;
+            }
+
+            uriBuilder.Query = query.ToString();
+
+            return uriBuilder.Query.ToString();
+        }
+        #endregion
     }
 }
