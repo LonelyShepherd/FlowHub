@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <title>@ViewBag.Title</title>
@@ -7,7 +7,7 @@
   <link rel="shortcut icon" type="image/ico" href="~/dist/images/favicon.ico">
   <link rel="stylesheet" type="text/css" href="~/dist/css/main.css">
 </head>
-<body>
+<body class="@ViewBag.Type">
   <div class="header container clearfix">
     <a href="@Url.Action("Index", "Home")" class="header__logo"><img src="~/dist/images/logo.png"></a>
     <div class="header__actions">

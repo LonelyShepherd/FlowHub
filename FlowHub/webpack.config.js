@@ -1,7 +1,7 @@
 const path = require('path');
 const dist = path.resolve(__dirname, './dist/');
 
-const scssFilename = 'dashboard';
+const scssFilename = 'teams';
 const jsFilename = 'manage';
 
 module.exports = {

@@ -4,14 +4,7 @@
 	<label for="logo">
 		<span>Upload</span>
 		<input id="logo" type="file" />
-		@if(Model.Avatar != null)
-		{
-			<img src="~/Avatars/@Model.Avatar" />
-		}
-		else
-		{
-			<img />
-		}
+		<img src="~/Avatars/default.png" />
 	</label>
 	<div class="team-logo__note">
 		<h5>Note</h5>
@@ -22,11 +15,11 @@
 		</ul>
 	</div>
 </div>
-<div class="team-name form-group">
+<div class="team-name form-group form-group--fancy-labels">
 	@Html.LabelFor(m => m.Name)
 	@Html.TextBoxFor(m => m.Name)
 </div>
-<div class="team-info form-group">
+<div class="team-info form-group form-group--fancy-labels">
 	@Html.LabelFor(m => m.Info)
 	<span>Something that best describes your team</span>
 	@Html.TextAreaFor(m => m.Info, new { @class = "not-resizable" })

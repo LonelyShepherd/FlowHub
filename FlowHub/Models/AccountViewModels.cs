@@ -47,19 +47,19 @@ namespace FlowHub.Models
 
     public class ForgotViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "This field is required")]
         [Display(Name = "Email")]
         public string Email { get; set; }
     }
 
     public class LoginViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "This field is required")]
         [Display(Name = "Email")]
-        [EmailAddress]
+        [EmailAddress(ErrorMessage = "Invalid email format")]
         public string Email { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "This field is required")]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; }
@@ -70,27 +70,27 @@ namespace FlowHub.Models
 
     public class RegisterViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "This field is required")]
         public string Name { get; set; }
         
-        [Required]
+        [Required(ErrorMessage = "This field is required")]
         public string Surname { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "This field is required")]
         [EmailAddress]
         [Display(Name = "Email")]
         public string Email { get; set; }
 
-        [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
-        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{6,}$", ErrorMessage = "The password must be at least 6 characters long, consisting of uppercase and lowercase letters, digits and special characters")]
+        [Required(ErrorMessage = "This field is required")]
+        [StringLength(128, ErrorMessage = "Must be between 6 and 128 characters long", MinimumLength = 6)]
+        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).+$", ErrorMessage = "Must consist of uppercase and lowercase letters, digits and special characters")]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; }
 
         [DataType(DataType.Password)]
         [Display(Name = "Confirm password")]
-        [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
+        [Compare("Password", ErrorMessage = "The password and confirmation password do not match")]
         public string ConfirmPassword { get; set; }
     }
 
@@ -117,8 +117,8 @@ namespace FlowHub.Models
 
     public class ForgotPasswordViewModel
     {
-        [Required]
-        [EmailAddress]
+        [Required(ErrorMessage = "This field is required")]
+        [EmailAddress(ErrorMessage = "Invalid email format")]
         [Display(Name = "Email")]
         public string Email { get; set; }
     }

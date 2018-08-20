@@ -1,13 +1,13 @@
 import Event from './core/Event';
 
-let signContainer = document.querySelector('.sign-container');
+let authBox = document.querySelector('.sign-container');
     
 window.addEventListener('resize', () => {
-  let signContainerHeight = parseInt(window.getComputedStyle(signContainer).height);
+  let authBoxH = authBox.offsetHeight;
 
-  if(window.innerHeight < (signContainerHeight + 160)) {
-    signContainer.style = 'position: static; margin: 50px auto; transform: none;';
-  } else signContainer.style = '';
+  if(window.innerHeight < (authBoxH + 160))
+    authBox.style = 'position: relative; margin: 50px auto; transform: none; top: 0';
+  else authBox.style = '';
 });
 
 Event.trigger(window, 'resize');

@@ -1,30 +1,3 @@
 ﻿@model FlowHub.Models.ApplicationUser
 
-<div class="team__body__content">s</div>
-<div class="team__body__sidebar">
-	<div class="sidebar__section sidebar__section--members">
-		<h5>
-			Members
-			<a href="javascript:;" data-href="members" class="view-all-members">View all</a>
-		</h5>
-		<div>
-			<ul>
-				<li>
-					<div class="member-name">@(Model.Team.Leader.Name + " " + Model.Team.Leader.Surname)</div>
-					<div class="member-email">@Model.Team.Leader.Email</div>
-				</li>
-				@for (int i = 0; i < Model.Team.ApplicationUsers.Count; i++)
-				{
-					if (i > 4) { break; }
-					var member = Model.Team.ApplicationUsers.ElementAt(i);
-
-					<li>
-						<div class="member-name">@(member.Name + " " + member.Surname)</div>
-						<div class="member-email">@member.Email</div>
-					</li>
-				}
-			</ul>
-			
-		</div>
-	</div>
-</div>
+<div class="team__body__content team__body__content--fluid">s</div>

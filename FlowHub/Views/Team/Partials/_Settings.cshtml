@@ -11,7 +11,7 @@
 <div class="team__body__content team__body__content--raw team__body__content--settings">
 	<div class="subsection subsection-1">
 		<div class="basic">
-			<h2>Basic</h2>
+			<h2>General</h2>
 			@{Html.RenderPartial("~/Views/Shared/_TeamFormTemplate.cshtml", Model.Team);}
 			<div class="actions clearfix">
 				<button type="button" class="btn btn-default update-team">Update</button>
@@ -41,6 +41,9 @@
 				@foreach (var member in Model.Team.ApplicationUsers)
 				{
 					<li>
+						<div>
+							<img src="/Avatars/@member.Avatar" />
+						</div>
 						<div>
 							<div>@(member.Name + " " + member.Surname)</div>
 							<div class="user-email">@member.Email</div>
