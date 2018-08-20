@@ -2,6 +2,18 @@
 @import "partials/global";
 @import "partials/form";
 
+html, body {
+  height: 100%;
+}
+
+body {
+  padding-top: 10px;
+}
+
+.auth {
+  background: url('../images/aa.png') no-repeat left top;
+}
+
 .call-to-action {
   background: $pale-blue;
   color: $blue;
@@ -20,10 +32,6 @@
 
 .call-to-action-link:hover {
   text-decoration: underline;
-}
-
-.header {
-  margin-top: 10px;
 }
 
 .header__logo img {
@@ -57,13 +65,14 @@
     margin: 20px 0;
     color: $light-gray;
     line-height: 1.5;
+    font-size: 14px;
   }
 }
 
 .content__section--about {
   padding-top: 50px;
   padding-bottom: 120px;
-  background: url('../images/about.png') no-repeat bottom right;
+  background: url('../images/about1.png') no-repeat right 70px;
   background-size: 70%;
 
   h1 {
@@ -130,14 +139,8 @@
   }
 }
 
-.posts {
-  display: block;
-  width: 85%;
-  margin: 0 auto;
-}
-
 .content__section--analytics-feature {
-  padding: 300px 0;
+  padding: 300px 0 200px 0;
   background: url('../images/analytics.png') no-repeat top center;
 }
 
@@ -195,13 +198,15 @@
 }
 
 .sign-container {
-  width: 35%;
   margin: auto;
   position: fixed;
-  left: 0;
   right: 0;
+  left: 0;
   top: 50%;
   transform: translateY(-50%);
+  width: 450px;
+
+  
 
   h1 {
     color: $blue;
@@ -210,22 +215,18 @@
   p {
     color: $light-gray;
     margin: 10px 0 30px 0;
+    font-size: 14px;
   }
 
   .url-default {
     color: $light-gray;
-    font-size: 13px;
+    font-size: 12px;
     border-bottom: 1px dashed $light-gray
   }
   
   .url-default:hover {
     color: $blue;
     border-color: $blue;
-  }
-
-  .form-group a {
-    margin-bottom: 10px;
-    float: right;
   }
 
   span {
@@ -243,10 +244,31 @@
   }
 }
 
-@media only screen and (max-height: 640px) {
-    .sign-container {
-        position: static;
-        transform: none;
-        margin-top: 50px;
-    }
+.form-group {
+  &:last-of-type {
+    margin-bottom: 40px;
+  }
+
+  a {
+    margin-bottom: 10px;
+    float: right;
+  }
 }
+
+.form-group--name > div {
+  float: left;
+  width: 220px;
+  margin-bottom: 0 !important;
+
+  &:first-of-type {
+    margin-right: 10px;
+  }
+}
+
+// @media only screen and (max-height: 640px) {
+//     .sign-container {
+//         position: static;
+//         transform: none;
+//         margin-top: 50px;
+//     }
+// }

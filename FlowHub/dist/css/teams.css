@@ -1,3 +1,6 @@
+.team {
+  width: calc(100% - 200px); }
+
 .team__header__info {
   text-align: center;
   padding: 0 120px;
@@ -41,6 +44,18 @@
       border-bottom: 1px solid #377dff; }
     .team__header__nav li a:hover, .team__header__nav li a.active {
       color: #353535; }
+  .team__header__nav li button {
+    float: right;
+    width: 20px;
+    height: 20px;
+    background: red;
+    display: block;
+    margin-top: 11px;
+    background: url("../images/members-list.png");
+    background-position-y: -20px; }
+    .team__header__nav li button.active {
+      background-position-y: 0;
+      border: none; }
   .team__header__nav:after {
     content: "";
     position: absolute;
@@ -69,6 +84,10 @@
   padding: 0;
   background: none;
   border: 0; }
+
+.team__body__content--fluid {
+  width: 100%;
+  float: none; }
 
 .team__body__content--settings h2 {
   font-size: 16px;
@@ -104,12 +123,20 @@
   display: table;
   width: 100%;
   padding: 10px 0; }
+  .team__body__content--settings .remove-members li img {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    vertical-align: middle; }
   .team__body__content--settings .remove-members li > div {
     display: table-cell;
     vertical-align: middle; }
-    .team__body__content--settings .remove-members li > div:first-of-type div:last-of-type {
-      color: #77838f;
-      font-size: 12px; }
+    .team__body__content--settings .remove-members li > div:nth-of-type(2) {
+      width: 100%;
+      padding-left: 10px; }
+      .team__body__content--settings .remove-members li > div:nth-of-type(2) div:last-of-type {
+        color: #77838f;
+        font-size: 12px; }
     .team__body__content--settings .remove-members li > div:last-of-type .remove-member {
       width: 25px;
       height: 25px;
@@ -134,30 +161,6 @@
   float: right;
   margin-top: 30px; }
 
-.team__body__content--all-members {
-  padding: 0; }
-  .team__body__content--all-members li {
-    float: left;
-    width: calc((100% / 3) - 7px);
-    margin-right: 10px;
-    margin-bottom: 10px;
-    background: #fff;
-    padding: 20px 10px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
-    text-align: center;
-    border-radius: 3px; }
-    .team__body__content--all-members li img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      display: block;
-      margin: 0 auto 10px auto; }
-    .team__body__content--all-members li > div:last-of-type {
-      font-size: 11px;
-      color: #77838f; }
-    .team__body__content--all-members li:nth-of-type(3n) {
-      margin-right: 0; }
-
 .team__body__sidebar {
   width: 290px;
   font-size: 13px;
@@ -168,20 +171,27 @@
   margin-right: 30px; }
 
 .team__body__sidebar--left {
-  width: 240px; }
+  width: 150px; }
 
-.team__body__sidebar--nav li {
-  padding-top: 10px !important;
-  padding-bottom: 10px !important; }
+.team__body__sidebar--nav .sidebar__section {
+  background: transparent;
+  border: none; }
+  .team__body__sidebar--nav .sidebar__section li {
+    border: none;
+    padding: 0; }
 
 .team__body__sidebar--nav a {
-  display: block; }
+  display: block;
+  padding: 5px 10px;
+  border-radius: 3px;
+  margin-bottom: 10px; }
 
 .team__body__sidebar--nav .active-subsection {
-  color: #353535; }
+  background: #377dff;
+  color: #fff; }
 
 .team__body__sidebar--nav + .team__body__content {
-  width: calc(100% - 280px); }
+  width: calc(100% - 180px); }
 
 .sidebar__section {
   width: 100%;
@@ -211,17 +221,46 @@
     .sidebar__section li:last-of-type {
       border: none; }
 
-.sidebar__section--members > div {
-  padding: 0 20px; }
-  .sidebar__section--members > div > span {
-    display: block;
-    text-align: center; }
-  .sidebar__section--members > div .member-email {
-    font-size: 11px;
-    margin-top: -3px;
-    color: #77838f; }
-
-.sidebar__section--member-stats span {
-  float: right;
-  font-size: 12px;
-  color: #77838f; }
+.team-members-list {
+  position: fixed;
+  top: 0;
+  right: 0;
+  background: #f5f6f7;
+  border-left: 1px solid #e1e1e1;
+  overflow-y: hidden;
+  height: 100%;
+  width: 200px;
+  padding: 0 5px;
+  z-index: 100; }
+  .team-members-list:hover {
+    overflow-y: auto; }
+  .team-members-list .leader-icon {
+    background: url("../images/leader.png");
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    background-size: 12px 12px;
+    vertical-align: middle;
+    margin-left: 7.5px; }
+  .team-members-list h5 {
+    margin: 10px;
+    font-weight: 600; }
+  .team-members-list li {
+    position: relative;
+    display: table;
+    height: 30px;
+    line-height: 30px;
+    width: 100%;
+    font-size: 13px;
+    padding: 5px 10px;
+    margin-bottom: 5px;
+    border-radius: 3px;
+    cursor: default; }
+    .team-members-list li:hover {
+      background: rgba(0, 0, 0, 0.02); }
+  .team-members-list img {
+    float: left;
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+    border-radius: 50%; }

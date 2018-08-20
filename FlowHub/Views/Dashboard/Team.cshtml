@@ -2,8 +2,6 @@
 @using FlowHub.ViewModels
 @model DashboardViewModel<Team, ApplicationUser>
 @{
-	/**/
-
 	ViewBag.Title = "Team";
 	Layout = "~/Views/Shared/_Dashboard.cshtml";
 }
@@ -34,7 +32,6 @@ else
 			<div class="team__header__nav">
 				<ul class="clearfix">
 					<li><a href="javascript:;" data-href="overview" class="active">Overview</a></li>
-					<li><a href="javascript:;" data-href="members">Members</a></li>
 					@if (Model.Model.Team.LeaderId == Model.Model.Id)
 					{
 						<li><a href="javascript:;" data-href="settings">Settings</a></li>
@@ -45,6 +42,23 @@ else
 		<div class="team__body clearfix">
 			@{Html.RenderPartial("~/Views/Team/Partials/_Overview.cshtml", Model.Model);}
 		</div>
+	</div>
+	<div class="team-members-list">
+		<h5>Members &mdash; @(Model.VModel.ApplicationUsers.Count + 1)</h5>
+		<ul>
+			<li>
+				<img src="/Avatars/@Model.VModel.Leader.Avatar" />
+				<span>@(Model.VModel.Leader.Name + " " + Model.VModel.Leader.Surname)</span>
+				<span class="leader-icon" title="Team Leader"></span>
+			</li>
+			@foreach (var member in Model.VModel.ApplicationUsers)
+			{
+				<li>
+					<img src="/Avatars/@member.Avatar" />
+					<span>@(member.Name + " " + member.Surname)</span>
+				</li>
+			}
+		</ul>
 	</div>
 
 	@section Styles {

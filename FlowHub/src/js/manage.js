@@ -1,7 +1,7 @@
 import Utils from "./core/Utils";
 import Alter from "./core/Alter";
 import Async from "./core/Async";
-import Event from "./core/Event";
+import Traversal from "./core/Traversal";
 import Component from "./components/Component";
 import { SEQUENTIAL_ADD } from "./helpers/common";
 
@@ -56,7 +56,7 @@ let body = document.querySelector('.team__body')
   , hInfo = header.querySelector('p')
   , script
   , loaded = false
-  , membersTab = nav.querySelector('li:nth-child(2) a');
+  , membersList = document.querySelector('.team-members-list ul');
 
 body.onclick = e => {
   if(e.target.tagName !== 'BUTTON' && e.target.tagName !== 'A')
@@ -118,17 +118,32 @@ body.onclick = e => {
         added.innerHTML = '';
         data = JSON.parse(data);
         removeMembers.innerHTML = '';
+        
+        let firstMember = membersList.firstElementChild;
+        membersList.innerHTML = '';
+        membersList.appendChild(firstMember);
 
         data.forEach(member => {
           removeMembers.innerHTML +=
           `<li>
             <div>
+              <img src="/Avatars/${member.Avatar}">
+            </div>
+            <div>
               <div>${member.FullName}</div>
               <div class="user-email">${member.Email}</div>
             </div>
             <div><button type="button" class="remove-member"></button></div>
-          </li>`
-        })
+          </li>`;
+
+          membersList.innerHTML +=
+          `<li>
+            <img src="/Avatars/${member.Avatar}">
+            <span>${member.FullName}</span>
+          </li>`;
+        });
+
+        Traversal.prev(membersList).innerHTML = `Members &mdash; ${membersList.children.length}`;
       }
     });
   }
@@ -139,7 +154,7 @@ body.onclick = e => {
       , formData = new FormData();
 
     if(!emails.length)
-      return main.notify('warning', 'Are you really trying to add new members, without actually adding new members?');
+      return main.notify('warning', 'We don\'t really know what we\'re supposed to do...');
 
     formData.append('emails', emails.join(','));
     Async.post({
@@ -150,14 +165,33 @@ body.onclick = e => {
         [].forEach.call(forRemoval, element => {
           Alter.unmount(element);
         });
+        console.log(removeMembers);
+
+        let firstMember = membersList.firstElementChild
+          , fragment = document.createDocumentFragment();
+
+        membersList.innerHTML = '';
+        membersList.appendChild(firstMember);
+
+        [].forEach.call(removeMembers.children, member => {
+          let li = Utils.createElement('li');
+
+          li.appendChild(member.querySelector('img'));
+          li.appendChild(Utils.createElement('span', {
+            innerHTML: member.querySelector('div > div').innerHTML
+          }));
+
+          fragment.appendChild(li);
+        });
+
+        membersList.appendChild(fragment);
+        Traversal.prev(membersList).innerHTML = `Members &mdash; ${membersList.children.length}`;
         
         if(!removeMembers.firstElementChild)
           removeMembers.innerHTML = '<li class="no-members">There are currently no other members in your team to remove</li>';
       }
     });
-  }   
-  if(Utils.hasClass(e.target, 'view-all-members'))
-    selectTab(membersTab);
+  }
 };
 
 nav.addEventListener('click', e => {
@@ -183,4 +217,3 @@ window.addEventListener('scroll', () => {
     }
   }
 });
-

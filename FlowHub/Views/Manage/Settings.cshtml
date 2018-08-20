@@ -35,32 +35,32 @@
 			</div>
 		</div>
 		<div class="name clearfix">
-			<div class="form-group">
+			<div class="form-group form-group--fancy-labels">
 				@Html.LabelFor(m => m.VModel.Name)
 				@Html.TextBoxFor(m => m.VModel.Name)
 			</div>
-			<div class="form-group">
+			<div class="form-group form-group--fancy-labels">
 				@Html.LabelFor(m => m.VModel.Surname)
 				@Html.TextBoxFor(m => m.VModel.Surname)
 			</div>
 		</div>
-		<div class="form-group email">
+		<div class="form-group form-group--fancy-labels email">
 			@Html.LabelFor(m => m.VModel.Email)
 			@Html.TextBoxFor(m => m.VModel.Email)
 			@Html.ValidationMessageFor(m => m.VModel.Email, "", new { @class = "validation-error-message" })
 		</div>
 		<div class="password clearfix">
 			<div>
-				<div class="form-group">
+				<div class="form-group form-group--fancy-labels">
 					@Html.LabelFor(m => m.VModel.OldPassword)
 					@Html.PasswordFor(m => m.VModel.OldPassword)
 				</div>
-				<div class="form-group">
+				<div class="form-group form-group--fancy-labels">
 					@Html.LabelFor(m => m.VModel.NewPassword)
 					@Html.PasswordFor(m => m.VModel.NewPassword)
 					@Html.ValidationMessageFor(m => m.VModel.NewPassword, "", new { @class = "validation-error-message" })
 				</div>
-				<div class="form-group">
+				<div class="form-group form-group--fancy-labels">
 					@Html.LabelFor(m => m.VModel.ConfirmPassword)
 					@Html.PasswordFor(m => m.VModel.ConfirmPassword)
 					@Html.ValidationMessageFor(m => m.VModel.ConfirmPassword, "", new { @class = "validation-error-message" })

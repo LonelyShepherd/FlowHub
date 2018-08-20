@@ -12,7 +12,7 @@ namespace FlowHub.ViewModels
 		public string Name { get; set; }
 		public string Surname { get; set; }
 
-		[EmailAddress]
+		[EmailAddress(ErrorMessage = "Invalid email format")]
 		[System.Web.Mvc.Remote("IsRegistered", "Manage", HttpMethod = "POST", ErrorMessage = "There is already a user registered with this email")]
 		public string Email { get; set; }
 	}

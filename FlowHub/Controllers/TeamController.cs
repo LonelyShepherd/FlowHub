@@ -89,8 +89,6 @@ namespace FlowHub.Controllers
 			{
 				case "overview":
 					return PartialView("~/Views/Team/Partials/_Overview.cshtml", user);
-				case "members":
-					return PartialView("~/Views/Team/Partials/_Members.cshtml", user);
 				case "settings":
 					if (user.Team.LeaderId == user.Id)
 						return PartialView("~/Views/Team/Partials/_Settings.cshtml", user);
@@ -137,6 +135,7 @@ namespace FlowHub.Controllers
 			});
 		}
 
+		// POST: Team/Delete
 		[HttpPost]
 		public ActionResult Delete()
 		{
@@ -164,6 +163,7 @@ namespace FlowHub.Controllers
 			return Json(new { redirectUrl = Url.Action("Index", "Dashboard") });		
 		}
 
+		// POST: Team/AddMembers
 		[HttpPost]
 		public ActionResult AddMembers()
 		{
@@ -196,6 +196,7 @@ namespace FlowHub.Controllers
 			foreach (var member in user.Team.ApplicationUsers)
 				members.Add(new UserViewModel
 				{
+					Avatar = member.Avatar,
 					FullName = member.Name + " " + member.Surname,
 					Email = member.Email
 				});
@@ -203,6 +204,7 @@ namespace FlowHub.Controllers
 			return Json(members?.ToArray());
 		}
 
+		// POST: Team.RemoveMembers
 		[HttpPost]
 		public ActionResult RemoveMembers()
 		{
