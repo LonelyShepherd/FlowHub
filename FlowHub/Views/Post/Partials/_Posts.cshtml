@@ -1,0 +1,34 @@
+﻿@model IEnumerable<FlowHub.ViewModels.PostViewModel>
+
+@foreach (var post in Model)
+{
+    <div class="posts-presenter__post" data-postid="@post.Id">
+        <div class="posts-presenter__post__header clearfix">
+            <div class="posts-presenter__status-lane"></div>
+            <div class="posts-presenter__actions">
+                <button class="btn btn-action">Edit</button>
+                <button class="btn btn-action js-delete-post">Delete</button>
+                @*<button class="btn btn-action">Comment</button>*@
+            </div>
+        </div>
+        <div class="posts-presenter__post__content">
+            <p>@post.Message</p>
+            <div class="show-comments">
+                <button class="show-commentos" title="Leave a comment"></button>
+            </div>
+        </div>
+        <div class="posts-presenter__post__comments">
+            <div class="comment-input clearfix">
+                <img src="@post.PictureUrl" />
+                <button class="post-comment">Post</button>
+                <div>
+                    @Html.TextBox("comment-composer", null, new { placeholder = "Write a comment .." })
+                    @*<input placeholder="Write a comment.." type="text" name="comment" />*@
+                </div>
+            </div>
+            <div class="comment-presenter" data-acursor="">
+            </div>
+            <a class="loadmore" title="View more comments">Load more comments</a>
+        </div>
+    </div>
+}
