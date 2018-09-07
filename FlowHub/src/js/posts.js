@@ -22,17 +22,17 @@ document.addEventListener('DOMContentLoaded', function () {
 input.addEventListener('change', e => {
     let image = Utils.createElement('img');
     let successful = Utils.URLToImage(input, image);
-    
-    if(!successful) {
-      console.log('failed');
-      input.value = '';
-      return;
+
+    if (!successful) {
+        console.log('failed');
+        input.value = '';
+        return;
     }
 
     let imageHolder = Utils.createElement('div', { id: `image-${uniqueId++}`, className: 'post-composer__content__uploader--image' })
         , close = Utils.createElement('button', { className: 'remove-image' })
         , file = {
-            id: imageHolder.id, 
+            id: imageHolder.id,
             file: input.files[0]
         };
 
@@ -47,7 +47,7 @@ input.addEventListener('change', e => {
 uploadHolder.addEventListener('click', e => {
     let action = e.target;
 
-    if(Utils.hasClass(action, 'remove-image')) {
+    if (Utils.hasClass(action, 'remove-image')) {
         let parent = action.parentNode;
         uploads = uploads.filter(file => file.id !== parent.id);
         console.log(uploads);
@@ -118,26 +118,82 @@ loadPosts.addEventListener('click', e => {
 
 postsPresenter.addEventListener('click', e => {
     let action = e.target;
-    console.log(action);
-    //switch (action.innerHTML) {
-    //    case 'Comment':
-    //        let post = Traversal.parents(action, '.posts-presenter__post');
 
-    //        post.querySelector('.posts-presenter__post__comments').style.display = 'block';
-    //        break;
-
-    //}
+    switch (action.innerHTML) {
+        case 'Delete':
+            let post = Traversal.parents(action, '.posts-presenter__post');
+            $.ajax({
+                url: '/Post/DeletePost',
+                method: 'GET',
+                data: 'post_id=' + post.getAttribute('data-postid')
+            }).done(data => {
+                Alter.unmount(post);
+            });
+            break;
+    }
 
     switch (action.className) {
         case 'show-commentos':
-            let postContent = Traversal.parents(action, 'posts-presenter__post__content');
-            console.log(postContent);
-            let commentsPresenter = Traversal.next(postContent, 'posts-presenter__post__comments');
-            console.log(commentsPresenter);
+            let postContent = Traversal.parents(action, '.posts-presenter__post__content');
+            let comments = Traversal.next(postContent, '.posts-presenter__post__comments');
+            let commentsPresenter = comments.querySelector('.comment-presenter');
+            if (commentsPresenter.getAttribute('data-acursor') === '') {
+                var commentLoader = comments.querySelector('.loadmore');
+                if (commentLoader)
+                    commentLoader.click();
+            }
+            comments.style.display = window.getComputedStyle(comments).display === 'none' ? 'block' : 'none';
+            break;
+
+        case 'loadmore':
+            let post = Traversal.parents(action, '.posts-presenter__post');
+            let postId = post.getAttribute('data-postid');
+            commentsPresenter = Traversal.prev(action, '.comment-presenter');
+
+            $.ajax({
+                url: '/Post/GetComments',
+                dataType: 'json',
+                data: 'post_id=' + postId + '&after_cursor=' + commentsPresenter.getAttribute('data-acursor')
+            }).done(data => {
+                console.log(data.cursors.after);
+                if (data.cursors.after === '') {
+                    Alter.unmount(action);
+                    //action.style.display = 'none';
+                    // Say sth
+                }
+
+                commentsPresenter.innerHTML += data.comments;
+                commentsPresenter.setAttribute('data-acursor', data.cursors.after);
+                //console.log(data.cursors);
+            });
+
             break;
 
         case 'post-comment':
-
+            let commentInput = Traversal.parents(action, '.comment-input').querySelector('#comment-composer');
+            post = Traversal.parents(action, '.posts-presenter__post');
+            commentsPresenter = post.querySelector('.comment-presenter');
+            var formData = new FormData();
+            formData.append('message', commentInput.value);
+            formData.append('post_id', post.getAttribute('data-postid'));
+            if (commentInput !== '') {
+                $.ajax({
+                    url: '/Post/CreateComment',
+                    method: 'POST',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    mimeType: 'multipart/form-data'
+                }).done(data => {
+                    //var template = document.createElement('template');
+                    //data = data.trim(); // Never return a text node of whitespace as the result
+                    //template.innerHTML = data;
+                    //Alter.prepend(template.content.firstChild, commentsPresenter);
+                    commentsPresenter.innerHTML = data + commentsPresenter.innerHTML;
+                    commentInput.value = '';
+                });
+            }
             break;
+
     }
 });

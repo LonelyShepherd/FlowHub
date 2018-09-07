@@ -1,4 +1,5 @@
-﻿using FlowHub.ViewModels;
+﻿using FlowHub.Common;
+using FlowHub.ViewModels;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -68,7 +69,7 @@ namespace FlowHub.Api_Managers
             return response;
         }
 
-        public async Task<string> CreatePostCommentAsync(string post_id, string message, string access_token, DateTime time)
+        public async Task<string> CreatePostCommentAsync(string post_id, string message, string access_token)
         {
             var escapedMessage = Uri.EscapeDataString(message);
             //string fields = $"?message={escapedMessage}&access_token={access_token}";
@@ -79,7 +80,7 @@ namespace FlowHub.Api_Managers
                 { "access_token", access_token },
             };
 
-            string response = await _client.PostAsync($"/{post_id}/feed", payload);
+            string response = await _client.PostAsync($"/{post_id}/comments", payload);
 
             return response;
         }
@@ -97,7 +98,7 @@ namespace FlowHub.Api_Managers
                 fields.Add("after", after_cursor);
             }
 
-            string response = await _client.GetAsync($"/{page_id}/feed", GetQueryString(fields));
+            string response = await _client.GetAsync($"/{page_id}/feed", Utils.GetQueryString(fields));
 
             return response;
         }
@@ -110,7 +111,7 @@ namespace FlowHub.Api_Managers
                 { "access_token", access_token }
             };
 
-            string response = await _client.GetAsync($"/{page_id}/promotable_posts", GetQueryString(fields));
+            string response = await _client.GetAsync($"/{page_id}/promotable_posts", Utils.GetQueryString(fields));
 
             return response;
         }
@@ -120,6 +121,11 @@ namespace FlowHub.Api_Managers
             string response = await _client.GetAsync($"/{post_id}", $"?access_token={access_token}");
 
             return response;
+        }
+
+        public async Task<string> DeletePost(string post_id, string access_token) 
+        {
+            return await _client.DeleteAsync($"/{post_id}", $"?access_token={access_token}");
         }
 
         public async Task<string> GetComment(string comment_id, string access_token)
@@ -134,6 +140,7 @@ namespace FlowHub.Api_Managers
             var fields = new Dictionary<string, string>
             {
                 { "access_token", access_token },
+                { "order", "reverse_chronological" }
             };
 
             if (limit != 0)
@@ -142,7 +149,7 @@ namespace FlowHub.Api_Managers
                 fields.Add("after", after_cursor);
             }
 
-            string response = await _client.GetAsync($"/{post_id}/comments", GetQueryString(fields));
+            string response = await _client.GetAsync($"/{post_id}/comments", Utils.GetQueryString(fields));
 
             return response;
         }
@@ -157,7 +164,7 @@ namespace FlowHub.Api_Managers
             };
 
 
-            string response = await _client.GetAsync($"/{object_id}/picture", GetQueryString(fields));
+            string response = await _client.GetAsync($"/{object_id}/picture", Utils.GetQueryString(fields));
 
             return response;
         }
@@ -184,23 +191,6 @@ namespace FlowHub.Api_Managers
             return JObject.Parse(response).SelectToken("id").ToString();
         }
 
-        #region query
-        private string GetQueryString(Dictionary<string, string> pairs)
-        {
-            var uriBuilder = new UriBuilder {
-                Port = -1
-            };
-            var query = HttpUtility.ParseQueryString(uriBuilder.Query);
 
-            foreach (var pair in pairs)
-            {
-                query[pair.Key] = pair.Value;
-            }
-
-            uriBuilder.Query = query.ToString();
-
-            return uriBuilder.Query.ToString();
-        }
-        #endregion
     }
 }

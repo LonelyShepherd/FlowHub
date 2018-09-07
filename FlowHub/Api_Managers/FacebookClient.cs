@@ -37,7 +37,16 @@ namespace FlowHub.Api_Managers
 
         public async Task<string> GetAsync(string endpoint, string fields)
         {
-            string response = await _client.GetStringAsync($"{endpoint}{fields}");
+            string response = "";
+
+            try
+            {
+                response = await _client.GetStringAsync($"{endpoint}{fields}");
+            }
+            catch(Exception e)
+            {
+
+            }
 
             return response;
         }

@@ -7,7 +7,7 @@
             <div class="posts-presenter__status-lane"></div>
             <div class="posts-presenter__actions">
                 <button class="btn btn-action">Edit</button>
-                <button class="btn btn-action">Delete</button>
+                <button class="btn btn-action js-delete-post">Delete</button>
                 @*<button class="btn btn-action">Comment</button>*@
             </div>
         </div>
@@ -26,9 +26,9 @@
                     @*<input placeholder="Write a comment.." type="text" name="comment" />*@
                 </div>
             </div>
-            <div class="comment-presenter">
+            <div class="comment-presenter" data-acursor="">
             </div>
-            <a title="View more comments">Load more comments</a>
+            <a class="loadmore" title="View more comments">Load more comments</a>
         </div>
     </div>
 }

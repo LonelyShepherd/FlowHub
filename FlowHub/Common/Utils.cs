@@ -22,5 +22,23 @@ namespace FlowHub.Common
                 return sw.GetStringBuilder().ToString();
             }
         }
+
+        public static string GetQueryString(Dictionary<string, string> pairs)
+        {
+            var uriBuilder = new UriBuilder
+            {
+                Port = -1
+            };
+            var query = HttpUtility.ParseQueryString(uriBuilder.Query);
+
+            foreach (var pair in pairs)
+            {
+                query[pair.Key] = pair.Value;
+            }
+
+            uriBuilder.Query = query.ToString();
+
+            return uriBuilder.Query.ToString();
+        }
     }
 }

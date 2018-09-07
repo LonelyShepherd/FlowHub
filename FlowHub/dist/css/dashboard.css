@@ -599,47 +599,47 @@ body {
       transition: background .005s ease-out;
       padding: 10px 10px; }
 
-.posts-presenter__post__comments .comment-input {
-  height: 40px;
-  margin: 0 10px; }
-  .posts-presenter__post__comments .comment-input img {
-    width: 30px;
-    height: 30px;
-    border-radius: 50% 50%;
-    margin-right: 5px;
-    float: left; }
-  .posts-presenter__post__comments .comment-input > div {
-    margin: 0 40px; }
-  .posts-presenter__post__comments .comment-input input[type="text"] {
-    width: 100%;
-    height: 30px;
-    padding: 3px;
-    border: none;
-    border-bottom: 1px solid #dedada; }
-  .posts-presenter__post__comments .comment-input button {
-    float: right;
-    height: 100%;
-    margin-right: 2px;
-    color: #377dff; }
-
-.posts-presenter__post__comments a {
-  display: inline-block;
-  margin: 10px 10px;
-  margin-bottom: 3px;
-  color: #377dff;
-  font-size: 12px; }
-
-.posts-presenter__post__comments a:hover {
-  text-decoration: underline;
-  cursor: pointer; }
+.posts-presenter__post__comments {
+  display: none;
+  padding-bottom: 5px; }
+  .posts-presenter__post__comments .comment-input {
+    height: 40px;
+    margin: 0 10px; }
+    .posts-presenter__post__comments .comment-input img {
+      width: 30px;
+      height: 30px;
+      border-radius: 50% 50%;
+      margin-right: 5px;
+      float: left; }
+    .posts-presenter__post__comments .comment-input > div {
+      margin: 0 40px; }
+    .posts-presenter__post__comments .comment-input input[type="text"] {
+      width: 100%;
+      height: 30px;
+      padding: 3px;
+      border: none;
+      border-bottom: 1px solid #dedada; }
+    .posts-presenter__post__comments .comment-input button {
+      float: right;
+      height: 100%;
+      margin-right: 2px;
+      color: #377dff; }
+  .posts-presenter__post__comments a {
+    display: inline-block;
+    margin: 10px 10px;
+    margin-bottom: 0;
+    color: #377dff;
+    font-size: 12px; }
+  .posts-presenter__post__comments a:hover {
+    text-decoration: underline;
+    cursor: pointer; }
 
 .comment-presenter__comment {
   margin: 0 10px;
   margin-top: 10px;
   transition: all .5s; }
   .comment-presenter__comment img {
-    /*display: table-cell;
-        vertical-align: top;*/
+    border-radius: 50% 50%;
     float: left;
     width: 30px;
     height: 30px; }
@@ -653,6 +653,72 @@ body {
       color: darkslateblue; }
     .comment-presenter__comment .comment-presenter__comment--content p {
       word-wrap: break-word; }
+
+.post-composer__profiles--profile {
+  /*background-color: #f6f9fd;*/
+  display: inline-block;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  width: 33.33333%;
+  /*label::before {
+        content: '';
+        background: url("/dist/images/avatar.png");
+        background-size: 30px 30px;
+        background-repeat: no-repeat;
+        width: 30px;
+        height: 30px;
+        position: absolute;
+    }*/ }
+  .post-composer__profiles--profile label {
+    position: relative;
+    margin: 0 3px;
+    display: block;
+    vertical-align: middle;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; }
+    .post-composer__profiles--profile label img {
+      height: 30px;
+      width: 30px;
+      vertical-align: middle;
+      border-radius: 50% 50%; }
+    .post-composer__profiles--profile label span {
+      margin-left: 10px;
+      font-size: 13px; }
+  .post-composer__profiles--profile label:hover {
+    background-color: #f5f5f5; }
+  .post-composer__profiles--profile input {
+    display: none; }
+  .post-composer__profiles--profile input:checked + label {
+    background-color: #e3e7f0; }
+  .post-composer__profiles--profile input:checked + label::before {
+    content: "";
+    height: 30px;
+    width: 30px;
+    border-radius: 50% 50%;
+    position: absolute;
+    background-color: #377dff;
+    background: url("/dist/images/check.png");
+    background-size: 700px 170px;
+    background-repeat: no-repeat;
+    left: 13px;
+    top: 9px;
+    z-index: 4;
+    background-position: -562px -69px; }
+  .post-composer__profiles--profile input:checked + label::after {
+    content: "";
+    height: 32px;
+    width: 32px;
+    border-radius: 50% 50%;
+    position: absolute;
+    background-color: #377dff85;
+    left: 9px;
+    top: 4px; }
 
 body {
   width: 100%;

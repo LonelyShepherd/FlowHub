@@ -8,17 +8,19 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
 namespace FlowHub.Controllers
 {
-    public class PostController : Controller
+    public class PostController : AsyncController
     {
         private static readonly string page_id = "1733163406773721";
-        private static readonly string access_token = "EAADlpRefaDYBAFThACjkPxsl4xFhQDhQ6CnTGcNcjCegt04hYF93ZClowiar4Dd5DZAEZBPKxARpatpFdgIZAU07PTAYtZBdI6ZA03yUiYp6ZAXjGk2uTQWV4UtifD1mQeZCZBCy2eKnZCL6BvI4WWxnyMtGykH5Tp0MoYRt3uZC9zfOgZDZD";
+        //private static string access_token = "EAADlpRefaDYBAFThACjkPxsl4xFhQDhQ6CnTGcNcjCegt04hYF93ZClowiar4Dd5DZAEZBPKxARpatpFdgIZAU07PTAYtZBdI6ZA03yUiYp6ZAXjGk2uTQWV4UtifD1mQeZCZBCy2eKnZCL6BvI4WWxnyMtGykH5Tp0MoYRt3uZC9zfOgZDZD";
         //private static readonly string user_access_token = "EAADlpRefaDYBAE65goZBF02eGbZCAyqktwEp3c9sNASsvAyyaU78VZA4uP7Uz9dJtSVtnPbeVvSktprZCHKpxllZBQQIyCOZAu7otYHbVw4NGHrIpVK7G48b97x56vMfuvQc2CM0ZAAyKUZBg4VZA3TWKQDVgK6p22FJY38g22AXP6QZDZD";
+        private static string access_token = "";
 
         private static readonly FacebookClient _client = new FacebookClient();
         private FacebookPostsApi PostsApi;
@@ -28,6 +30,17 @@ namespace FlowHub.Controllers
             PostsApi = new FacebookPostsApi(_client);
         }
 
+
+        public FacebookClient getFacebookClient()
+        {
+            return _client;
+        }
+
+        // TO be deleted 
+        public static void setAccessToken(string token)
+        {
+            access_token = token;
+        }
         // GET: Post
         public ActionResult Index()
         {
@@ -96,15 +109,38 @@ namespace FlowHub.Controllers
             }, JsonRequestBehavior.AllowGet);
         }
 
-        public async Task<ActionResult> GetComments()
+        [HttpDelete]
+        public async Task<ActionResult> DeletePost(string post_id)
         {
-            string postComments = await PostsApi.GetPostComments("1733163406773721_1768270006596394", access_token);
+            string response = await PostsApi.DeletePost(post_id, access_token);
+
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
+        }
+
+        public async Task<ActionResult> GetComments(string post_id, string after_cursor)
+        {
+            string postComments = await PostsApi.GetPostComments(post_id, access_token, 5, after_cursor);
             JObject jsonComments = JObject.Parse(postComments);
             IList<JToken> comments = jsonComments["data"].Children().ToList();
 
             List<CommentViewModel> lista = new List<CommentViewModel>();
 
             List<Tuple<CommentViewModel, Task<string>>> cms = new List<Tuple<CommentViewModel, Task<string>>>();
+
+            string afterCursor;
+
+            try
+            {
+                afterCursor = GetJsonProperty(postComments, "paging", "cursors", "after");
+            }
+            catch (JsonException e)
+            {
+                afterCursor = "";
+            }
+            catch (Exception e)
+            {
+                afterCursor = null;
+            }
 
             foreach (JToken comment in comments)
             {
@@ -126,7 +162,30 @@ namespace FlowHub.Controllers
                 comment.Item1.ComposerPictureUrl = JObject.Parse(await comment.Item2)["data"]["url"].ToString();
             }
 
-            return PartialView("~/Views/Post/Partials/_Comments.cshtml", cms.Select(m => m.Item1).ToList());
+            return Json(new
+            {
+                cursors = new
+                {
+                    after = afterCursor,
+                },
+                comments = Utils.RenderRazorViewToString(this, "~/Views/Post/Partials/_Comments.cshtml", cms.Select(m => m.Item1).ToList())
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        public async Task<ActionResult> CreateComment()
+        {
+            string response = await PostsApi.CreatePostCommentAsync(Request.Form["post_id"], Request.Form["message"], access_token);
+            string pictureUrl = await PostsApi.GetPicture(page_id, access_token);
+
+            CommentViewModel comment = new CommentViewModel
+            {
+                Id = GetJsonProperty(response, "id"),
+                Message = Request.Form["message"],
+                CreatedTime = DateTime.Now.ToString(),
+                ComposerPictureUrl = GetJsonProperty(pictureUrl, "data", "url").ToString()
+            };
+
+            return PartialView("~/Views/Post/Partials/_Comments.cshtml", new List<CommentViewModel>() { comment });
         }
 
         #region helper

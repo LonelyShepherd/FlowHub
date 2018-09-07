@@ -8,6 +8,7 @@
 
 <div class="dashboard-section dashboard-section--post-composer">
     <!-- Compose posts -->
+    @Html.ActionLink("FB Login", "AuthorizeFacebook", "OAuth")
     <div class="post-composer">
         <div class="post-composer__content">
             <textarea cols="20" id="Test" name="Test" rows="3"></textarea>
@@ -20,6 +21,27 @@
             <!-- <div class="post-composer__content__uploader">
               <div class="post-composer__content__uploader--image"></div>
             </div> -->
+            <div class="post-composer__profiles">
+                <div class="post-composer__profiles--profile">
+                    <input id="profile-1" type="checkbox" />
+                    <label for="profile-1">
+                        <img src="/dist/images/avatar.png" />
+                        <span>Text text Text</span>
+                    </label>
+                </div><div class="post-composer__profiles--profile">
+                    <input id="profile-2" type="checkbox" />
+                    <label for="profile-2">
+                        <img src="/dist/images/avatar.png" />
+                        <span>Text text Text</span>
+                    </label>
+                </div><div class="post-composer__profiles--profile">
+                    <input id="profile-3" type="checkbox" />
+                    <label for="profile-3">
+                        <img src="/dist/images/avatar.png" />
+                        <span>Text text Text</span>
+                    </label>
+                </div>
+            </div>
         </div>
         <div class="post-composer__footer clearfix">
             <div class="create-post">
@@ -33,14 +55,14 @@
 
 <div class="dashboard-section dashboard-section--post-presenter">
     <div class="posts-presenter" data-acursor="">
-        @*<div class="posts-presenter__post">
-            @*<div class="posts-presenter__post__header clearfix">
+        <div class="posts-presenter__post">
+            <div class="posts-presenter__post__header clearfix">
                 <div class="posts-presenter__status-lane"></div>
                 <div class="posts-presenter__actions">
                     <button class="btn btn-action">Edit</button>
                     <button class="btn btn-action">Delete</button>
-                    @*<button class="btn btn-action">Comment</button>
-                @*</div>
+                    <button class="btn btn-action">Comment</button>
+                </div>
             </div>
             <div class="posts-presenter__post__content">
                 <p>Test content..Test content..Test content..Test content..Test content..Test content..Test content..dadadaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
@@ -85,11 +107,11 @@
                     </div>
                 </div>
                 <a title="View more comments">Load more comments</a>
-            </div>*@
-            @*<div class="posts-presenter__post__footer">
+            </div>
+            <div class="posts-presenter__post__footer">
                     @Html.TextArea("Comments")
-                </div>*@
-        @*</div>*@
+                </div>
+        </div>
     </div>
     <button class="btn btn-default-outlined load-posts">Load Posts</button>
 </div>
