@@ -60,7 +60,7 @@ namespace FlowHub.Controllers
                 }
             }
 
-            return RedirectToAction("Index", "Post");
+            return RedirectToAction("Index", "Dashboard");
         }
     }
 }

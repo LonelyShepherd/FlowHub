@@ -30,7 +30,6 @@ namespace FlowHub.Controllers
             PostsApi = new FacebookPostsApi(_client);
         }
 
-
         public FacebookClient getFacebookClient()
         {
             return _client;
@@ -40,11 +39,6 @@ namespace FlowHub.Controllers
         public static void setAccessToken(string token)
         {
             access_token = token;
-        }
-        // GET: Post
-        public ActionResult Index()
-        {
-            return View();
         }
 
         // POST: Post/Create
