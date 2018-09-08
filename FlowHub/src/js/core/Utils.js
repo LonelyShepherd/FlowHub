@@ -21,6 +21,11 @@ class Utils {
 			} catch(e) {}
 		}
   }
+
+  static css(element, properties) {
+    for(let property in properties)
+      element.style[property] = properties[property];
+  }
   
   static createElement(tagName, htmlProperties, cssProperties) {
     let element = document.createElement(tagName);
@@ -28,9 +33,8 @@ class Utils {
     for(let property in htmlProperties)
       element[property] = htmlProperties[property];
 
-    for(let property in cssProperties)
-      element.style[property] = cssProperties[property];
-
+    this.css(element, cssProperties);
+    
     return element;
   }
 

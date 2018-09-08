@@ -40,6 +40,9 @@ class Traversal {
     let first = element;
 
     while(first = first.parentNode) {
+      if(first === document)
+        return null;
+        
       if(first.matches(selector))
         return first;
     }

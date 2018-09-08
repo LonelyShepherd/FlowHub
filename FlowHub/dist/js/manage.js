@@ -170,25 +170,25 @@ eval("\n\nvar _Utils = __webpack_require__(/*! ./core/Utils */ \"./src/js/core/U
 
 /***/ }),
 
-/***/ "./src/scss/teams.scss":
-/*!*****************************!*\
-  !*** ./src/scss/teams.scss ***!
-  \*****************************/
+/***/ "./src/scss/dashboard.scss":
+/*!*********************************!*\
+  !*** ./src/scss/dashboard.scss ***!
+  \*********************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("module.exports = __webpack_require__.p + \"css/teams.css\";\n\n//# sourceURL=webpack:///./src/scss/teams.scss?");
+eval("module.exports = __webpack_require__.p + \"css/dashboard.css\";\n\n//# sourceURL=webpack:///./src/scss/dashboard.scss?");
 
 /***/ }),
 
 /***/ 0:
-/*!******************************************************!*\
-  !*** multi ./src/js/manage.js ./src/scss/teams.scss ***!
-  \******************************************************/
+/*!**********************************************************!*\
+  !*** multi ./src/js/manage.js ./src/scss/dashboard.scss ***!
+  \**********************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("__webpack_require__(/*! ./src/js/manage.js */\"./src/js/manage.js\");\nmodule.exports = __webpack_require__(/*! ./src/scss/teams.scss */\"./src/scss/teams.scss\");\n\n\n//# sourceURL=webpack:///multi_./src/js/manage.js_./src/scss/teams.scss?");
+eval("__webpack_require__(/*! ./src/js/manage.js */\"./src/js/manage.js\");\nmodule.exports = __webpack_require__(/*! ./src/scss/dashboard.scss */\"./src/scss/dashboard.scss\");\n\n\n//# sourceURL=webpack:///multi_./src/js/manage.js_./src/scss/dashboard.scss?");
 
 /***/ })
 

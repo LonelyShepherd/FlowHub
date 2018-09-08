@@ -53,6 +53,10 @@ body {
 .btn-bolded {
   font-weight: 600; }
 
+.btn-small {
+  height: 25px;
+  line-height: 25px; }
+
 .btn-medium {
   height: 35px;
   line-height: 35px; }
@@ -100,7 +104,7 @@ body {
     border-color: #6498f9;
     color: #6498f9; }
 
-.clearfix:after, .fh-modal__content__footer:after, .dashboard-section:after {
+.clearfix:after, .fh-modal__content__footer:after, .post-composer__uploader__uploaded:after, .post-composer__profiles:after, .dashboard-section:after {
   content: "";
   display: table;
   clear: both; }
@@ -429,121 +433,192 @@ body {
   .fh-sequential-add__element-added--member .fh-sequential-add__element-added__remove {
     background-image: url("../images/remove.png"); }
 
-.post-composer {
-  border: 1px solid #d4d7dd;
-  border-radius: 4px;
+.new-post-title {
+  font-weight: 600;
+  color: #353535;
+  margin-bottom: 3px; }
+
+.content-wrapper {
+  width: 600px;
   min-width: 500px;
-  overflow-y: auto; }
+  margin: 0 auto; }
+  .content-wrapper .dashboard-section {
+    padding: 0; }
+
+.post-composer {
+  border: 1px solid #dedede;
+  border-radius: 3px;
+  background: #fff; }
+
+.post-composer__textbox {
+  font-family: "Poppins", sans-serif, arial;
+  display: block;
+  width: 100%;
+  padding: 10px;
+  border-color: transparent;
+  border-radius: 3px;
+  font-size: 13px;
+  resize: none;
+  word-break: break-all;
+  min-height: 65px;
+  max-height: 200px; }
+
+.post-composer__manager {
+  max-height: 0;
+  overflow-y: hidden;
+  transition: .4s ease-in-out; }
+
+.post-composer__manager--slide {
+  max-height: 300px; }
+
+.post-composer__uploader {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  overflow-x: auto; }
+
+.post-composer__uploader__uploaded {
+  display: inline-flex;
+  float: left; }
+
+.post-composer__uploader__upload,
+.post-composer__uploader__image {
+  float: left;
+  width: 100px;
+  height: 100px;
+  margin-right: 10px; }
+
+.post-composer__uploader__upload {
+  border: 2px dashed #c6d2de;
+  background-image: url(../images/add_picture.png);
+  background-position: 50%;
+  background-repeat: no-repeat;
+  background-size: 20px; }
+  .post-composer__uploader__upload:hover {
+    background-image: url(../images/add_picture_s.png); }
+  .post-composer__uploader__upload label {
+    width: 100%;
+    height: 100%;
+    display: inline-block;
+    cursor: pointer; }
+  .post-composer__uploader__upload input {
+    display: none; }
+
+.post-composer__uploader__image {
+  position: relative; }
+  .post-composer__uploader__image img {
+    width: 100px;
+    height: 100px;
+    -o-object-fit: cover;
+       object-fit: cover;
+    -o-object-position: 50% 50%;
+       object-position: 50% 50%; }
+  .post-composer__uploader__image .remove-image {
+    display: none;
+    right: 5px;
+    top: 5px;
+    width: 12px;
+    height: 12px;
+    position: absolute;
+    background-image: url("../images/remove-image.png");
+    background-position: 0 -182px;
+    cursor: pointer; }
+  .post-composer__uploader__image .remove-image:hover {
+    background-position: 0 -195px; }
+  .post-composer__uploader__image:hover .remove-image {
+    display: block;
+    z-index: 1; }
+  .post-composer__uploader__image:after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: all .2s ease-in;
+    background: transparent; }
+  .post-composer__uploader__image:hover::after {
+    background: rgba(0, 0, 0, 0.3); }
+
+.post-composer__profiles {
+  padding: 10px; }
+  .post-composer__profiles > h6 {
+    color: #353535;
+    font-weight: 600;
+    margin-bottom: 5px; }
+
+.post-composer__profiles__profile {
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  width: calc(100% / 3 - (10px / 3));
+  float: left; }
+  .post-composer__profiles__profile:not(:last-child) {
+    margin-right: 5px; }
+  .post-composer__profiles__profile label {
+    position: relative;
+    display: block;
+    padding: 5px 10px;
+    border-radius: 3px;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; }
+    .post-composer__profiles__profile label img {
+      height: 30px;
+      width: 30px;
+      vertical-align: middle;
+      border-radius: 50% 50%; }
+    .post-composer__profiles__profile label span {
+      margin-left: 10px;
+      font-size: 13px; }
+  .post-composer__profiles__profile label:hover {
+    background-color: #f5f5f5; }
+  .post-composer__profiles__profile input {
+    display: none; }
+  .post-composer__profiles__profile input:checked + label {
+    background-color: #e3e7f0; }
+  .post-composer__profiles__profile input:checked + label::before {
+    content: "";
+    height: 30px;
+    width: 30px;
+    border-radius: 50% 50%;
+    position: absolute;
+    background-color: #377dff;
+    background: url("/dist/images/check.png");
+    background-size: 700px 170px;
+    background-repeat: no-repeat;
+    left: 13px;
+    top: 9px;
+    z-index: 4;
+    background-position: -562px -69px; }
+  .post-composer__profiles__profile input:checked + label::after {
+    content: "";
+    height: 32px;
+    width: 32px;
+    border-radius: 50% 50%;
+    position: absolute;
+    background-color: #377dff85;
+    left: 9px;
+    top: 4px; }
+
+.post-composer__footer {
+  padding: 7.5px 10px;
+  font-size: 13px;
+  background: #f7f7f7;
+  border-radius: 0 0 3px 3px;
+  border-top: 1px solid #dedede; }
+  .post-composer__footer .post-btn {
+    float: right; }
+  .post-composer__footer .actions {
+    float: left; }
 
 .posts-presenter {
   margin-bottom: 30px;
   min-width: 500px;
   font-size: 13px; }
-
-.post-composer__content {
-  background: white;
-  border-radius: 4px 4px 0 0; }
-  .post-composer__content textarea {
-    font-family: "Poppins", sans-serif, arial;
-    display: block;
-    width: 100%;
-    padding: 10px;
-    border-radius: 4px 4px 0 0;
-    border-color: transparent;
-    transition: height .5s;
-    font-size: 13px;
-    resize: none;
-    height: 6em; }
-  .post-composer__content textarea:focus {
-    height: 8em; }
-
-.post-composer,
-.posts-presenter {
-  width: 60%; }
-
-.post-composer__content__uploader {
-  display: block;
-  padding: .3em; }
-  .post-composer__content__uploader .post-composer__content__uploader--upload,
-  .post-composer__content__uploader .post-composer__content__uploader--image {
-    vertical-align: top;
-    display: inline-block;
-    clear: both;
-    width: 100px;
-    height: 100px;
-    margin-left: .3em;
-    margin-top: .3em; }
-  .post-composer__content__uploader .post-composer__content__uploader--upload {
-    border: 2px dashed #c6d2de;
-    background-image: url(../images/add_picture.png);
-    background-position: 50%;
-    background-repeat: no-repeat;
-    background-size: 20px; }
-    .post-composer__content__uploader .post-composer__content__uploader--upload:hover {
-      background-image: url(../images/add_picture_s.png); }
-    .post-composer__content__uploader .post-composer__content__uploader--upload label {
-      width: 100%;
-      height: 100%;
-      display: inline-block;
-      cursor: pointer; }
-    .post-composer__content__uploader .post-composer__content__uploader--upload input {
-      display: none; }
-  .post-composer__content__uploader .post-composer__content__uploader--image {
-    position: relative; }
-    .post-composer__content__uploader .post-composer__content__uploader--image img {
-      width: 100px;
-      height: 100px;
-      -o-object-fit: cover;
-         object-fit: cover;
-      -o-object-position: 50% 50%;
-         object-position: 50% 50%; }
-    .post-composer__content__uploader .post-composer__content__uploader--image .remove-image {
-      display: none;
-      right: 5px;
-      top: 5px;
-      width: 12px;
-      height: 12px;
-      position: absolute;
-      background-image: url("../images/remove-image.png");
-      background-position: 0 -182px;
-      cursor: pointer; }
-    .post-composer__content__uploader .post-composer__content__uploader--image .remove-image:hover {
-      background-position: 0 -195px; }
-    .post-composer__content__uploader .post-composer__content__uploader--image:hover .remove-image {
-      display: block;
-      z-index: 1; }
-    .post-composer__content__uploader .post-composer__content__uploader--image:after {
-      content: '';
-      display: block;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      transition: all .2s ease-in;
-      background: transparent; }
-    .post-composer__content__uploader .post-composer__content__uploader--image:hover::after {
-      background: rgba(0, 0, 0, 0.3); }
-
-.post-composer__footer {
-  background: #c6d2de;
-  border-radius: 0 0 4px 4px;
-  position: relative;
-  padding: 4px; }
-  .post-composer__footer .create-post {
-    display: block;
-    line-height: 20px;
-    float: right; }
-    .post-composer__footer .create-post .post-btn {
-      background: #7c9bbb;
-      height: 20px;
-      line-height: 20px;
-      vertical-align: top;
-      font-size: 12px; }
-    .post-composer__footer .create-post .post-btn:hover {
-      background: #7591af; }
-  .post-composer__footer .actions {
-    float: left; }
 
 .posts-presenter__post {
   border-radius: 4px;
@@ -654,71 +729,9 @@ body {
     .comment-presenter__comment .comment-presenter__comment--content p {
       word-wrap: break-word; }
 
-.post-composer__profiles--profile {
-  /*background-color: #f6f9fd;*/
-  display: inline-block;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-      -ms-user-select: none;
-          user-select: none;
-  width: 33.33333%;
-  /*label::before {
-        content: '';
-        background: url("/dist/images/avatar.png");
-        background-size: 30px 30px;
-        background-repeat: no-repeat;
-        width: 30px;
-        height: 30px;
-        position: absolute;
-    }*/ }
-  .post-composer__profiles--profile label {
-    position: relative;
-    margin: 0 3px;
-    display: block;
-    vertical-align: middle;
-    padding: 5px 10px;
-    border-radius: 3px;
-    cursor: pointer;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap; }
-    .post-composer__profiles--profile label img {
-      height: 30px;
-      width: 30px;
-      vertical-align: middle;
-      border-radius: 50% 50%; }
-    .post-composer__profiles--profile label span {
-      margin-left: 10px;
-      font-size: 13px; }
-  .post-composer__profiles--profile label:hover {
-    background-color: #f5f5f5; }
-  .post-composer__profiles--profile input {
-    display: none; }
-  .post-composer__profiles--profile input:checked + label {
-    background-color: #e3e7f0; }
-  .post-composer__profiles--profile input:checked + label::before {
-    content: "";
-    height: 30px;
-    width: 30px;
-    border-radius: 50% 50%;
-    position: absolute;
-    background-color: #377dff;
-    background: url("/dist/images/check.png");
-    background-size: 700px 170px;
-    background-repeat: no-repeat;
-    left: 13px;
-    top: 9px;
-    z-index: 4;
-    background-position: -562px -69px; }
-  .post-composer__profiles--profile input:checked + label::after {
-    content: "";
-    height: 32px;
-    width: 32px;
-    border-radius: 50% 50%;
-    position: absolute;
-    background-color: #377dff85;
-    left: 9px;
-    top: 4px; }
+.load-posts {
+  display: table;
+  margin: 0 auto; }
 
 body {
   width: 100%;
