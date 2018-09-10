@@ -13,7 +13,8 @@ namespace FlowHub.Api_Managers
     {
         private static readonly string app_id = "252497228687414";
         private static readonly string app_secret = "a3850005923b3535bfcd2b1c2c89180a";
-        private IFacebookClient _client;
+
+				private IFacebookClient _client;
 
         public FacebookOAuthLogin(IFacebookClient client)
         {

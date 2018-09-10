@@ -6,7 +6,7 @@
 <div class="content-wrapper">
   <div class="dashboard-section dashboard-section--post-composer">
     @* Compose posts *@
-    <!-- @Html.ActionLink("FB Login", "AuthorizeFacebook", "OAuth") -->
+    @Html.ActionLink("FB Login", "AuthorizeFacebook", "OAuth")
     <h5 class="new-post-title">Share your thoughts</h5>
     <div class="post-composer">
       <textarea id="Test" name="Test" class="post-composer__textbox" placeholder="What's on your mind?"></textarea>
@@ -15,7 +15,7 @@
           <div class="post-composer__uploader__uploaded">
             <div class="post-composer__uploader__upload">
               <label for="post-image"></label>
-              <input id="post-image" type="file" />
+              <input id="post-image" type="file" multiple />
             </div>
           </div>
         </div>
@@ -25,21 +25,21 @@
         <div class="post-composer__profiles">
           <h6>Choose accounts</h6>
           <div class="post-composer__profiles__profile">
-            <input id="profile-1" type="checkbox" />
+            <input id="profile-1" type="checkbox" checked />
             <label for="profile-1">
               <img src="/dist/images/avatar.png" />
               <span>Text text Text</span>
             </label>
           </div>
           <div class="post-composer__profiles__profile">
-            <input id="profile-2" type="checkbox" />
+            <input id="profile-2" type="checkbox" checked />
             <label for="profile-2">
               <img src="/dist/images/avatar.png" />
               <span>Text text Text</span>
             </label>
           </div>
           <div class="post-composer__profiles__profile">
-            <input id="profile-3" type="checkbox" />
+            <input id="profile-3" type="checkbox" checked />
             <label for="profile-3">
               <img src="/dist/images/avatar.png" />
               <span>Text text Text</span>
@@ -47,73 +47,75 @@
           </div>
         </div>
         <div class="post-composer__footer clearfix">
-          <button class="btn btn-default btn-small post-btn">Post</button>
+          <button class="btn btn-default btn-small btn-bolded post-btn">Post</button>
           <div class="post-composer__actions clearfix"></div>
         </div>
       </div> 
     </div>
   </div>
   <div class="dashboard-section dashboard-section--post-presenter">
-      <div class="posts-presenter" data-acursor="">
-          <div class="posts-presenter__post">
-              <div class="posts-presenter__post__header clearfix">
-                  <div class="posts-presenter__status-lane"></div>
-                  <div class="posts-presenter__actions">
-                      <button class="btn btn-action">Edit</button>
-                      <button class="btn btn-action">Delete</button>
-                      <button class="btn btn-action">Comment</button>
-                  </div>
+    <div class="posts-presenter" data-acursor="">
+      <!-- <div class="posts-presenter__post">
+          <div class="posts-presenter__post__header clearfix">
+              <div class="posts-presenter__status-lane"></div>
+              <div class="posts-presenter__actions">
+                  <button class="btn btn-action">Edit</button>
+                  <button class="btn btn-action">Delete</button>
+                  <button class="btn btn-action">Comment</button>
               </div>
-              <div class="posts-presenter__post__content">
-                  <p>Test content..Test content..Test content..Test content..Test content..Test content..Test content..dadadaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
-                  <p>Test content..Test content..Test content..Test content..Test content..Test content..Test content..</p>
-                  <div class="show-comments">
-                      <button title="Leave a comment"></button>
-                  </div>
-              </div>
-              <div class="posts-presenter__post__comments">
-                  <div class="comment-input clearfix">
-                      <img src="/dist/images/avatar.png" />
-                      <button>Post</button>
-                      <div>
-                          <input placeholder="Write a comment.." type="text" name="comment" />
-                      </div>
-                  </div>
-                  <div class="comment-presenter">
-                      <div class="comment-presenter__comment clearfix">
-                          <img src="/dist/images/avatar.png" />
-                          <div class="comment-presenter__comment--content">
-                              <span>Darko Filipovski</span>
-                              <p>Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski </p>
-                          </div>
-                      </div>
-                      <div class="comment-presenter__comment clearfix">
-                          <img src="/dist/images/avatar.png" />
-                          <div class="comment-presenter__comment--content">
-                              <span>Darko Filipovski</span>
-                              <p>Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski </p>
-                          </div>
-                      </div>
-                      <div class="comment-presenter__comment clearfix">
-                          <img src="/dist/images/avatar.png" />
-                          <div class="comment-presenter__comment--content">
-                              <span>Darko Filipovski</span>
-                              <p>
-                                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam quis felis luctus, eleifend felis eu, malesuada ante. Curabitur leo neque, pulvinar vel vulputate vitae, venenatis ac magna. Morbi consequat id eros sed sollicitudin. Nulla non risus libero. Etiam lacinia quam vel lorem ullamcorper, vitae dapibus lectus condimentum. Etiam vel viverra risus. In pretium, nisi in sollicitudin pellentesque, felis lorem sagittis risus, et volutpat risus dolor eu lorem. Etiam non quam at eros dapibus vestibulum vitae ac nibh. Morbi suscipit sodales dolor. Vivamus at est non sem porttitor mollis id in purus. Vivamus luctus erat nisi, eu ultricies enim eleifend eu. Integer fermentum et odio at blandit. Cras quis massa maximus, fringilla quam sed, faucibus sapien. Phasellus vel venenatis ex. Quisque faucibus justo sit amet fringilla pretium. Maecenas laoreet, lacus eget scelerisque condimentum, ex risus eleifend ligula, a efficitur leo libero at ante.
-
-                                  Sed ut urna quis ligula tincidunt eleifend sed id lacus. Cras ac dolor sit amet lectus ultricies efficitur. Duis cursus in nisl f
-                              </p>
-                          </div>
-                      </div>
-                  </div>
-                  <a title="View more comments">Load more comments</a>
-              </div>
-              <div class="posts-presenter__post__footer">
-                      @Html.TextArea("Comments")
-                  </div>
           </div>
-      </div>
+          <div class="posts-presenter__post__content">
+              <p>Test content..Test content..Test content..Test content..Test content..Test content..Test content..dadadaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+              <p>Test content..Test content..Test content..Test content..Test content..Test content..Test content..</p>
+              <div class="show-comments">
+                  <button title="Leave a comment"></button>
+              </div>
+          </div>
+          <div class="posts-presenter__post__comments">
+              <div class="comment-input clearfix">
+                  <img src="/dist/images/avatar.png" />
+                  <button>Post</button>
+                  <div>
+                      <input placeholder="Write a comment.." type="text" name="comment" />
+                  </div>
+              </div>
+              <div class="comment-presenter">
+                  <div class="comment-presenter__comment clearfix">
+                      <img src="/dist/images/avatar.png" />
+                      <div class="comment-presenter__comment--content">
+                          <span>Darko Filipovski</span>
+                          <p>Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski </p>
+                      </div>
+                  </div>
+                  <div class="comment-presenter__comment clearfix">
+                      <img src="/dist/images/avatar.png" />
+                      <div class="comment-presenter__comment--content">
+                          <span>Darko Filipovski</span>
+                          <p>Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski Darko Filipovski </p>
+                      </div>
+                  </div>
+                  <div class="comment-presenter__comment clearfix">
+                      <img src="/dist/images/avatar.png" />
+                      <div class="comment-presenter__comment--content">
+                          <span>Darko Filipovski</span>
+                          <p>
+                              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam quis felis luctus, eleifend felis eu, malesuada ante. Curabitur leo neque, pulvinar vel vulputate vitae, venenatis ac magna. Morbi consequat id eros sed sollicitudin. Nulla non risus libero. Etiam lacinia quam vel lorem ullamcorper, vitae dapibus lectus condimentum. Etiam vel viverra risus. In pretium, nisi in sollicitudin pellentesque, felis lorem sagittis risus, et volutpat risus dolor eu lorem. Etiam non quam at eros dapibus vestibulum vitae ac nibh. Morbi suscipit sodales dolor. Vivamus at est non sem porttitor mollis id in purus. Vivamus luctus erat nisi, eu ultricies enim eleifend eu. Integer fermentum et odio at blandit. Cras quis massa maximus, fringilla quam sed, faucibus sapien. Phasellus vel venenatis ex. Quisque faucibus justo sit amet fringilla pretium. Maecenas laoreet, lacus eget scelerisque condimentum, ex risus eleifend ligula, a efficitur leo libero at ante.
+
+                              Sed ut urna quis ligula tincidunt eleifend sed id lacus. Cras ac dolor sit amet lectus ultricies efficitur. Duis cursus in nisl f
+                          </p>
+                      </div>
+                  </div>
+              </div>
+              <a title="View more comments">Load more comments</a>
+          </div>
+          <div class="posts-presenter__post__footer">
+                  @Html.TextArea("Comments")
+              </div>
+      </div> -->
+    </div>
+    <div class="posts-load">
       <button class="btn btn-default-outlined load-posts">Load Posts</button>
+    </div>
   </div>
 </div>
 

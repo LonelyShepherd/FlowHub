@@ -58,7 +58,7 @@ namespace FlowHub.Controllers
                 Message = Request.Form["message"],
                 CreatedTime = DateTime.Now.ToString(),
                 PictureUrl = GetJsonProperty(pictureUrl, "data", "url").ToString()
-        };
+						};
 
 
             return PartialView("~/Views/Post/Partials/_Posts.cshtml", new List<PostViewModel>() { post });
@@ -171,12 +171,14 @@ namespace FlowHub.Controllers
             string response = await PostsApi.CreatePostCommentAsync(Request.Form["post_id"], Request.Form["message"], access_token);
             string pictureUrl = await PostsApi.GetPicture(page_id, access_token);
 
-            CommentViewModel comment = new CommentViewModel
-            {
-                Id = GetJsonProperty(response, "id"),
+						CommentViewModel comment = new CommentViewModel
+						{
+								Id = GetJsonProperty(response, "id"),
+								// ComposerName - da se zeme,
                 Message = Request.Form["message"],
-                CreatedTime = DateTime.Now.ToString(),
-                ComposerPictureUrl = GetJsonProperty(pictureUrl, "data", "url").ToString()
+                CreatedTime = DateTime.Now.ToString(), // ovdeka bi bilo bolje da se zeme od facebookov response posto datetime.now ne culture invariant dok fb ke ga dade vreme spored zonu
+																											 // format preporuka: 2:25 PM - 9 Sep 2018
+								ComposerPictureUrl = GetJsonProperty(pictureUrl, "data", "url").ToString()
             };
 
             return PartialView("~/Views/Post/Partials/_Comments.cshtml", new List<CommentViewModel>() { comment });
