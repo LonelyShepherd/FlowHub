@@ -2,11 +2,11 @@
 
 @foreach (var comment in Model)
 {
-    <div class="comment-presenter__comment clearfix" data-commentid="@comment.Id">
-        <img src="@comment.ComposerPictureUrl" />
-        <div class="comment-presenter__comment--content">
-            <span>@comment.ComposerName</span>
-            <p>@comment.Message</p>
-        </div>
-    </div>
+  <div class="comment-presenter__comment clearfix" data-commentid="@comment.Id">
+    <img src="@comment.ComposerPictureUrl" />
+    <div class="comment-presenter__comment--content">
+      <span>@comment.ComposerName <span>@comment.CreatedTime</span></span>
+      <p>@comment.Message</p>
+  </div>
+  </div>
 }
