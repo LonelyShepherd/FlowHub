@@ -25,8 +25,7 @@ namespace FlowHub.Common
 
         public static string GetQueryString(Dictionary<string, string> pairs)
         {
-            var uriBuilder = new UriBuilder
-            {
+            var uriBuilder = new UriBuilder {
                 Port = -1
             };
             var query = HttpUtility.ParseQueryString(uriBuilder.Query);
@@ -35,7 +34,6 @@ namespace FlowHub.Common
             {
                 query[pair.Key] = pair.Value;
             }
-
             uriBuilder.Query = query.ToString();
 
             return uriBuilder.Query.ToString();

@@ -41,6 +41,11 @@ namespace FlowHub.Controllers
             access_token = token;
         }
 
+        public ActionResult Index()
+        {
+            return View();
+        }
+
         // POST: Post/Create
         [HttpPost]
         public async Task<ActionResult> Create()
@@ -205,6 +210,28 @@ namespace FlowHub.Controllers
 
             return PartialView("~/Views/Post/Partials/_Comments.cshtml", new List<CommentViewModel>() { comment });
         }
+
+        public async Task<ActionResult> TestRequestToken()
+        {
+            TwiterOAuthAuthenticator a = new TwiterOAuthAuthenticator();
+
+            string RT = await a.RequestTokenAsync(Url.Action("TwitterAuth", "OAuth", null, this.Request.Url.Scheme));
+
+            //Debug.WriteLine(RT);
+
+            return Content(RT);
+        }
+
+        //public ActionResult TestRequestToken()
+        //{
+        //    TwiterOAuthAuthenticator a = new TwiterOAuthAuthenticator();
+
+        //    string RT = a.RequestToken();
+
+        //    Debug.WriteLine(RT);
+
+        //    return Content(RT);
+        //}
 
         #region helper
         private string GetJsonArray(string jsonString, params string[] nestedProperties)
