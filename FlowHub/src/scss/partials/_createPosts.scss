@@ -219,13 +219,12 @@
     border-radius: 50% 50%;
     position: absolute;
     background-color: $blue;
-    background: url("/dist/images/check.png");
-    background-size: 700px 170px;
+    background: url("/dist/images/tick.png");
+    background-size: 18px 18px;
     background-repeat: no-repeat;
     left: 13px;
-    top: 9px;
+    top: 10px;
     z-index: 4;
-    background-position: -562px -69px;
   }
 
   input:checked + label:after {

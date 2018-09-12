@@ -606,13 +606,12 @@ body {
     border-radius: 50% 50%;
     position: absolute;
     background-color: #377dff;
-    background: url("/dist/images/check.png");
-    background-size: 700px 170px;
+    background: url("/dist/images/tick.png");
+    background-size: 18px 18px;
     background-repeat: no-repeat;
     left: 13px;
-    top: 9px;
-    z-index: 4;
-    background-position: -562px -69px; }
+    top: 10px;
+    z-index: 4; }
   .post-composer__profiles__profile input:checked + label:after {
     content: "";
     height: 25px;

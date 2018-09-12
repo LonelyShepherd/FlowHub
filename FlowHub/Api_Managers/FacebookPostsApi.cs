@@ -37,7 +37,7 @@ namespace FlowHub.Api_Managers
             {
                 IEnumerable<Task<string>> uploadTasks = images.AllKeys
                                                               .ToList()
-                                                              .Select(key => UploadFile(page_id, message, images[key], access_token));
+                                                              .Select(key => UploadFileAsync(page_id, message, images[key], access_token));
 
                 string[] imageIds = await Task.WhenAll(uploadTasks.ToArray());
 
@@ -85,11 +85,12 @@ namespace FlowHub.Api_Managers
             return response;
         }
 
-        public async Task<string> GetPostedPosts(string page_id, string access_token, int limit = 0, string after_cursor = "")
+        public async Task<string> GetPostedPostsAsync(string page_id, string access_token, int limit = 0, string after_cursor = "")
         {
             var fields = new Dictionary<string, string>
             {
                 { "access_token", access_token },
+                { "fields", "id,message,created_time,from,comments.limit(1).summary(true),likes.summary(true),shares,attachments" }
             };
 
             if (limit != 0)
@@ -103,7 +104,7 @@ namespace FlowHub.Api_Managers
             return response;
         }
 
-        public async Task<string> GetScheduledPosts(string page_id, string access_token)
+        public async Task<string> GetScheduledPostsAsync(string page_id, string access_token)
         {
             var fields = new Dictionary<string, string>
             {
@@ -116,26 +117,32 @@ namespace FlowHub.Api_Managers
             return response;
         }
 
-        public async Task<string> GetPost(string post_id, string access_token)
+        public async Task<string> GetPostAsync(string post_id, string access_token)
         {
-            string response = await _client.GetAsync($"/{post_id}", $"?access_token={access_token}");
+            var fields = new Dictionary<string, string>
+            {
+                { "access_token", access_token },
+                { "fields", "id,message,created_time,from,attachments" },
+            };
+
+            string response = await _client.GetAsync($"/{post_id}", Utils.GetQueryString(fields));
 
             return response;
         }
 
-        public async Task<string> DeletePost(string post_id, string access_token) 
+        public async Task<string> DeleteObjectAsync(string object_id, string access_token) 
         {
-            return await _client.DeleteAsync($"/{post_id}", $"?access_token={access_token}");
+            return await _client.DeleteAsync($"/{object_id}", $"?access_token={access_token}");
         }
 
-        public async Task<string> GetComment(string comment_id, string access_token)
+        public async Task<string> GetCommentAsync(string comment_id, string access_token)
         {
             string response = await _client.GetAsync($"/{comment_id}", $"?access_token={access_token}");
 
             return response;
         }
 
-        public async Task<string> GetPostComments(string post_id, string access_token, int limit = 0, string after_cursor = "")
+        public async Task<string> GetPostCommentsAsync(string post_id, string access_token, int limit = 0, string after_cursor = "")
         {
             var fields = new Dictionary<string, string>
             {
@@ -154,7 +161,7 @@ namespace FlowHub.Api_Managers
             return response;
         }
 
-        public async Task<string> GetPicture(string object_id, string access_token)
+        public async Task<string> GetPictureAsync(string object_id, string access_token)
         {
             var fields = new Dictionary<string, string>
             {
@@ -169,7 +176,7 @@ namespace FlowHub.Api_Managers
             return response;
         }
 
-        private async Task<string> UploadFile(string page_id, string message, HttpPostedFileBase file, string access_token)
+        private async Task<string> UploadFileAsync(string page_id, string message, HttpPostedFileBase file, string access_token)
         {
             string response;
             using (var content = new MultipartFormDataContent())
@@ -190,7 +197,5 @@ namespace FlowHub.Api_Managers
 
             return JObject.Parse(response).SelectToken("id").ToString();
         }
-
-
     }
 }
