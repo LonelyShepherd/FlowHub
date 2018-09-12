@@ -4,55 +4,55 @@
 }
 
 <div class="content-wrapper">
-  <div class="dashboard-section dashboard-section--post-composer">
-    @* Compose posts *@
-    @Html.ActionLink("FB Login", "AuthorizeFacebook", "OAuth")
-    <h5 class="new-post-title">Share your thoughts</h5>
-    <div class="post-composer">
-      <textarea id="Test" name="Test" class="post-composer__textbox" placeholder="What's on your mind?"></textarea>
-      <div class="post-composer__manager"> 
-        <div class="post-composer__uploader">
-          <div class="post-composer__uploader__uploaded">
-            <div class="post-composer__uploader__upload">
-              <label for="post-image"></label>
-              <input id="post-image" type="file" multiple />
+    <div class="dashboard-section dashboard-section--post-composer">
+        @* Compose posts *@
+        @Html.ActionLink("FB Login", "AuthorizeFacebook", "OAuth")<span>---------------------<span>@Html.ActionLink("Check Token", "TokenExpiration", "OAuth")
+        <h5 class="new-post-title">Share your thoughts</h5>
+        <div class="post-composer">
+            <textarea id="Test" name="Test" class="post-composer__textbox" placeholder="What's on your mind?"></textarea>
+            <div class="post-composer__manager">
+                <div class="post-composer__uploader">
+                    <div class="post-composer__uploader__uploaded">
+                        <div class="post-composer__uploader__upload">
+                            <label for="post-image"></label>
+                            <input id="post-image" type="file" multiple />
+                        </div>
+                    </div>
+                </div>
+                @* <div class="post-composer__content__uploader">
+                  <div class="post-composer__content__uploader__image"></div>
+                </div> *@
+                <div class="post-composer__profiles">
+                    <h6>Choose accounts</h6>
+                    <div class="post-composer__profiles__profile">
+                        <input id="profile-1" type="checkbox" checked />
+                        <label for="profile-1">
+                            <img src="/dist/images/avatar.png" />
+                            <span>Text text Text</span>
+                        </label>
+                    </div>
+                    <div class="post-composer__profiles__profile">
+                        <input id="profile-2" type="checkbox" checked />
+                        <label for="profile-2">
+                            <img src="/dist/images/avatar.png" />
+                            <span>Text text Text</span>
+                        </label>
+                    </div>
+                    <div class="post-composer__profiles__profile">
+                        <input id="profile-3" type="checkbox" checked />
+                        <label for="profile-3">
+                            <img src="/dist/images/avatar.png" />
+                            <span>Text text Text</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="post-composer__footer clearfix">
+                    <button class="btn btn-default btn-small btn-bolded post-btn">Post</button>
+                    <div class="post-composer__actions clearfix"></div>
+                </div>
             </div>
-          </div>
         </div>
-        @* <div class="post-composer__content__uploader">
-          <div class="post-composer__content__uploader__image"></div>
-        </div> *@
-        <div class="post-composer__profiles">
-          <h6>Choose accounts</h6>
-          <div class="post-composer__profiles__profile">
-            <input id="profile-1" type="checkbox" checked />
-            <label for="profile-1">
-              <img src="/dist/images/avatar.png" />
-              <span>Text text Text</span>
-            </label>
-          </div>
-          <div class="post-composer__profiles__profile">
-            <input id="profile-2" type="checkbox" checked />
-            <label for="profile-2">
-              <img src="/dist/images/avatar.png" />
-              <span>Text text Text</span>
-            </label>
-          </div>
-          <div class="post-composer__profiles__profile">
-            <input id="profile-3" type="checkbox" checked />
-            <label for="profile-3">
-              <img src="/dist/images/avatar.png" />
-              <span>Text text Text</span>
-            </label>
-          </div>
-        </div>
-        <div class="post-composer__footer clearfix">
-          <button class="btn btn-default btn-small btn-bolded post-btn">Post</button>
-          <div class="post-composer__actions clearfix"></div>
-        </div>
-      </div> 
     </div>
-  </div>
   <div class="dashboard-section dashboard-section--post-presenter">
     <div class="posts-presenter" data-acursor="">
       <!-- <div class="posts-presenter__post">

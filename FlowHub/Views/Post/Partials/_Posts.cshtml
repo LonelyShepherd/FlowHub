@@ -1,42 +1,44 @@
 ﻿@model IEnumerable<FlowHub.ViewModels.PostViewModel>
-
 @foreach (var post in Model)
 {
-  <div class="posts-presenter__post" data-postid="@post.Id">
-    <!-- <div class="posts-presenter__post__header clearfix">
-      <div class="posts-presenter__status-lane"></div>
-      <div class="posts-presenter__actions">
-        <button class="btn btn-action">Edit</button>
-        <button class="btn btn-action js-delete-post">Delete</button>
-        @*<button class="btn btn-action">Comment</button>*@
-      </div>
-    </div> -->
-    <div class="posts-presenter__post__content">
-      <div class="content__infobox">
-        <div><img src="@post.PictureUrl"></div>
-        <div>
-          <span>Ime Prezime</span>
-          <span>@post.CreatedTime</span>
+    <div class="posts-presenter__post" data-postid="@post.Id">
+        <!-- <div class="posts-presenter__post__header clearfix">
+          <div class="posts-presenter__status-lane"></div>
+          <div class="posts-presenter__actions">
+            <button class="btn btn-action">Edit</button>
+            <button class="btn btn-action js-delete-post">Delete</button>
+            @*<button class="btn btn-action">Comment</button>*@
+          </div>
+        </div> -->
+        <div class="posts-presenter__post__content">
+            <div class="content__infobox">
+                <div><img src="@post.PictureUrl"></div>
+                <div>
+                    <span>@post.Name</span>
+                    <span>@post.GetCreatedTime()</span>
+                </div>
+                <div class="content__infobox__actions"><button class="post-actions"></button></div>
+            </div>
+            <p class="content__post">@post.Message</p>
+            <div class="content__leave-a-comment">
+                <div>
+                    <img src="@post.PictureUrl" />
+                    <textarea id="comment-composer" name="comment-composer" class="comment-textbox" placeholder="Leave a comment..."></textarea>
+                </div>
+                <div><button class="btn btn-default btn-small btn-bolded post-comment">Comment</button></div>
+            </div>
+            <div class="content__footer">
+                <span title="Likes">@post.LikesCount</span>
+                <button title="Show comments" class="show-comments">See what others have said in @post.CommentsCount comments</button>
+                <span title="Shares">@post.SharesCount</span>
+            </div>
         </div>
-        <div class="content__infobox__actions"><button class="post-actions"></button></div>
-      </div>
-      <p class="content__post">@post.Message</p>
-      <div class="content__leave-a-comment">
-        <div>
-          <img src="@post.PictureUrl" />
-          <textarea id="comment-composer" name="comment-composer" class="comment-textbox" placeholder="Leave a comment..."></textarea>
+        <div class="posts-presenter__post__comments">
+            <div class="comment-presenter" data-acursor=""></div>
+            @if (!post.CommentsCount.Equals("0"))
+            {
+                <a class="loadmore" title="View more comments">Load more comments</a>
+            }
         </div>
-        <div><button class="btn btn-default btn-small btn-bolded post-comment">Comment</button></div>
-      </div>
-      <div class="content__footer">
-        <span title="Likes">282</span>
-        <button title="Show comments" class="show-comments">See what others have said in 242 comments</button>
-        <span title="Shares">12</span>
-      </div>
     </div>
-    <div class="posts-presenter__post__comments">
-      <div class="comment-presenter" data-acursor=""></div>
-      <a class="loadmore" title="View more comments">Load more comments</a>
-    </div>
-  </div>
 }

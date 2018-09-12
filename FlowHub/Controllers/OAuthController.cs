@@ -62,5 +62,18 @@ namespace FlowHub.Controllers
 
             return RedirectToAction("Index", "Dashboard");
         }
+
+        // Delete everything below.. 
+        public ActionResult TokenExpiration()
+        {
+            return FacebookAuthenticator.LoginDialog("http://localhost:60272/OAuth/CheckExpiration");
+        }
+
+        public async Task<ActionResult> CheckExpiration(string code, string state)
+        {
+            string response = await FacebookAuthenticator.ExchangeOAuthCodeAsync(code, "http://localhost:60272/OAuth/CheckExpiration");
+
+            return Content(response);
+        }
     }
 }

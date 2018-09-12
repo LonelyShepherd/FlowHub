@@ -45,21 +45,27 @@ namespace FlowHub.Controllers
         [HttpPost]
         public async Task<ActionResult> Create()
         {
-            //string response = await PostsApi.CreatePhotoPost(page_id, Request.Form["message"], image, access_token);
             string response = await PostsApi.CreatePostAsync(page_id, Request.Form["message"], Request.Files, access_token);
-            //string postedPost = await PostsApi.GetPost(GetJsonProperty(response, "id"), access_token);
-            string pictureUrl = await PostsApi.GetPicture(page_id, access_token);
+            string pictureUrl = await PostsApi.GetPictureAsync(page_id, access_token);
+            dynamic postedPost = JsonConvert.DeserializeObject(await PostsApi.GetPostAsync(GetJsonProperty(response, "id"), access_token));
 
-            //PostViewModel post = JsonConvert.DeserializeObject<PostViewModel>(postedPost);
-            //post.PictureUrl = GetJsonProperty(pictureUrl, "data", "url").ToString();
-            PostViewModel post = new PostViewModel()
+            PostViewModel post = JsonConvert.DeserializeObject<PostViewModel>(Convert.ToString(postedPost));
+            post.Name = postedPost.from.name; // GetJsonProperty(postedPost, "from", "name");
+            post.PictureUrl = GetJsonProperty(pictureUrl, "data", "url");
+            post.Photos = new List<string>();
+
+            if (postedPost.attachments != null)
             {
-                Id = GetJsonProperty(response, "id"),
-                Message = Request.Form["message"],
-                CreatedTime = DateTime.Now.ToString(),
-                PictureUrl = GetJsonProperty(pictureUrl, "data", "url").ToString()
-						};
-
+                if (postedPost.attachments.data[0].subattachments != null)
+                {
+                    foreach (dynamic photo in postedPost.attachments.data[0].subattachments.data)
+                    {
+                        post.Photos.Add(Convert.ToString(photo.media.image.src));
+                    }
+                }
+                else
+                    post.Photos.Add(Convert.ToString(postedPost.attachments.data[0].media.image.src));
+            }
 
             return PartialView("~/Views/Post/Partials/_Posts.cshtml", new List<PostViewModel>() { post });
         }
@@ -67,11 +73,36 @@ namespace FlowHub.Controllers
         // GET: Post/GetPosts
         public async Task<ActionResult> GetPosts(string after_cursor)
         {
-            Task<string> publishedPostsTask = PostsApi.GetPostedPosts(page_id, access_token, 10, after_cursor);
-            string pagePictureUrl = await PostsApi.GetPicture(page_id, "");
+            Task<string> publishedPostsTask = PostsApi.GetPostedPostsAsync(page_id, access_token, 10, after_cursor);
+            string pagePictureUrl = await PostsApi.GetPictureAsync(page_id, "");
             string publishedPosts = await publishedPostsTask;
 
-            IEnumerable<PostViewModel> posts = JsonConvert.DeserializeObject<IEnumerable<PostViewModel>>(GetJsonArray(publishedPosts, "data"));
+            dynamic publishedPostsResponse = JsonConvert.DeserializeObject(publishedPosts);
+            List<PostViewModel> posts = new List<PostViewModel>();
+
+            foreach(dynamic post in publishedPostsResponse.data)
+            {
+                PostViewModel deserializedPost = JsonConvert.DeserializeObject<PostViewModel>(post.ToString());
+                deserializedPost.Name = post.from.name;
+                deserializedPost.CommentsCount = post.comments.summary.total_count;
+                deserializedPost.LikesCount = post.likes.summary.total_count;
+                deserializedPost.SharesCount = post.shares == null ? "0" : post.shares.count;
+                deserializedPost.Photos = new List<string>();
+                if (post.attachments != null)
+                {
+                    if (post.attachments.data[0].subattachments != null)
+                    {
+                        foreach (dynamic photo in post.attachments.data[0].subattachments.data)
+                        {
+                            deserializedPost.Photos.Add(Convert.ToString(photo.media.image.src));
+                        }
+                    }
+                    else
+                        deserializedPost.Photos.Add(Convert.ToString(post.attachments.data[0].media.image.src));
+                }
+
+                posts.Add(deserializedPost);
+            }
 
             string afterCursor;
 
@@ -106,14 +137,14 @@ namespace FlowHub.Controllers
         [HttpDelete]
         public async Task<ActionResult> DeletePost(string post_id)
         {
-            string response = await PostsApi.DeletePost(post_id, access_token);
+            string response = await PostsApi.DeleteObjectAsync(post_id, access_token);
 
             return new HttpStatusCodeResult(HttpStatusCode.OK);
         }
 
         public async Task<ActionResult> GetComments(string post_id, string after_cursor)
         {
-            string postComments = await PostsApi.GetPostComments(post_id, access_token, 5, after_cursor);
+            string postComments = await PostsApi.GetPostCommentsAsync(post_id, access_token, 5, after_cursor);
             JObject jsonComments = JObject.Parse(postComments);
             IList<JToken> comments = jsonComments["data"].Children().ToList();
 
@@ -138,16 +169,13 @@ namespace FlowHub.Controllers
 
             foreach (JToken comment in comments)
             {
+                CommentViewModel deserializedComment = JsonConvert.DeserializeObject<CommentViewModel>(comment.ToString());
+                deserializedComment.ComposerName = comment["from"]["name"].ToString();
+                deserializedComment.ComposerId = comment["from"]["id"].ToString();
+                        
                 cms.Add(Tuple.Create(
-                    new CommentViewModel()
-                    {
-                        Id = comment["id"].ToString(),
-                        Message = comment["message"].ToString(),
-                        CreatedTime = comment["created_time"].ToString(),
-                        ComposerName = comment["from"]["name"].ToString(),
-                        ComposerId = comment["from"]["id"].ToString()
-                    },
-                    PostsApi.GetPicture(comment["from"]["id"].ToString(), access_token)
+                    deserializedComment,
+                    PostsApi.GetPictureAsync(comment["from"]["id"].ToString(), access_token)
                 ));
             }
 
@@ -169,17 +197,11 @@ namespace FlowHub.Controllers
         public async Task<ActionResult> CreateComment()
         {
             string response = await PostsApi.CreatePostCommentAsync(Request.Form["post_id"], Request.Form["message"], access_token);
-            string pictureUrl = await PostsApi.GetPicture(page_id, access_token);
-
-						CommentViewModel comment = new CommentViewModel
-						{
-								Id = GetJsonProperty(response, "id"),
-								// ComposerName - da se zeme,
-                Message = Request.Form["message"],
-                CreatedTime = DateTime.Now.ToString(), // ovdeka bi bilo bolje da se zeme od facebookov response posto datetime.now ne culture invariant dok fb ke ga dade vreme spored zonu
-																											 // format preporuka: 2:25 PM - 9 Sep 2018
-								ComposerPictureUrl = GetJsonProperty(pictureUrl, "data", "url").ToString()
-            };
+            string pictureUrl = await PostsApi.GetPictureAsync(page_id, access_token);
+            string postedComment = await PostsApi.GetCommentAsync(GetJsonProperty(response, "id"), access_token);
+            CommentViewModel comment = JsonConvert.DeserializeObject<CommentViewModel>(postedComment);
+            comment.ComposerName = GetJsonProperty(postedComment, "from", "name");
+            comment.ComposerPictureUrl = GetJsonProperty(pictureUrl, "data", "url");
 
             return PartialView("~/Views/Post/Partials/_Comments.cshtml", new List<CommentViewModel>() { comment });
         }
