@@ -5,7 +5,7 @@
   <div class="comment-presenter__comment clearfix" data-commentid="@comment.Id">
     <img src="@comment.ComposerPictureUrl" />
     <div class="comment-presenter__comment--content">
-      <span>@comment.ComposerName <span>@comment.CreatedTime</span></span>
+      <span>@comment.ComposerName <span>@comment.GetCreatedTime()</span></span>
       <p>@comment.Message</p>
   </div>
   </div>
