@@ -12,12 +12,17 @@ let composer = document.querySelector('.post-composer')
     , uploaded = uploadHolder.querySelector('.post-composer__uploader__uploaded')
     , uploader = uploadHolder.querySelector('.post-composer__uploader__upload')
     , input = uploader.querySelector('input')
+    , galleryOverlay = Utils.createElement('div', { className: 'gallery-overlay' })
+    , galleryPhoto = Utils.createElement('img', { className: 'gallery-photo' })
+    , galleryContainer = Utils.createElement('div', { className: 'gallery-container' })
+    , galleryPrev = Utils.createElement('button', { className: 'gallery-container__prev' })
+    , galleryNext = Utils.createElement('button', { className: 'gallery-container__next' })
     , uniqueId = 0
     , uploads = []
     , actions
     , mouseDown = false
+    , load = true
     , postsPresenter = document.querySelector('.posts-presenter')
-    , loadPosts = document.querySelector('.dashboard-section--post-presenter .load-posts')
     , editModal = new Modal({
         title: 'Edit post',
         buttons: {
@@ -45,6 +50,22 @@ function close(e) {
     }
 }
 
+function loadPosts() {
+  if(postsPresenter.getAttribute('data-acursor') === '' && !load)
+    return;
+
+  $.ajax({
+    url: '/Post/GetPosts',
+    dataType: 'json',
+    data: 'after_cursor=' + postsPresenter.getAttribute('data-acursor')
+  }).done(data => {
+    postsPresenter.setAttribute('data-acursor', data.cursors.after);
+    postsPresenter.innerHTML += data.posts;
+  });
+
+  load = false;
+}
+
 function autoresize(e) {
     let target = e.target;
 
@@ -52,12 +73,12 @@ function autoresize(e) {
     target.style.height = target.scrollHeight + target.offsetHeight - target.clientHeight + 'px';
 }
 
-function showComments(action, display, fetch) {
+function showComments(action, display) {
     let postContent = Traversal.parents(action, '.posts-presenter__post__content')
         , comments = postContent.nextElementSibling
         , commentsPresenter = comments.querySelector('.comment-presenter');
 
-    if (commentsPresenter.getAttribute('data-acursor') === '' && fetch) {
+    if (commentsPresenter.getAttribute('data-acursor') === '') {
         let commentLoader = comments.querySelector('.loadmore');
 
         if (commentLoader)
@@ -68,8 +89,49 @@ function showComments(action, display, fetch) {
     else if (display === 'auto') comments.style.display = window.getComputedStyle(comments).display === 'none' ? 'block' : 'none';
 }
 
+let current;
+
+galleryContainer.appendChild(galleryPrev);
+galleryContainer.appendChild(galleryNext);
+
+document.addEventListener('click', e => {
+  if(e.target.getAttribute('data-item') === 'gallery') {
+    document.body.style.overflow = 'hidden';
+    current = e.target.parentNode;
+
+    galleryPrev.style.opacity = '1';
+    galleryNext.style.opacity = '1';
+    if(!current.nextElementSibling) galleryNext.style.opacity = '.5';
+    if(!current.previousElementSibling) galleryPrev.style.opacity = '.5';
+
+    galleryPhoto.src = current.getAttribute('data-photo');
+    galleryContainer.appendChild(galleryPhoto);
+
+    Alter.prepend(galleryContainer, document.body);
+    Alter.prepend(galleryOverlay, document.body);
+  } else if(Utils.hasClass(e.target, 'gallery-overlay')) {
+    Alter.unmount(galleryContainer);
+    Alter.unmount(galleryOverlay);
+    document.body.style.overflow = '';
+  } else if(Utils.hasClass(e.target, 'gallery-container__prev')) {
+    galleryPrev.style.opacity = '1';
+    if(current === current.parentNode.children[1]) galleryPrev.style.opacity = '.5'
+    current = current.previousElementSibling ? current.previousElementSibling : (galleryPrev.style.opacity = '.5', current);
+    if(current.nextElementSibling) galleryNext.style.opacity = '1';
+
+    galleryPhoto.src = current.getAttribute('data-photo');
+  } else if(Utils.hasClass(e.target, 'gallery-container__next')) {
+    galleryNext.style.opacity = '1';
+    if(current === current.parentNode.children[current.parentNode.children.length - 2]) galleryNext.style.opacity = '.5'
+    current = current.nextElementSibling ? current.nextElementSibling : (galleryNext.style.opacity = '.5', current);
+    if(current.previousElementSibling) galleryPrev.style.opacity = '1';
+
+    galleryPhoto.src = current.getAttribute('data-photo');
+  }
+});
+
 document.addEventListener('DOMContentLoaded', () => {
-    Event.trigger(loadPosts, 'click');
+  loadPosts();
 }, false);
 
 textbox.addEventListener('input', () => {
@@ -81,9 +143,9 @@ textbox.addEventListener('input', () => {
 });
 
 textbox.addEventListener('focus', () => {
-    Event.trigger(textbox, 'input');
-    Utils.addClass(manager, 'post-composer__manager--slide');
-    document.addEventListener('click', close);
+  Event.trigger(textbox, 'input');
+  Utils.addClass(manager, 'post-composer__manager--slide');
+  document.addEventListener('click', close);
 });
 
 input.addEventListener('change', () => {
@@ -171,18 +233,9 @@ createPost.addEventListener('click', () => {
     }
 });
 
-loadPosts.addEventListener('click', e => {
-    $.ajax({
-        url: '/Post/GetPosts',
-        dataType: 'json',
-        data: 'after_cursor=' + postsPresenter.getAttribute('data-acursor')
-    }).done(data => {
-        if (data.cursors.after === '')
-            Alter.unmount(loadPosts);
-
-        postsPresenter.setAttribute('data-acursor', data.cursors.after);
-        postsPresenter.innerHTML += data.posts;
-    });
+window.addEventListener('scroll', () => {
+  if(document.documentElement.offsetHeight === window.scrollY + window.innerHeight)
+    loadPosts();
 });
 
 postsPresenter.addEventListener('mousedown', e => {
@@ -304,9 +357,9 @@ postsPresenter.addEventListener('click', e => {
             }).done(data => {
                 let temp = Utils.createElement('div', { innerHTML: data });
 
-                //if (commentsPresenter.getAttribute('data-acursor') !== '')
-                Alter.prepend(temp.firstElementChild, commentsPresenter);
-                showComments(action, true, true);
+                commentsPresenter.getAttribute('data-acursor') !== '' 
+                  ? (Alter.prepend(temp.firstElementChild, commentsPresenter), commentsPresenter.parentNode.style.display = 'block')
+                  : showComments(action, true, true);
 
                 commentComposer.value = '';
                 action.parentNode.style.display = 'none';
