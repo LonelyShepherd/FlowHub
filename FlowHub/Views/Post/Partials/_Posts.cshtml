@@ -20,6 +20,23 @@
                 <div class="content__infobox__actions"><button class="post-actions"></button></div>
             </div>
             <p class="content__post">@post.Message</p>
+            @if(post.Photos.Count != 0) 
+            {
+              int count = post.Photos.Count;
+
+              <div class="content__photos">
+                @for(int i = 0; i < count; i++) 
+                {
+                  var photo = post.Photos.ElementAt(i);
+
+                  <a href="javascript:;" data-photo="@photo">
+                    @if(i == 4 && count > 5) { <span data-item="gallery">+@(count - 4)</span> }
+                    else { <span data-item="gallery"></span> }
+                    <img src="@photo">
+                  </a>
+                }
+              </div>
+            }
             <div class="content__leave-a-comment">
                 <div>
                     <img src="@post.PictureUrl" />
@@ -28,17 +45,14 @@
                 <div><button class="btn btn-default btn-small btn-bolded post-comment">Comment</button></div>
             </div>
             <div class="content__footer">
-                <span title="Likes">@post.LikesCount</span>
-                <button title="Show comments" class="show-comments">See what others have said in @post.CommentsCount comments</button>
-                <span title="Shares">@post.SharesCount</span>
+                @if(!post.LikesCount.Equals("0")) { <span title="Likes">@post.LikesCount</span> }
+                @if(!post.CommentsCount.Equals("0")) { <button title="Show comments" class="show-comments">See what others have said in @post.CommentsCount comments</button> }
+                @if(!post.SharesCount.Equals("0")) { <span title="Shares">@post.SharesCount</span> }
             </div>
         </div>
         <div class="posts-presenter__post__comments">
             <div class="comment-presenter" data-acursor=""></div>
-            @if (!post.CommentsCount.Equals("0"))
-            {
-                <a class="loadmore" title="View more comments">Load more comments</a>
-            }
+            @if (!post.CommentsCount.Equals("0")) { <a class="loadmore" title="View more comments">Load more comments</a> }
         </div>
     </div>
 }
