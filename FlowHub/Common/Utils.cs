@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -25,8 +26,7 @@ namespace FlowHub.Common
 
         public static string GetQueryString(Dictionary<string, string> pairs)
         {
-            var uriBuilder = new UriBuilder
-            {
+            var uriBuilder = new UriBuilder {
                 Port = -1
             };
             var query = HttpUtility.ParseQueryString(uriBuilder.Query);
@@ -35,10 +35,23 @@ namespace FlowHub.Common
             {
                 query[pair.Key] = pair.Value;
             }
-
             uriBuilder.Query = query.ToString();
 
             return uriBuilder.Query.ToString();
+        }
+
+        public static string GetJsonArray(string jsonString, params string[] nestedProperties)
+        {
+            JObject jObject = JObject.Parse(jsonString);
+            JArray jArray = (JArray)jObject.SelectToken(string.Join(".", nestedProperties));
+
+            return jArray.ToString();
+        }
+
+        public static string GetJsonProperty(string jsonString, params string[] nestedProperties)
+        {
+            JObject jObject = JObject.Parse(jsonString);
+            return jObject.SelectToken(string.Join(".", nestedProperties), true).ToString();
         }
     }
 }

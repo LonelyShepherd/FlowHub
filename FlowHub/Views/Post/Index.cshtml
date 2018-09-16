@@ -7,6 +7,8 @@
     <div class="dashboard-section dashboard-section--post-composer">
         @* Compose posts *@
         @Html.ActionLink("FB Login", "AuthorizeFacebook", "OAuth")<span>---------------------<span>@Html.ActionLink("Check Token", "TokenExpiration", "OAuth")
+        <p>@Html.ActionLink("Make Post", "TestTweeting", "Post")</p>
+        <p>@Html.ActionLink("Login Twitter", "TwitterLogin", "OAuth")</p>
         <h5 class="new-post-title">Share your thoughts</h5>
         <div class="post-composer">
             <textarea id="Test" name="Test" class="post-composer__textbox" placeholder="What's on your mind?"></textarea>
@@ -112,6 +114,9 @@
                   @Html.TextArea("Comments")
               </div>
       </div> -->
+    </div>
+    <div class="posts-load">
+      <button class="btn btn-default-outlined load-posts">Load Posts</button>
     </div>
   </div>
 </div>
