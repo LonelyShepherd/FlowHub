@@ -12,23 +12,19 @@ using System.Web.Mvc;
 
 namespace FlowHub.Api_Managers
 {
-    public class TwiterOAuthAuthenticator
+    public class TwitterOAuthAuthenticator
     {
-        private string ConsumerKey = "qwIFnxQODU724OFmjmQB60aR0";
-        private string ConsumerSecret = "Jib6KoMUPjTLTNScDZ3ZuNK2pFNhGRCKFDslS9MTgQZzTYLr8b";
+        private string ConsumerKey = "";
+        private string ConsumerSecret = "";
 
         private string SignatureMethod = "HMAC-SHA1";
         private string Version = "1.0";
-        private string Signature;
-        private string Timestamp;
-        private string Nonce;
         private string requestToken;
         private string requestTokenSecret;
-        private string access_token = "1030518131834466305-Q5C3NRBP7O31sz658QdO8Zt4ev8FNR";
-        private string access_token_secret = "MTJ65xYQwMomPj4suJK8L84scFl0sKaio4AajpUi1h1VY";
-        private static readonly HttpClient _client = new HttpClient();
+        private static readonly HttpClient _clienttt = new HttpClient();
+        private static readonly TwitterClient _client = new TwitterClient();
 
-        public TwiterOAuthAuthenticator() { }
+        public TwitterOAuthAuthenticator() {}
 
         public string GetBaseString(string method, string url, Dictionary<string, string> baseDictionary)
         {
@@ -66,30 +62,42 @@ namespace FlowHub.Api_Managers
                 .ToList());
         }
 
-        public async Task<string> RequestTokenAsync(string callbackUrl)
+        public Action<HttpRequestMessage> GetOAuthAuthenticator(Dictionary<string, string> requestParameters, string oauth_token = "", string oauth_token_secret = "")
         {
-            Timestamp = ((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds().ToString();
-            Nonce = Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString()));
+            string timestamp = ((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds().ToString();
+            string nonce = Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString()));
 
-            Dictionary<string, string> requestParameters = new Dictionary<string, string>
+            Dictionary<string, string> oauthParameters = new Dictionary<string, string>
             {
                 { "oauth_consumer_key", ConsumerKey},
                 { "oauth_signature_method", SignatureMethod },
-                { "oauth_timestamp", Timestamp },
-                { "oauth_nonce", Nonce },
-                { "oauth_version", Version },
+                { "oauth_timestamp", timestamp },
+                { "oauth_nonce", nonce },
+                { "oauth_token", oauth_token },
+                { "oauth_version", Version }
+            };
+
+            requestParameters
+                .ToList()
+                .ForEach(kp => oauthParameters.Add(kp.Key, kp.Value));
+
+            return request => {
+                string signature = GetOAuthSignature(request.Method.ToString(), request.RequestUri.GetLeftPart(UriPartial.Path), oauthParameters, oauth_token_secret);
+                oauthParameters.Add("oauth_signature", signature);
+                request.Headers.Authorization = new AuthenticationHeaderValue("OAuth", GetAuthenticationHeader(oauthParameters));
+            };
+        }
+
+        public async Task<string> RequestTokenAsync(string callbackUrl)
+        {
+            Dictionary<string, string> requestParameters = new Dictionary<string, string>
+            {
                 { "oauth_callback", callbackUrl }
             };
 
-            string RequestUrl = "https://api.twitter.com/oauth/request_token";
-            Signature = GetOAuthSignature("POST", RequestUrl, requestParameters);
-            requestParameters.Add("oauth_signature", Signature);
+            string response = await _client.PostAsync("/oauth/request_token", requestParameters, GetOAuthAuthenticator(requestParameters));
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, RequestUrl);
-            request.Headers.Authorization = new AuthenticationHeaderValue("OAuth", GetAuthenticationHeader(requestParameters));
-            HttpResponseMessage response = await _client.SendAsync(request);
-
-            return await response.Content.ReadAsStringAsync();
+            return response;
         }
 
         public async Task<ActionResult> LoginDialog(string uriRedirectString)
@@ -106,31 +114,30 @@ namespace FlowHub.Api_Managers
 
         public async Task<Tuple<string, string>> ExchangeRequestTokenAsync(string oauth_token, string oauth_verifier)
         {
-            Timestamp = ((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds().ToString();
-            Nonce = Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString()));
-
             Dictionary<string, string> requestParameters = new Dictionary<string, string>
-            {
-                { "oauth_consumer_key", ConsumerKey},
-                { "oauth_signature_method", SignatureMethod },
-                { "oauth_timestamp", Timestamp },
-                { "oauth_nonce", Nonce },
-                { "oauth_token", oauth_token },
-                { "oauth_verifier", oauth_verifier },
-                { "oauth_version", Version }
+            {         
+                { "oauth_verifier", oauth_verifier }
             };
 
-            string RequestUrl = "https://api.twitter.com/oauth/access_token";
-            Signature = GetOAuthSignature("POST", RequestUrl, requestParameters, requestTokenSecret);
-            requestParameters.Add("oauth_signature", Signature);
+            string response = await _client.PostAsync("/oauth/access_token", requestParameters, GetOAuthAuthenticator(requestParameters, oauth_token, requestTokenSecret));
+            var parsedResponse = HttpUtility.ParseQueryString(response);
 
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, RequestUrl);
-            request.Headers.Authorization = new AuthenticationHeaderValue("OAuth", GetAuthenticationHeader(requestParameters));
-            HttpResponseMessage response = await _client.SendAsync(request);
-            string responseString = await response.Content.ReadAsStringAsync();
-            var parsedResponse = HttpUtility.ParseQueryString(responseString);
-            
             return Tuple.Create(parsedResponse["oauth_token"], parsedResponse["oauth_token_secret"]);
         }
+
+        //public async Task<string> CreatePost(string message, string access_token, string access_token_secret) 
+        //{
+        //    Dictionary<string, string> requestParameters = new Dictionary<string, string>
+        //    {
+        //        { "status", message }
+        //    };
+
+        //    string response = await _client.PostAsync(
+        //                "/1.1/statuses/update.json", 
+        //                requestParameters, 
+        //                GetOAuthAuthenticator(requestParameters, access_token, access_token_secret));
+
+        //    return response;
+        //}
     }
 }

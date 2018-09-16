@@ -12,7 +12,7 @@
         </div> -->
         <div class="posts-presenter__post__content">
             <div class="content__infobox">
-                <div><img src="@post.PictureUrl"></div>
+                <div><img src="@post.ComposerPictureUrl"></div>
                 <div>
                     <span>@post.Name</span>
                     <span>@post.GetCreatedTime()</span>
@@ -39,7 +39,7 @@
             }
             <div class="content__leave-a-comment">
                 <div>
-                    <img src="@post.PictureUrl" />
+                    <img src="@post.ComposerPictureUrl" />
                     <textarea id="comment-composer" name="comment-composer" class="comment-textbox" placeholder="Leave a comment..."></textarea>
                 </div>
                 <div><button class="btn btn-default btn-small btn-bolded post-comment">Comment</button></div>

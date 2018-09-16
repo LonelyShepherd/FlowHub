@@ -18,9 +18,9 @@ namespace FlowHub.Api_Managers
 
     public class FacebookPostsApi
     {
-        private IFacebookClient _client;
+        private ISocialMediaClient _client;
 
-        public FacebookPostsApi(IFacebookClient client) // facebookClient should be reusable, not disposed after each request
+        public FacebookPostsApi(ISocialMediaClient client) // facebookClient should be reusable, not disposed after each request
         {
             _client = client;
         }

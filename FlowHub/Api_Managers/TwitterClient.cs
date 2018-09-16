@@ -38,9 +38,15 @@ namespace FlowHub.Api_Managers
             return await response.Content.ReadAsStringAsync();
         }
 
-        public Task<string> PostFileAsync(string endpoint, MultipartFormDataContent content, Action<HttpRequestMessage> AuthenticateRequest)
+        public async Task<string> PostFileAsync(string endpoint, MultipartFormDataContent content, Action<HttpRequestMessage> AuthenticateRequest = null)
         {
-            throw new NotImplementedException();
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, endpoint);
+            request.Content = content;
+            AuthenticateRequest(request);
+
+            HttpResponseMessage response = await _client.SendAsync(request);
+
+            return await response.Content.ReadAsStringAsync();
         }
 
         public async Task<string> DeleteAsync(string endpoint, string fields, Action<HttpRequestMessage> AuthenticateRequest)

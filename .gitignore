@@ -267,3 +267,6 @@ __pycache__/
 # EntityFramework database files
 *.mdf
 *.ldf
+
+# Original files
+*.orig

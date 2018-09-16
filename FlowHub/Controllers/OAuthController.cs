@@ -14,7 +14,7 @@ namespace FlowHub.Controllers
     {
         //private static readonly string app_id = "252497228687414";
         private FacebookOAuthLogin FacebookAuthenticator;
-        private TwiterOAuthAuthenticator TwitterAuthenticator;
+        private TwitterOAuthAuthenticator TwitterAuthenticator;
         public string requestToken { get; set; }
         public string requestTokenSecret { get; set; }
 
@@ -24,7 +24,7 @@ namespace FlowHub.Controllers
         {
             var controller = DependencyResolver.Current.GetService<PostController>();
             FacebookAuthenticator = new FacebookOAuthLogin(controller.getFacebookClient());
-            TwitterAuthenticator = new TwiterOAuthAuthenticator();
+            TwitterAuthenticator = new TwitterOAuthAuthenticator();
         }
 
         // GET: OAuth

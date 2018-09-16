@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 
@@ -19,7 +20,9 @@ namespace FlowHub.ViewModels
         public string GetCreatedTime()
         {
             DateTime time;
-            if (DateTime.TryParse(CreatedTime, out time))
+            const string twitterDateFormat = "ddd MMM dd HH:mm:ss zzzz yyyy";
+            if (DateTime.TryParse(CreatedTime, out time) ||
+                DateTime.TryParseExact(CreatedTime, twitterDateFormat, CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out time))
             {
                 if (time > DateTime.Now.Add(new TimeSpan(0, -1, 0)))
                     return "Now";

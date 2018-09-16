@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -37,6 +38,20 @@ namespace FlowHub.Common
             uriBuilder.Query = query.ToString();
 
             return uriBuilder.Query.ToString();
+        }
+
+        public static string GetJsonArray(string jsonString, params string[] nestedProperties)
+        {
+            JObject jObject = JObject.Parse(jsonString);
+            JArray jArray = (JArray)jObject.SelectToken(string.Join(".", nestedProperties));
+
+            return jArray.ToString();
+        }
+
+        public static string GetJsonProperty(string jsonString, params string[] nestedProperties)
+        {
+            JObject jObject = JObject.Parse(jsonString);
+            return jObject.SelectToken(string.Join(".", nestedProperties), true).ToString();
         }
     }
 }
