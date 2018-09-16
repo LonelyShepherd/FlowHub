@@ -60,6 +60,7 @@ namespace FlowHub.Api_Managers
             JArray jsonResponse = JArray.Parse(response);
 
             List<PostViewModel> posts = jsonResponse
+                .Where(post => post["in_reply_to_status_id"].ToString() == "")
                 .Select(post => ParseTweet(post.ToString()))
                 .ToList();
 
@@ -86,10 +87,16 @@ namespace FlowHub.Api_Managers
 
         public async Task<List<CommentViewModel>> GetPostCommentsAsync(string tweet_id, string screen_name, string access_token, string access_token_secret)
         {
+            return await RecursePost(new List<CommentViewModel>(), screen_name, tweet_id, tweet_id, access_token, access_token_secret);
+        }
+
+        private async Task<List<CommentViewModel>> RecursePost(List<CommentViewModel> retrievedComments, string screen_name, string tweet_id, string since_id, string access_token, string access_token_secret)
+        {
             var fields = new Dictionary<string, string>
             {
                 { "screen_name", screen_name },
-                { "since_id", tweet_id }
+                { "since_id", since_id },
+                { "count", "200" }
             };
 
             string response = await _client.GetAsync("/1.1/statuses/user_timeline.json",
@@ -97,12 +104,21 @@ namespace FlowHub.Api_Managers
 
             JArray jsonResponse = JArray.Parse(response);
 
+            if (jsonResponse.Count == 0)
+                return retrievedComments;
+
             List<CommentViewModel> comments = jsonResponse
                 .Where(tweet => tweet["in_reply_to_status_id"].ToString().Equals(tweet_id))
                 .Select(comment => ParseReply(comment.ToString()))
                 .ToList();
 
-            return comments;
+            if (jsonResponse.Count < 200)
+                return comments;
+
+            CommentViewModel lastComment = ParseReply(jsonResponse.FirstOrDefault().ToString());
+            comments.AddRange(retrievedComments);
+
+            return await RecursePost(comments, screen_name, tweet_id, lastComment.Id, access_token, access_token_secret);
         }
 
         public async Task<string> UploadFileAsync(HttpPostedFileBase file, string access_token, string access_token_secret)
