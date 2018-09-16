@@ -23,7 +23,7 @@
 		<div class="nav__actions">
 			<div>
 				<a href="@Url.Action("Settings", "Manage")" title="Settings"></a>
-				@*<img src="~/Avatars/@Model.Model.Avatar">*@
+				<img src="~/Avatars/@Model.Model.Avatar">
 				@using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "sign-out" }))
 				{
 					@Html.AntiForgeryToken()
