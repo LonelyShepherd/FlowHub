@@ -17,10 +17,14 @@ let composer = document.querySelector('.post-composer')
   , galleryContainer = Utils.createElement('div', { className: 'gallery-container' })
   , galleryPrev = Utils.createElement('button', { className: 'gallery-container__prev' })
   , galleryNext = Utils.createElement('button', { className: 'gallery-container__next' })
+  , textarea = Utils.createElement('textarea')
   , cloned = uploadHolder.cloneNode(true)
+  , nav = document.querySelector('.posts-nav')
+  , active = nav.querySelector('a')
   , uniqueId = 0
   , uploads = []
   , edits = []
+  , deleted = []
   , actions
   , mouseDown = false
   , load = true
@@ -29,15 +33,51 @@ let composer = document.querySelector('.post-composer')
     title: 'Edit post',
     buttons: {
       Save: () => {
-        // ajax handler for editing an existing post
+        let data = new FormData();
+        data.append('message', textarea.value);
+        data.append('added', edits);
+        data.append('deleted', deleted.join(','));
+        
+        deleted.length = edits.length = 0;
+        editModal.close();
       }
     }
   });
+
+document.body.style.paddingTop = nav.offsetHeight + 'px';
+
+function ajaxHandler(selected) {
+  $.ajax({
+    url: 'pisi tuj',
+    data: `tab=${selected}`,
+    dataType: 'html'
+  }).done(data => {
+    body.innerHTML = data;
+
+    document.body.appendChild(script);
+  });
+}
+
+function selectTab(trigger) {
+  if(trigger.tagName === 'A') {
+    Utils.removeClass(active, 'active');
+    active = trigger;
+    active.className = 'active';
+    
+    ajaxHandler(trigger.getAttribute('data-href'));
+  }
+}
+
+nav.addEventListener('click', e => {
+  e.preventDefault();
+  selectTab(e.target);
+});
 
 cloned.querySelector('input').addEventListener('change', display);
 cloned.addEventListener('click', e => {
   if(e.target.className === 'remove-image') {
     edits = edits.filter(file => e.target.parentNode.id !== file.id);
+    deleted.push(e.target.nextElementSibling.id);
     Alter.unmount(e.target.parentNode);
   }
 })
@@ -295,8 +335,7 @@ postsPresenter.addEventListener('click', e => {
   let action = e.target
     , post
     , commentsPresenter
-    , formData
-    , textarea = Utils.createElement('textarea');
+    , formData;
 
   switch (action.innerHTML) {
     case 'Delete':
@@ -322,7 +361,7 @@ postsPresenter.addEventListener('click', e => {
       fragment.appendChild(textarea);
 
       if (photos) {
-        edits.length = 0;
+        edits.length = deleted.length = 0;
 
         uploader = cloned.querySelector('.post-composer__uploader__upload');
 

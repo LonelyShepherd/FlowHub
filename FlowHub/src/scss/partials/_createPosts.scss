@@ -9,6 +9,50 @@
     border-bottom-color: transparent;
 }
 
+.posts-nav {
+  position: fixed;
+  background: #f9fbfd;
+  z-index: 98;
+  height: 42px;
+  left: 250px;
+  right: 0;
+  top: 0;
+
+  &:after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    background: #e6e6e6;
+  }
+
+  ul {
+    width: 600px;
+    margin: 0 auto;
+  }
+
+  li a {
+    display: inline-block;
+    float: left;
+    height: 42px;
+    line-height: 41px;
+    margin-right: 30px;
+    color: $light-gray;
+    font-size: 14px;
+    position: relative;
+    z-index: 2;
+
+    &.active {
+      border-bottom: 1px solid $blue;
+    }
+
+    &:hover, &.active {
+      color: $dark-gray;
+    }
+  }
+}
+
 .dashboard-section--post-presenter {
   margin-top: 15px !important;
 }
@@ -20,6 +64,8 @@
 }
 
 .content-wrapper {
+  position: relative;
+
   .dashboard-section {
     padding: 0;
   }
@@ -334,6 +380,35 @@
   & > div {
     display: table-cell;
     vertical-align: middle;
+
+    &:first-of-type {
+      position: relative;
+
+      &:after {
+        content: "";
+        display: block;
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        bottom: -6px;
+        left: 16px;
+        background: #c0d41a url(../images/accounts.png);
+        border-radius: 50%;
+        border: 1px solid #fff;
+      }
+
+      &.facebook { 
+        &:after {
+          background-position-y: 0;
+        }
+      }
+
+      &.twitter {
+        &:after {
+          background-position-y: -20px;
+        }
+      }
+    }    
 
     &:nth-of-type(2) {
       width: 100%;
