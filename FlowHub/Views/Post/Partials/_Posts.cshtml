@@ -2,17 +2,9 @@
 @foreach (var post in Model)
 {
     <div class="posts-presenter__post" data-postid="@post.Id">
-        <!-- <div class="posts-presenter__post__header clearfix">
-          <div class="posts-presenter__status-lane"></div>
-          <div class="posts-presenter__actions">
-            <button class="btn btn-action">Edit</button>
-            <button class="btn btn-action js-delete-post">Delete</button>
-            @*<button class="btn btn-action">Comment</button>*@
-          </div>
-        </div> -->
         <div class="posts-presenter__post__content">
             <div class="content__infobox">
-                <div><img src="@post.ComposerPictureUrl"></div>
+                <div class="facebook"><img src="@post.ComposerPictureUrl"></div>
                 <div>
                     <span>@post.Name</span>
                     <span>@post.GetCreatedTime()</span>
@@ -32,7 +24,7 @@
                         <a href="javascript:;" data-photo="@photo">
                           @if (i == 4 && count > 5) { <button data-item="gallery">+@(count - 4)</button> }
                           else { <button data-item="gallery"></button> }
-                          <img src="@photo">
+                          <img id="placeholder-@i" src="@photo">
                         </a>
                     }
                 </div>
