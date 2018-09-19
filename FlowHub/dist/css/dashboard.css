@@ -750,22 +750,22 @@ body {
     margin-right: 5px;
     position: relative;
     overflow: hidden;
-    color: #fff;
-    font-size: 20px;
-    font-weight: 600;
-    text-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
     border-radius: 3px; }
-    .content__photos a span {
+    .content__photos a button {
       position: absolute;
       display: block;
       width: 100%;
       height: 100%;
-      z-index: 2; }
+      z-index: 2;
+      color: #fff;
+      font-size: 20px;
+      font-weight: 600;
+      text-shadow: 0 0 30px rgba(0, 0, 0, 0.5); }
     .content__photos a:nth-of-type(n + 6) {
       display: none; }
     .content__photos a:nth-of-type(5) {
       margin-right: 0; }
-      .content__photos a:nth-of-type(5) span {
+      .content__photos a:nth-of-type(5) button {
         line-height: 100px;
         text-align: center;
         background: rgba(0, 0, 0, 0.1);
@@ -875,15 +875,22 @@ body {
       word-wrap: break-word;
       margin-top: 3px; }
 
-.js-modal textarea {
-  font-size: 13px;
+.js-modal {
+  max-height: initial;
+  height: auto; }
+  .js-modal textarea {
+    font-size: 13px;
+    height: auto;
+    resize: none;
+    width: 100%;
+    font-family: "Poppins", sans-serif, arial;
+    border: none;
+    height: 230px;
+    padding: 10px 10px 0 10px; }
+
+.js-modal__body {
   height: auto;
-  resize: none;
-  width: 100%;
-  font-family: "Poppins", sans-serif, arial;
-  border: none;
-  height: 130px;
-  max-height: 130px; }
+  padding: 0; }
 
 .gallery-overlay {
   position: fixed;

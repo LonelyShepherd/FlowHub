@@ -30,11 +30,9 @@
                         var photo = post.Photos.ElementAt(i);
 
                         <a href="javascript:;" data-photo="@photo">
-                            @if (i == 4 && count > 5)
-                            {<span data-item="gallery">+@(count - 4)</span> }
-                        else
-                        { <span data-item="gallery"></span>}
-                            <img src="@photo">
+                          @if (i == 4 && count > 5) { <button data-item="gallery">+@(count - 4)</button> }
+                          else { <button data-item="gallery"></button> }
+                          <img src="@photo">
                         </a>
                     }
                 </div>

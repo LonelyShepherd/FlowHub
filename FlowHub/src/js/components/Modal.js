@@ -115,7 +115,7 @@ function Modal(settings) {
   function setContent(content) {
     _body.innerHTML = '';
 
-    content instanceof Element 
+    content instanceof Element || content instanceof DocumentFragment 
       ? _body.appendChild(content)
       : typeof content === 'string' && (_body.innerHTML = content);
   }

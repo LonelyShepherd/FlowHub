@@ -418,18 +418,18 @@
     margin-right: 5px;
     position: relative;
     overflow: hidden;
-    color: #fff;
-    font-size: 20px;
-    font-weight: 600;
-    text-shadow: 0 0 30px rgba(0,0,0,.5);
     border-radius: 3px;
 
-    span {
+    button {
       position: absolute;
       display: block;
       width: 100%;
       height: 100%;
       z-index: 2;
+      color: #fff;
+      font-size: 20px;
+      font-weight: 600;
+      text-shadow: 0 0 30px rgba(0,0,0,.5);
     }
 
     &:nth-of-type(n + 6) {
@@ -439,7 +439,7 @@
     &:nth-of-type(5) {
       margin-right: 0;
 
-      span {
+      button {
         line-height: 100px;
         text-align: center;
         background: rgba(0,0,0,.1);
@@ -604,6 +604,9 @@
 }
 
 .js-modal {
+  max-height: initial;
+  height: auto;
+
   textarea {
     font-size: 13px;
     height: auto;
@@ -611,9 +614,14 @@
     width: 100%;
     font-family: $default-font-set;
     border: none;
-    height: 130px;
-    max-height: 130px;
+    height: 230px;
+    padding: 10px 10px 0 10px;
   }
+}
+
+.js-modal__body {
+  height: auto;
+  padding: 0;
 }
 
 .gallery-overlay {
