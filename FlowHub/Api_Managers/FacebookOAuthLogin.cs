@@ -12,7 +12,7 @@ namespace FlowHub.Api_Managers
     public class FacebookOAuthLogin
     {
         private static readonly string app_id = "252497228687414";
-        private static readonly string app_secret = "";
+        private static readonly string app_secret = "f89e7dcf3c8a890454cfd3b6d50ea4d0";
         private ISocialMediaClient _client;
 
         public FacebookOAuthLogin(ISocialMediaClient client)
