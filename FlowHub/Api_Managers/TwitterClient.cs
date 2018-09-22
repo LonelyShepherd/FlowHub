@@ -23,8 +23,12 @@ namespace FlowHub.Api_Managers
             AuthenticateRequest(request);
 
             HttpResponseMessage response = await _client.SendAsync(request);
+            string responseString = await response.Content.ReadAsStringAsync();
 
-            return await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+                throw SocialMediaApiExceptionFactory.CreateSocialMediaApiException(responseString);
+
+            return responseString;
         }
 
         public async Task<string> PostAsync(string endpoint, Dictionary<string, string> payload, Action<HttpRequestMessage> AuthenticateRequest)
@@ -34,8 +38,12 @@ namespace FlowHub.Api_Managers
             AuthenticateRequest(request);
 
             HttpResponseMessage response = await _client.SendAsync(request);
+            string responseString = await response.Content.ReadAsStringAsync();
 
-            return await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+                throw SocialMediaApiExceptionFactory.CreateSocialMediaApiException(responseString);
+
+            return responseString;
         }
 
         public async Task<string> PostFileAsync(string endpoint, MultipartFormDataContent content, Action<HttpRequestMessage> AuthenticateRequest = null)
@@ -45,8 +53,12 @@ namespace FlowHub.Api_Managers
             AuthenticateRequest(request);
 
             HttpResponseMessage response = await _client.SendAsync(request);
+            string responseString = await response.Content.ReadAsStringAsync();
 
-            return await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+                throw SocialMediaApiExceptionFactory.CreateSocialMediaApiException(responseString);
+
+            return responseString;
         }
 
         public async Task<string> DeleteAsync(string endpoint, string fields, Action<HttpRequestMessage> AuthenticateRequest)
@@ -55,8 +67,12 @@ namespace FlowHub.Api_Managers
             AuthenticateRequest(request);
 
             HttpResponseMessage response = await _client.SendAsync(request);
+            string responseString = await response.Content.ReadAsStringAsync();
 
-            return await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+                throw SocialMediaApiExceptionFactory.CreateSocialMediaApiException(responseString);
+
+            return responseString;
         }
 
         private string GetApiUrl(string endpoint)

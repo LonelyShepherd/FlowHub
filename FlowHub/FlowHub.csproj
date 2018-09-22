@@ -193,6 +193,9 @@
     <Compile Include="Api_Managers\FacebookClient.cs" />
     <Compile Include="Api_Managers\FacebookOAuthLogin.cs" />
     <Compile Include="Api_Managers\FacebookPostsApi.cs" />
+    <Compile Include="Api_Managers\ISocialMediaClient.cs" />
+    <Compile Include="Api_Managers\SocialMediaApiException.cs" />
+    <Compile Include="Api_Managers\SocialMediaApiExceptionFactory.cs" />
     <Compile Include="Api_Managers\TwitterOAuthAuthenticator.cs" />
     <Compile Include="Api_Managers\TwitterClient.cs" />
     <Compile Include="Api_Managers\TwitterPostsApi.cs" />

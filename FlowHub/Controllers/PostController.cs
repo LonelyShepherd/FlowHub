@@ -19,7 +19,7 @@ namespace FlowHub.Controllers
     {
         private static readonly string page_id = "1733163406773721";
         private static string access_token = "";
-        private string access_tokenn = "103051834466305-";
+        private string access_tokenn = "";
         private string access_token_secret = "";
 
         private TwitterPostsApi TwitterAPI = new TwitterPostsApi();
