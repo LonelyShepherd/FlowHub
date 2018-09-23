@@ -46,6 +46,9 @@ namespace FlowHub.Api_Managers
                 {
                     payload.Add($"attached_media[{i}]", $"{{media_fbid:{imageIds[i]}}}");
                 }
+
+                if(imageIds.Length == 1)
+                    payload.Add($"attached_media[1]", $"{{media_fbid:{imageIds[0]}}}");
             }
 
             string response = await _client.PostAsync($"/{page_id}/feed", payload);
@@ -89,6 +92,61 @@ namespace FlowHub.Api_Managers
             return comment;
         }
 
+        public async Task<PostViewModel> EditPostAsync(string page_id, string post_id, string message, HttpFileCollectionBase newImages, string oldImages, string deletedImages, string access_token)
+        {
+            var payload = new Dictionary<string, string>
+            {
+                { "message", message },
+                { "access_token", access_token }
+            };
+
+            string[] oldImageIds = oldImages.Split(',');
+            oldImageIds = oldImageIds[0] == "" ? new string[0] : oldImageIds;
+
+            for (int i = 0; i < oldImageIds.Length; i++)
+            {
+                payload.Add($"attached_media[{i}]", $"{{media_fbid:{oldImageIds[i]}}}");
+            }
+
+            string[] imageIds = new string[1];
+
+            if (newImages.Count != 0)
+            {
+                IEnumerable<Task<string>> uploadTasks = newImages.AllKeys
+                                                              .ToList()
+                                                              .Select(key => UploadFileAsync(page_id, message, newImages[key], access_token));
+
+                imageIds = await Task.WhenAll(uploadTasks.ToArray());
+
+                for (int i = oldImageIds.Length; i < oldImageIds.Length + imageIds.Length; i++)
+                {
+                    payload.Add($"attached_media[{i}]", $"{{media_fbid:{imageIds[i - oldImageIds.Length]}}}");
+                }
+            }
+
+            if (oldImageIds.Length + newImages.Count == 1) {
+                if (oldImageIds.Length == 1)
+                    payload.Add($"attached_media[1]", $"{{media_fbid:{oldImageIds[0]}}}");
+                else
+                    payload.Add($"attached_media[1]", $"{{media_fbid:{imageIds[0]}}}");
+            }
+
+
+            List<string> deletedImageIds = deletedImages.Split(',').ToList();
+            if(oldImageIds.Length == 0 && newImages.Count == 0)
+            {
+                IEnumerable<Task<string>> deleteTasks = deletedImageIds
+                                                             .Select(id => _client.DeleteAsync($"{id}", $"?access_token={access_token}"));
+
+                await Task.WhenAll(deleteTasks.ToArray());
+            }
+
+            string response = await _client.PostAsync($"/{post_id}", payload);
+            PostViewModel post = await GetPostAsync(post_id, access_token);
+
+            return post;
+        }
+
         public async Task<Tuple<List<PostViewModel>,string>> GetPostedPostsAsync(string page_id, string access_token, int limit = 0, string after_cursor = "")
         {
             var fields = new Dictionary<string, string>
@@ -104,7 +162,7 @@ namespace FlowHub.Api_Managers
             }
 
             string response = await _client.GetAsync($"/{page_id}/feed", Utils.GetQueryString(fields));
-            string composerPictureUrl = await GetPictureAsync(page_id, access_token);
+            string composerPictureUrl = await GetPictureUrlAsync(page_id, access_token);
 
             JObject postedPosts = JObject.Parse(response);
             List<PostViewModel> posts = postedPosts["data"]
@@ -141,7 +199,7 @@ namespace FlowHub.Api_Managers
 
             string response = await _client.GetAsync($"/{post_id}", Utils.GetQueryString(fields));
             PostViewModel post = ParsePost(response, "");
-            post.ComposerPictureUrl = await GetPictureAsync(post.ComposerId, access_token);
+            post.ComposerPictureUrl = await GetPictureUrlAsync(post.ComposerId, access_token);
 
             return post;
         }
@@ -155,7 +213,7 @@ namespace FlowHub.Api_Managers
         {
             string response = await _client.GetAsync($"/{comment_id}", $"?access_token={access_token}");
             CommentViewModel comment = ParseComment(response);
-            comment.ComposerPictureUrl = await GetPictureAsync(comment.ComposerId, access_token);
+            comment.ComposerPictureUrl = await GetPictureUrlAsync(comment.ComposerId, access_token);
 
             return comment;
         }
@@ -182,7 +240,7 @@ namespace FlowHub.Api_Managers
                 .ToList();
 
             List<Tuple<CommentViewModel, Task<string>>> pictureTasks = comments
-                .Select(comment => Tuple.Create(comment, GetPictureAsync(comment.ComposerId, access_token)))
+                .Select(comment => Tuple.Create(comment, GetPictureUrlAsync(comment.ComposerId, access_token)))
                 .ToList();
 
             foreach (var task in pictureTasks)
@@ -198,7 +256,7 @@ namespace FlowHub.Api_Managers
             return Tuple.Create(comments, afterCursor);
         }
 
-        public async Task<string> GetPictureAsync(string object_id, string access_token)
+        public async Task<string> GetPictureUrlAsync(string object_id, string access_token)
         {
             var fields = new Dictionary<string, string>
             {
@@ -240,11 +298,12 @@ namespace FlowHub.Api_Managers
             dynamic postedPost = JsonConvert.DeserializeObject(jsonPost);
             PostViewModel post = JsonConvert.DeserializeObject<PostViewModel>(Convert.ToString(jsonPost));
             post.Name = postedPost.from.name;
+            post.ComposerId = postedPost.from.id;
             post.ComposerPictureUrl = pictureUrl;
             post.CommentsCount = postedPost.comments.summary.total_count;
             post.LikesCount = postedPost.likes.summary.total_count;
             post.SharesCount = postedPost.shares == null ? "0" : postedPost.shares.count;
-            post.Photos = new List<string>();
+            post.Photos = new List<Tuple<string,string>>();
 
             if (postedPost.attachments != null)
             {
@@ -252,11 +311,12 @@ namespace FlowHub.Api_Managers
                 {
                     foreach (dynamic photo in postedPost.attachments.data[0].subattachments.data)
                     {
-                        post.Photos.Add(Convert.ToString(photo.media.image.src));
+                        post.Photos.Add(Tuple.Create(Convert.ToString(photo.target.id), Convert.ToString(photo.media.image.src)));
                     }
                 }
                 else
-                    post.Photos.Add(Convert.ToString(postedPost.attachments.data[0].media.image.src));
+                    post.Photos.Add(Tuple.Create(Convert.ToString(postedPost.attachments.data[0].target.id), 
+                        Convert.ToString(postedPost.attachments.data[0].media.image.src)));
             }
 
             return post;

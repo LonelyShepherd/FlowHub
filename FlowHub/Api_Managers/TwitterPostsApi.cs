@@ -162,7 +162,7 @@ namespace FlowHub.Api_Managers
                 CommentsCount = "5",
                 LikesCount = jsonResponse["favorite_count"].ToString(),
                 SharesCount = jsonResponse["retweet_count"].ToString(),
-                Photos = photos.Select(t => t.Item2).ToList(),
+                Photos = photos,
                 Name = $"@{jsonResponse["user"]["screen_name"].ToString()}",
                 ComposerPictureUrl = jsonResponse["user"]["profile_image_url_https"].ToString(),
                 ComposerId = jsonResponse["user"]["id_str"].ToString()

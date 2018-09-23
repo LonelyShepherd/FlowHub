@@ -58,6 +58,15 @@ namespace FlowHub.Controllers
             return PartialView("~/Views/Post/Partials/_Posts.cshtml", new List<PostViewModel>() { post });
         }
 
+        // POST: Post/EditPost
+        public async Task<ActionResult> EditPostAsync()
+        {
+            var form = Request.Form;
+            PostViewModel editedPost = await PostsApi.EditPostAsync(page_id, form["post-id"], form["message"], Request.Files, form["old-photos"], form["deleted"], access_token);
+
+            return PartialView("~/Views/Post/Partials/_Posts.cshtml", new List<PostViewModel>() { editedPost });
+        }
+
         // GET: Post/GetPosts
         public async Task<ActionResult> GetPosts(string after_cursor)
         {

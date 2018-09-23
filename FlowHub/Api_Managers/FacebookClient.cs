@@ -37,8 +37,8 @@ namespace FlowHub.Api_Managers
             HttpResponseMessage response = await _client.PostAsync(endpoint, content);
             var responseString = await response.Content.ReadAsStringAsync();
 
-            if (!response.IsSuccessStatusCode)
-                throw SocialMediaApiExceptionFactory.CreateSocialMediaApiException(responseString);
+            //if (!response.IsSuccessStatusCode)
+            //    throw SocialMediaApiExceptionFactory.CreateSocialMediaApiException(responseString);
 
             return responseString;
         }

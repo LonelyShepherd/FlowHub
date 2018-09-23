@@ -38,6 +38,7 @@ namespace FlowHub.Api_Managers
             // Possible rate issues
             List<int> RateCodes = new List<int> { 2, 4, 17, 341, 368 };
             Predicate<int> TooManyApiCalls = code => RateCodes.Contains(code);
+            // 100
 
             if(AccessTokenExpired(errorCode))
             {

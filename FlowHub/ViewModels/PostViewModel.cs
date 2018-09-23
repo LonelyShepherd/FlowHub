@@ -17,7 +17,7 @@ namespace FlowHub.ViewModels
         public string CommentsCount { get; set; } = "0";
         public string LikesCount { get; set; } = "0";
         public string SharesCount { get; set; } = "0";
-        public List<string> Photos { get; set; }
+        public List<Tuple<string, string>> Photos { get; set; } // Id, Url
         // Creator
         public string Name { get; set; }
         public string ComposerPictureUrl { get; set; }

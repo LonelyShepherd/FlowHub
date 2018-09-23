@@ -25,6 +25,8 @@ let composer = document.querySelector('.post-composer')
   , uploads = []
   , edits = []
   , deleted = []
+  , allPhotos = []
+  , editingPost
   , actions
   , mouseDown = false
   , load = true
@@ -34,9 +36,27 @@ let composer = document.querySelector('.post-composer')
     buttons: {
       Save: () => {
         let data = new FormData();
-        data.append('message', textarea.value);
-        data.append('added', edits);
-        data.append('deleted', deleted.join(','));
+        allPhotos = allPhotos.filter(id => !deleted.includes(id));
+          data.append('message', textarea.value);
+          data.append('deleted', deleted.join(','));
+          for (var i = 0; i < edits.length; i++) {
+              data.append(edits[i].id, edits[i].file);
+          }
+        data.append('old-photos', allPhotos.join(','));
+        data.append('post-id', editingPost.getAttribute('data-postid'));
+
+          $.ajax({
+              url: '/Post/EditPost',
+              method: 'POST',
+              data: data,
+              contentType: false,
+              processData: false,
+              mimeType: 'multipart/form-data'
+          }).done(data => {
+              editingPost.display = 'none';
+              editingPost.insertAdjacentHTML('afterend', data)
+              Alter.unmount(editingPost);
+          });
         
         deleted.length = edits.length = 0;
         editModal.close();
@@ -252,8 +272,8 @@ createPost.addEventListener('click', () => {
     let formData = new FormData();
     formData.append('message', textbox.value);
 
-    for (var i = 0; i < uploads.length; i++)
-      formData.append(`image-${i}`, uploads[i].file);
+      for (var i = 0; i < uploads.length; i++)
+          formData.append(`image-${i}`, uploads[i].file);
 
     $.ajax({
       url: '/Post/Create',
@@ -350,50 +370,62 @@ postsPresenter.addEventListener('click', e => {
       });
       break;
     case 'Edit':
-      post = Traversal.parents(action, '.posts-presenter__post');
-      let photos = post.querySelector('.content__photos');
+          post = Traversal.parents(action, '.posts-presenter__post');
+          editingPost = post;
 
-      let fragment = document.createDocumentFragment()
-        , uploader;
+          let photos = post.querySelector('.content__photos');
 
-      textarea.value = post.querySelector('.content__post').innerHTML;
+          let fragment = document.createDocumentFragment()
+              , uploader;
 
-      fragment.appendChild(textarea);
+          textarea.value = post.querySelector('.content__post').innerHTML;
 
-      if (photos) {
-        edits.length = deleted.length = 0;
+          fragment.appendChild(textarea);
+          // Taken out 1
+          uploader = cloned.querySelector('.post-composer__uploader__upload');
 
-        uploader = cloned.querySelector('.post-composer__uploader__upload');
+          [].forEach.call(uploader.parentNode.querySelectorAll('.post-composer__uploader__image'), item => Alter.unmount(item));
 
-        [].forEach.call(uploader.parentNode.querySelectorAll('.post-composer__uploader__image'), item => Alter.unmount(item));
+          console.log('dppP');
+          edits.length = deleted.length = allPhotos.length = 0;
+          if (photos) {
+              [].forEach.call(photos.children, photo => {
+                  let currentId = photo.querySelector('a img').getAttribute('id');
+                  allPhotos.push(currentId);
+              });
 
-        [].forEach.call(photos.children, photo => {
-          let container = Utils.createElement('div', {
-            className: 'post-composer__uploader__image',
-            innerHTML: photo.innerHTML
-          });
+              // From here 1
 
-          let remove = container.querySelector('button');
-          remove.className = 'remove-image';
-          remove.innerHTML = '';
-          remove.removeAttribute('data-item');
+              [].forEach.call(photos.children, photo => {
+                  let container = Utils.createElement('div', {
+                      className: 'post-composer__uploader__image',
+                      innerHTML: photo.innerHTML
+                  });
 
-          Alter.before(container, uploader);
-        });
+                  let remove = container.querySelector('button');
+                  remove.className = 'remove-image';
+                  remove.innerHTML = '';
+                  remove.removeAttribute('data-item');
 
-        textarea.style.height = '110px';
-        fragment.appendChild(cloned);
-      }
+                  Alter.before(container, uploader);
+              });
 
-      editModal.setContent(fragment);
-      editModal.open();
-      textarea.focus();
+              // From here 2
+          }
+          // Taken out 2
+          textarea.style.height = '110px';
+          fragment.appendChild(cloned);
 
-      let sw = uploader.parentNode.parentNode.scrollWidth
-        , cw = uploader.parentNode.parentNode.clientWidth;
-          
-      if(sw > cw)
-        uploader.parentNode.parentNode.scrollLeft = sw - cw;
+          editModal.setContent(fragment);
+          editModal.open();
+          textarea.focus();
+
+          let sw = uploader.parentNode.parentNode.scrollWidth
+              , cw = uploader.parentNode.parentNode.clientWidth;
+
+          if (sw > cw)
+              uploader.parentNode.parentNode.scrollLeft = sw - cw;
+
 
       break;
   }
