@@ -23,8 +23,9 @@ namespace FlowHub.Controllers
     public ActionResult Index()
     {
 			GetUser(out _, out ApplicationUser user);
-			return View("~/Views/Post/Index.cshtml", new DashboardViewModel<ApplicationUser>(user));
-    }
+
+            return View("~/Views/Post/Index.cshtml", new DashboardViewModel<ApplicationUser>(user));
+        }
 
 		// GET: Dashboard/Accounts
 		public ActionResult Accounts()

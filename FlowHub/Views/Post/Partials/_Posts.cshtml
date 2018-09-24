@@ -1,10 +1,22 @@
 ﻿@model IEnumerable<FlowHub.ViewModels.PostViewModel>
 @foreach (var post in Model)
 {
-    <div class="posts-presenter__post" data-postid="@post.Id">
+    <div class="posts-presenter__post" data-postid="@post.Id" data-postType="@post.Type">
         <div class="posts-presenter__post__content">
             <div class="content__infobox">
-                <div class="facebook"><img src="@post.ComposerPictureUrl"></div>
+                @if (post.Type.Equals("facebook", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    <div class="facebook"><img src="@post.ComposerPictureUrl"></div>
+                }
+                else if (post.Type.Equals("twitter", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    <div class="twitter"><img src="@post.ComposerPictureUrl"></div>
+                }
+                else
+                {
+                    <div><img src="@post.ComposerPictureUrl"></div>
+                }
+
                 <div>
                     <span>@post.Name</span>
                     <span>@post.GetCreatedTime()</span>
@@ -21,10 +33,10 @@
                     {
                         var photo = post.Photos.ElementAt(i);
 
-                        <a href="javascript:;" data-photo="@photo">
+                        <a href="javascript:;" data-photo="@photo.Item2">
                           @if (i == 4 && count > 5) { <button data-item="gallery">+@(count - 4)</button> }
                           else { <button data-item="gallery"></button> }
-                          <img id="placeholder-@i" src="@photo">
+                          <img id="@photo.Item1" src="@photo.Item2">
                         </a>
                     }
                 </div>

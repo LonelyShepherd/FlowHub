@@ -1,6 +1,8 @@
 ﻿using FlowHub.Api_Managers;
 using FlowHub.Common;
+using FlowHub.Models;
 using FlowHub.ViewModels;
+using Microsoft.AspNet.Identity;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -17,31 +19,17 @@ namespace FlowHub.Controllers
 {
     public class PostController : AsyncController
     {
-        private static readonly string page_id = "1733163406773721";
-        private static string access_token = "";
-        private string access_tokenn = "103051834466305-";
-        private string access_token_secret = "";
-
         private TwitterPostsApi TwitterAPI = new TwitterPostsApi();
 
         private static readonly FacebookClient _client = new FacebookClient();
-        private FacebookPostsApi PostsApi;
-        private static readonly TwitterOAuthAuthenticator twitterAuth = new TwitterOAuthAuthenticator();
+        private static readonly FacebookPostsApi facebookPostsApi = new FacebookPostsApi();
+        private static readonly TwitterPostsApi twitterPostsApi = new TwitterPostsApi();
+
+        private ApplicationDbContext _context;
 
         public PostController()
         {
-            PostsApi = new FacebookPostsApi(_client);
-        }
-
-        public FacebookClient getFacebookClient()
-        {
-            return _client;
-        }
-
-        // TO be deleted 
-        public static void setAccessToken(string token)
-        {
-            access_token = token;
+            _context = new ApplicationDbContext();
         }
 
         public ActionResult Index()
@@ -53,196 +41,292 @@ namespace FlowHub.Controllers
         [HttpPost]
         public async Task<ActionResult> Create()
         {
-            //PostViewModel post = await TwitterAPI.CreatePostAsync(Request.Form["message"], Request.Files, access_tokenn, access_token_secret);
-
-
-            string response = await PostsApi.CreatePostAsync(page_id, Request.Form["message"], Request.Files, access_token);
-            string pictureUrl = await PostsApi.GetPictureAsync(page_id, access_token);
-            dynamic postedPost = JsonConvert.DeserializeObject(await PostsApi.GetPostAsync(Utils.GetJsonProperty(response, "id"), access_token));
-
-            PostViewModel post = JsonConvert.DeserializeObject<PostViewModel>(Convert.ToString(postedPost));
-            post.Name = postedPost.from.name; // Utils.GetJsonProperty(postedPost, "from", "name");
-            post.ComposerPictureUrl = Utils.GetJsonProperty(pictureUrl, "data", "url");
-            post.Photos = new List<string>();
-
-            if (postedPost.attachments != null)
-            {
-                if (postedPost.attachments.data[0].subattachments != null)
-                {
-                    foreach (dynamic photo in postedPost.attachments.data[0].subattachments.data)
-                    {
-                        post.Photos.Add(Convert.ToString(photo.media.image.src));
-                    }
-                }
-                else
-                    post.Photos.Add(Convert.ToString(postedPost.attachments.data[0].media.image.src));
-            }
+            GetUser(out _, out ApplicationUser user);
+            PostViewModel post = await facebookPostsApi.CreatePostAsync(user.FbUserAccount.AccountId, Request.Form["message"], Request.Files, user.FbUserAccount.account_access_token);
 
             return PartialView("~/Views/Post/Partials/_Posts.cshtml", new List<PostViewModel>() { post });
         }
 
-        // GET: Post/GetPosts
-        public async Task<ActionResult> GetPosts(string after_cursor)
+        // POST: Post/EditPost
+        public async Task<ActionResult> EditPostAsync()
         {
-            //Tuple<List<PostViewModel>, string> response = await TwitterAPI.GetPostedPostsAsync("Filipovski0", access_tokenn, access_token_secret, 10, after_cursor);
-
-            Task<string> publishedPostsTask = PostsApi.GetPostedPostsAsync(page_id, access_token, 10, after_cursor);
-            string pagePictureUrl = await PostsApi.GetPictureAsync(page_id, "");
-            string publishedPosts = await publishedPostsTask;
-
-            dynamic publishedPostsResponse = JsonConvert.DeserializeObject(publishedPosts);
-            List<PostViewModel> posts = new List<PostViewModel>();
-
-            foreach (dynamic post in publishedPostsResponse.data)
-            {
-                PostViewModel deserializedPost = JsonConvert.DeserializeObject<PostViewModel>(post.ToString());
-                deserializedPost.Name = post.from.name;
-                deserializedPost.CommentsCount = post.comments.summary.total_count;
-                deserializedPost.LikesCount = post.likes.summary.total_count;
-                deserializedPost.SharesCount = post.shares == null ? "0" : post.shares.count;
-                deserializedPost.Photos = new List<string>();
-                if (post.attachments != null)
-                {
-                    if (post.attachments.data[0].subattachments != null)
-                    {
-                        foreach (dynamic photo in post.attachments.data[0].subattachments.data)
-                        {
-                            deserializedPost.Photos.Add(Convert.ToString(photo.media.image.src));
-                        }
-                    }
-                    else
-                        deserializedPost.Photos.Add(Convert.ToString(post.attachments.data[0].media.image.src));
-                }
-
-                posts.Add(deserializedPost);
-            }
-
-            string afterCursor;
-
+            var form = Request.Form;
+            GetUser(out _, out ApplicationUser user);
+            PostViewModel editedPost = null;
             try
             {
-                afterCursor = Utils.GetJsonProperty(publishedPosts, "paging", "cursors", "after");
-                pagePictureUrl = Utils.GetJsonProperty(pagePictureUrl, "data", "url");
+                editedPost = await facebookPostsApi.EditPostAsync(user.FbUserAccount.AccountId, form["post-id"], form["message"], Request.Files, form["old-photos"], form["deleted"], user.FbUserAccount.account_access_token);
             }
-            catch (JsonException e)
+            catch (SocialMediaApiException e)
             {
-                afterCursor = "";
-                pagePictureUrl = Url.Content("~/dist/images/avatar.png");
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, e.Message);
             }
             catch (Exception e)
             {
-                afterCursor = null;
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            posts.ToList().ForEach(post => post.ComposerPictureUrl = pagePictureUrl);
+            return PartialView("~/Views/Post/Partials/_Posts.cshtml", new List<PostViewModel>() { editedPost });
+        }
 
+        // GET: Post/GetPosts
+        public async Task<ActionResult> GetPosts(string tab, string fb_after_cursor, string twitter_after_cursor)
+        {
+            GetUser(out _, out ApplicationUser user);
+            string facebookAccountId = user.FbUserAccount != null ? user.FbUserAccount.AccountId : "";
+            string facebookAccessToken = user.FbUserAccount != null ? user.FbUserAccount.account_access_token : "";
+
+            string twitterAccountId = user.twitterUserAccount != null ? user.twitterUserAccount.AccountId : "";
+            string twitterAccessToken = user.twitterUserAccount != null ? user.twitterUserAccount.account_access_token : "";
+            string twitterTokenSecret = user.twitterUserAccount != null ? user.twitterUserAccount.account_access_token_secret : "";
+
+            Task<Tuple<List<PostViewModel>, string>> facebookPostsTask = null;
+            Task<Tuple<List<PostViewModel>, string>> twitterPostsTask = null;
+            try
+            {
+                if (tab == "all")
+                {
+                    if (facebookAccessToken != null && facebookAccessToken != "")
+                    {
+                        facebookPostsTask = facebookPostsApi.GetPostedPostsAsync(facebookAccountId, facebookAccessToken, 5, fb_after_cursor);
+                    }
+
+                    if(twitterAccessToken != null && twitterAccessToken != "")
+                    {
+                        twitterPostsTask = twitterPostsApi.GetPostedPostsAsync(twitterAccountId, twitterAccessToken, twitterTokenSecret, 5, twitter_after_cursor);
+                    }
+                }
+
+                if(tab == "facebook")
+                {
+                    if (facebookAccessToken != null && facebookAccessToken != "")
+                    {
+                        facebookPostsTask = facebookPostsApi.GetPostedPostsAsync(facebookAccountId, facebookAccessToken, 10, fb_after_cursor);
+                    }
+                    else
+                    {
+                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Please connect your social media account");
+                    }
+                }
+
+                if(tab == "twitter")
+                {
+                    if (twitterAccessToken != null && twitterAccessToken != "")
+                    {
+                        twitterPostsTask = twitterPostsApi.GetPostedPostsAsync(twitterAccountId, twitterAccessToken, twitterTokenSecret, 10, twitter_after_cursor);
+                    }
+                    else
+                    {
+                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Please connect your social media account");
+                    }
+                }
+            }
+            catch (SocialMediaApiException e)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, e.Message);
+            }
+            catch (Exception e)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            if(twitterPostsTask == null && facebookPostsTask == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "Please connect your social media accounts");
+            }
+
+            string twitterCursor = "";
+            string facebookCursor = "";
+            List<PostViewModel> posts = new List<PostViewModel>();
+
+            if(facebookPostsTask != null)
+            {
+                Tuple<List<PostViewModel>, string> publishedPosts = await facebookPostsTask;
+                posts = publishedPosts.Item1;
+                facebookCursor = publishedPosts.Item2;
+            }
+
+            if (twitterPostsTask != null)
+            {
+                Tuple<List<PostViewModel>, string> publishedPosts = await twitterPostsTask;
+                List<PostViewModel> excess = new List<PostViewModel>();
+                if (posts.Count > publishedPosts.Item1.Count)
+                {
+                    excess = posts.GetRange(publishedPosts.Item1.Count, posts.Count - publishedPosts.Item1.Count);
+
+                }
+                else if (posts.Count < publishedPosts.Item1.Count)
+                {
+                    excess = publishedPosts.Item1.GetRange(posts.Count, publishedPosts.Item1.Count - posts.Count);
+                }
+
+                List<PostViewModel> helper = new List<PostViewModel>();
+                IEnumerable<Tuple<PostViewModel, PostViewModel>> pairs = posts.Zip(publishedPosts.Item1, (a, b) => Tuple.Create(a, b));
+                pairs.ToList().ForEach(p => { helper.Add(p.Item1); helper.Add(p.Item2); });
+                helper.AddRange(excess);
+
+                posts = helper;
+                twitterCursor = publishedPosts.Item2;
+            }
 
             return Json(new
             {
                 cursors = new
                 {
-                    after = afterCursor,
-                    //before = Utils.GetJsonProperty(publishedPosts, "paging", "cursors", "before")
+                    fbafter = facebookCursor,
+                    twafter = twitterCursor
                 },
                 posts = Utils.RenderRazorViewToString(this, "~/Views/Post/Partials/_Posts.cshtml", posts)
             }, JsonRequestBehavior.AllowGet);
-
-            //return Json(new
-            //{
-            //    cursors = new
-            //    {
-            //        after = response.Item2,
-            //        before = Utils.GetJsonProperty(publishedPosts, "paging", "cursors", "before")
-            //    },
-            //    posts = Utils.RenderRazorViewToString(this, "~/Views/Post/Partials/_Posts.cshtml", response.Item1)
-            //}, JsonRequestBehavior.AllowGet);
         }
 
         [HttpDelete]
-        public async Task<ActionResult> DeletePost(string post_id)
+        public async Task<ActionResult> DeleteFacebookPost(string post_id)
         {
-            string response = await PostsApi.DeleteObjectAsync(post_id, access_token);
-
-            return new HttpStatusCodeResult(HttpStatusCode.OK);
-        }
-
-        public async Task<ActionResult> GetComments(string post_id, string after_cursor)
-        {
-            string postComments = await PostsApi.GetPostCommentsAsync(post_id, access_token, 5, after_cursor);
-            JObject jsonComments = JObject.Parse(postComments);
-            IList<JToken> comments = jsonComments["data"].Children().ToList();
-
-            List<CommentViewModel> lista = new List<CommentViewModel>();
-
-            List<Tuple<CommentViewModel, Task<string>>> cms = new List<Tuple<CommentViewModel, Task<string>>>();
-
-            string afterCursor;
-
             try
             {
-                afterCursor = Utils.GetJsonProperty(postComments, "paging", "cursors", "after");
+                GetUser(out _, out ApplicationUser user);
+                string response = await facebookPostsApi.DeleteObjectAsync(post_id, user.FbUserAccount.account_access_token);
             }
-            catch (JsonException e)
+            catch (SocialMediaApiException e)
             {
-                afterCursor = "";
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, e.Message);
             }
             catch (Exception e)
             {
-                afterCursor = null;
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            foreach (JToken comment in comments)
-            {
-                CommentViewModel deserializedComment = JsonConvert.DeserializeObject<CommentViewModel>(comment.ToString());
-                deserializedComment.ComposerName = comment["from"]["name"].ToString();
-                deserializedComment.ComposerId = comment["from"]["id"].ToString();
 
-                cms.Add(Tuple.Create(
-                    deserializedComment,
-                    PostsApi.GetPictureAsync(comment["from"]["id"].ToString(), access_token)
-                ));
+            return new HttpStatusCodeResult(HttpStatusCode.Accepted);
+        }
+
+        public async Task<ActionResult> GetFacebookComments(string post_id, string after_cursor)
+        {
+            Tuple<List<CommentViewModel>, string> comments = null;
+            try
+            {
+                GetUser(out _, out ApplicationUser user);
+                comments = await facebookPostsApi.GetPostCommentsAsync(post_id, user.FbUserAccount.account_access_token, 5, after_cursor);
             }
-
-            foreach (var comment in cms)
+            catch (SocialMediaApiException e)
             {
-                comment.Item1.ComposerPictureUrl = JObject.Parse(await comment.Item2)["data"]["url"].ToString();
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, e.Message);
+            }
+            catch (Exception e)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
             return Json(new
             {
                 cursors = new
                 {
-                    after = afterCursor,
+                    after = comments.Item2,
                 },
-                comments = Utils.RenderRazorViewToString(this, "~/Views/Post/Partials/_Comments.cshtml", cms.Select(m => m.Item1).ToList())
+                comments = Utils.RenderRazorViewToString(this, "~/Views/Post/Partials/_Comments.cshtml", comments.Item1)
             }, JsonRequestBehavior.AllowGet);
-
-            //List<CommentViewModel> comments = await TwitterAPI.GetPostCommentsAsync(post_id, "Filipovski0", access_tokenn, access_token_secret);
-
-            //return Json(new
-            //{
-            //    cursors = new
-            //    {
-            //        after = "",
-            //    },
-            //    comments = Utils.RenderRazorViewToString(this, "~/Views/Post/Partials/_Comments.cshtml", comments)
-            //}, JsonRequestBehavior.AllowGet);
         }
 
-        public async Task<ActionResult> CreateComment()
+        public async Task<ActionResult> CreateFacebookComment()
         {
-            string response = await PostsApi.CreatePostCommentAsync(Request.Form["post_id"], Request.Form["message"], access_token);
-            string pictureUrl = await PostsApi.GetPictureAsync(page_id, access_token);
-            string postedComment = await PostsApi.GetCommentAsync(Utils.GetJsonProperty(response, "id"), access_token);
-            CommentViewModel comment = JsonConvert.DeserializeObject<CommentViewModel>(postedComment);
-            comment.ComposerName = Utils.GetJsonProperty(postedComment, "from", "name");
-            comment.ComposerPictureUrl = Utils.GetJsonProperty(pictureUrl, "data", "url");
+            CommentViewModel comment = null;
+            try
+            {
+                GetUser(out _, out ApplicationUser user);
+                comment = await facebookPostsApi.CreatePostCommentAsync(Request.Form["post_id"], Request.Form["message"], user.FbUserAccount.account_access_token);
+            }
+            catch(SocialMediaApiException e)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, e.Message);
+            }
+            catch(Exception e)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
 
             return PartialView("~/Views/Post/Partials/_Comments.cshtml", new List<CommentViewModel>() { comment });
-
-            //CommentViewModel comment = await TwitterAPI.CreatePostCommentAsync(Request.Form["post_id"], Request.Form["message"], "Filipovski0", access_tokenn, access_token_secret);
-
-            //return PartialView("~/Views/Post/Partials/_Comments.cshtml", new List<CommentViewModel>() { comment });
         }
+
+        [HttpDelete]
+        public async Task<ActionResult> DeleteTwitterPost(string post_id)
+        {
+            try
+            {
+                GetUser(out _, out ApplicationUser user);
+                string response = await facebookPostsApi.DeleteObjectAsync(post_id, user.FbUserAccount.account_access_token);
+            }
+            catch (SocialMediaApiException e)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, e.Message);
+            }
+            catch (Exception e)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+
+            return new HttpStatusCodeResult(HttpStatusCode.Accepted);
+        }
+
+        public async Task<ActionResult> GetTwitterComments(string post_id, string after_cursor)
+        {
+            List<CommentViewModel> comments = null;
+            try
+            {
+                GetUser(out _, out ApplicationUser user);
+                comments = await twitterPostsApi.GetPostCommentsAsync(post_id, user.twitterUserAccount.AccountId, user.twitterUserAccount.account_access_token, user.twitterUserAccount.account_access_token_secret);
+            }
+            catch (SocialMediaApiException e)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, e.Message);
+            }
+            catch (Exception e)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            return Json(new
+            {
+                cursors = new
+                {
+                    after = "",
+                },
+                comments = Utils.RenderRazorViewToString(this, "~/Views/Post/Partials/_Comments.cshtml", comments)
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        public async Task<ActionResult> CreateTwitterComment()
+        {
+            CommentViewModel comment = null;
+            try
+            {
+                GetUser(out _, out ApplicationUser user);
+                comment = await twitterPostsApi.CreatePostCommentAsync(Request.Form["post_id"], Request.Form["message"], user.twitterUserAccount.AccountId, user.twitterUserAccount.account_access_token, user.twitterUserAccount.account_access_token_secret);
+            }
+            catch (SocialMediaApiException e)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, e.Message);
+            }
+            catch (Exception e)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            return PartialView("~/Views/Post/Partials/_Comments.cshtml", new List<CommentViewModel>() { comment });
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            _context.Dispose();
+        }
+
+        #region helpers
+        private void GetUser(out string id, out ApplicationUser user)
+        {
+            id = User.Identity.GetUserId();
+            user = _context.Users.Find(id);
+        }
+        #endregion
     }
 }

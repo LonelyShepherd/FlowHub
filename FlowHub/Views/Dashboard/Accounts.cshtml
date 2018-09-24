@@ -1,1 +1,9 @@
-﻿
+﻿@{
+    ViewBag.Title = "Accounts";
+    Layout = "~/Views/Shared/_Dashboard.cshtml";
+}
+
+<p>@Html.ActionLink("Facebook User Login", "FacebookUserLogin", "OAuth")</p>
+<p>@Html.ActionLink("Facebook Team Login", "FacebookTeamLogin", "OAuth")</p>
+<p>@Html.ActionLink("Twiter User Login", "TwitterUserLogin", "OAuth")</p>
+<p>@Html.ActionLink("Twiter Team Login", "TwitterTeamLogin", "OAuth")</p>
