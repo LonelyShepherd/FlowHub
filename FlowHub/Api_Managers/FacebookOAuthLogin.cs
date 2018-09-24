@@ -1,4 +1,6 @@
 ﻿using FlowHub.Common;
+using FlowHub.ViewModels;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,27 +15,25 @@ namespace FlowHub.Api_Managers
     {
         private static readonly string app_id = "252497228687414";
         private static readonly string app_secret = "f89e7dcf3c8a890454cfd3b6d50ea4d0";
-        private ISocialMediaClient _client;
+        private static readonly ISocialMediaClient _client = new FacebookClient();
 
-        public FacebookOAuthLogin(ISocialMediaClient client)
+        public FacebookOAuthLogin()
         {
-            _client = client;
+
         }
 
         public ActionResult LoginDialog(string uriRedirectString) // Default permissions manage_pages ad publish_pages
         {
             var baseUri = "https://www.facebook.com/v3.0";
             var permissions = "manage_pages, publish_pages"; // If needed pass as argument.
-            var oauthRedirectUri = $"{baseUri}/dialog/oauth?client_id={app_id}&scope={permissions}&response_type=code&redirect_uri={uriRedirectString}";// &state={{st=state123abc,ds=123456789}} &scope
+            var oauthRedirectUri = $"{baseUri}/dialog/oauth?client_id={app_id}&scope={permissions}&response_type=code&redirect_uri={uriRedirectString}"; // &state={{st=state123abc,ds=123456789}} &scope
 
             return new RedirectResult(oauthRedirectUri);
         }
 
         public async Task<string> ExchangeOAuthCodeAsync(string code, string uriRedirectString) // Exchange code for access_token 
         { // uriRedirect string - Where the OAuth authentication code was originally issued
-            //var endpoint = "/oauth/access_token";
-            //var fields = $"?client_id={app_id}&redirect_uri={uriRedirectString}&client_secret={app_secret}&code={code}";
-            //var access_token = await _client.GetAsync(endpoint, fields);
+
             var fields = new Dictionary<string, string>
             {
                 { "client_id", app_id },
@@ -44,18 +44,34 @@ namespace FlowHub.Api_Managers
 
             string access_token = await _client.GetAsync("/oauth/access_token", Utils.GetQueryString(fields));
 
-            return access_token;
+            return JObject.Parse(access_token)["access_token"].ToString();
         }
 
-        public async Task<string> GetPageAuthTokens(string access_token) // Exchange code for access_token 
+        public async Task<List<FacebookAccountViewModel>> GetPageAuthTokens(string access_token, string account_id = "") // Exchange code for access_token 
         { // uriRedirect string - Where the OAuth authentication code was originally issued
             var fields = new Dictionary<string, string>
             {
-                { "fields", "access_token,name" },
+                { "fields", "id,name,access_token,picture{url}" },
                 { "access_token", access_token }
             };
 
-            return await _client.GetAsync("/me/accounts", Utils.GetQueryString(fields));
+            string response =  await _client.GetAsync("/me/accounts", Utils.GetQueryString(fields));
+            JObject parsedPages = JObject.Parse(response);
+            List<FacebookAccountViewModel> accounts = new List<FacebookAccountViewModel>();
+
+            if (account_id == "") {
+                foreach (JObject page in parsedPages["data"])
+                {
+                    accounts.Add(GetAccount(page));
+                }
+
+                return accounts;
+            }
+
+            return new List<FacebookAccountViewModel> { parsedPages["data"].ToList()
+                .Where(p => p["id"].ToString().Equals(account_id))
+                .Select(p => GetAccount(p))
+                .FirstOrDefault() };
         }
 
         public async Task<string> DeAuthorizeApp(string user_id, string access_token)
@@ -66,5 +82,18 @@ namespace FlowHub.Api_Managers
 
             return response;
         }
+
+        #region
+        public FacebookAccountViewModel GetAccount(JToken jsonAccount)
+        {
+            return  new FacebookAccountViewModel
+            {
+                Id = jsonAccount["id"].ToString(),
+                Name = jsonAccount["name"].ToString(),
+                access_token = jsonAccount["access_token"].ToString(),
+                PictureUrl = jsonAccount["picture"]["data"]["url"].ToString()
+            };
+        }
+        #endregion
     }
 }

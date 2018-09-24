@@ -24,6 +24,22 @@ namespace FlowHub.Models
         [ForeignKey("TeamId")]
         public virtual Team Team { get; set; }
 
+        public int? FbUserAccountId { get; set; }
+        [ForeignKey("FbUserAccountId")]
+        public virtual FacebookUserAccount FbUserAccount { get; set; }
+
+        public int? FbTeamAccountId { get; set; }
+        [ForeignKey("FbTeamAccountId")]
+        public virtual FacebookTeamAccount FbTeamAccount { get; set; }
+
+        public int? twitterUserAccountId { get; set; }
+        [ForeignKey("twitterUserAccountId")]
+        public virtual TwitterUserAccount twitterUserAccount { get; set; }
+
+        public int? twitterTeamAccountId { get; set; }
+        [ForeignKey("twitterTeamAccountId")]
+        public virtual TwitterTeamAccount twitterTeamAccount { get; set; }
+
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType

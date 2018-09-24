@@ -27,6 +27,7 @@ let composer = document.querySelector('.post-composer')
   , deleted = []
   , allPhotos = []
   , editingPost
+  ,currentTab = 'twitter'
   , actions
   , mouseDown = false
   , load = true
@@ -54,7 +55,7 @@ let composer = document.querySelector('.post-composer')
               mimeType: 'multipart/form-data'
           }).done(data => {
               editingPost.display = 'none';
-              editingPost.insertAdjacentHTML('afterend', data)
+              editingPost.insertAdjacentHTML('afterend', data);
               Alter.unmount(editingPost);
           });
         
@@ -83,8 +84,14 @@ function selectTab(trigger) {
     Utils.removeClass(active, 'active');
     active = trigger;
     active.className = 'active';
-    
-    ajaxHandler(trigger.getAttribute('data-href'));
+    currentTab = trigger.getAttribute('data-href');
+
+    postsPresenter.setAttribute('data-fbAcursor', '');
+      postsPresenter.setAttribute('data-twAcursor', '');
+      postsPresenter.innerHTML = "";
+      loadPosts();
+
+    //ajaxHandler(trigger.getAttribute('data-href'));
   }
 }
 
@@ -121,15 +128,16 @@ function close(e) {
 }
 
 function loadPosts() {
-  if (postsPresenter.getAttribute('data-acursor') === '' && !load)
+  if (postsPresenter.getAttribute('data-fbAcursor') === '' && !load)
     return;
 
   $.ajax({
     url: '/Post/GetPosts',
     dataType: 'json',
-    data: 'after_cursor=' + postsPresenter.getAttribute('data-acursor')
+      data: 'tab=' + currentTab + '&fb_after_cursor=' + postsPresenter.getAttribute('data-fbAcursor') + '&twitter_after_cursor=' + postsPresenter.getAttribute('data-twAcursor')
   }).done(data => {
-    postsPresenter.setAttribute('data-acursor', data.cursors.after);
+      postsPresenter.setAttribute('data-fbAcursor', data.cursors.fbafter);
+      postsPresenter.setAttribute('data-twAcursor', data.cursors.twafter);
     postsPresenter.innerHTML += data.posts;
   });
 
@@ -360,9 +368,10 @@ postsPresenter.addEventListener('click', e => {
   switch (action.innerHTML) {
     case 'Delete':
       post = Traversal.parents(action, '.posts-presenter__post');
+      let postType = post.getAttribute('data-postType')
 
       $.ajax({
-        url: '/Post/DeletePost',
+        url: '/Post/Delete' + postType + 'Post',
         method: 'DELETE',
         data: 'post_id=' + post.getAttribute('data-postid')
       }).done(() => {
@@ -437,11 +446,12 @@ postsPresenter.addEventListener('click', e => {
 
     case 'loadmore':
       let post = Traversal.parents(action, '.posts-presenter__post');
-      let postId = post.getAttribute('data-postid');
+          let postId = post.getAttribute('data-postid');
+          let postType = post.getAttribute('data-postType');
       commentsPresenter = Traversal.prev(action, '.comment-presenter');
 
       $.ajax({
-        url: '/Post/GetComments',
+        url: '/Post/Get' + postType + 'Comments',
         dataType: 'json',
         data: 'post_id=' + postId + '&after_cursor=' + commentsPresenter.getAttribute('data-acursor')
       }).done(data => {
@@ -468,10 +478,11 @@ postsPresenter.addEventListener('click', e => {
     formData = new FormData();
     formData.append('message', commentValue);
     formData.append('post_id', post.getAttribute('data-postid'));
+    let postType = post.getAttribute('data-postType');
 
     if (commentComposer.value !== '') {
       $.ajax({
-        url: '/Post/CreateComment',
+        url: '/Post/Create' + postType + 'Comment',
         method: 'POST',
         data: formData,
         contentType: false,

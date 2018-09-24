@@ -19,11 +19,11 @@ namespace FlowHub.Api_Managers
 
     public class FacebookPostsApi
     {
-        private ISocialMediaClient _client;
+        private static readonly ISocialMediaClient _client = new FacebookClient(); // facebookClient should be reusable, not disposed after each request
 
-        public FacebookPostsApi(ISocialMediaClient client) // facebookClient should be reusable, not disposed after each request
+        public FacebookPostsApi()
         {
-            _client = client;
+
         }
 
         public async Task<PostViewModel> CreatePostAsync(string page_id, string message, HttpFileCollectionBase images, string access_token)
@@ -297,6 +297,7 @@ namespace FlowHub.Api_Managers
         {
             dynamic postedPost = JsonConvert.DeserializeObject(jsonPost);
             PostViewModel post = JsonConvert.DeserializeObject<PostViewModel>(Convert.ToString(jsonPost));
+            post.Type = "Facebook";
             post.Name = postedPost.from.name;
             post.ComposerId = postedPost.from.id;
             post.ComposerPictureUrl = pictureUrl;

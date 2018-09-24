@@ -1,10 +1,22 @@
 ﻿@model IEnumerable<FlowHub.ViewModels.PostViewModel>
 @foreach (var post in Model)
 {
-    <div class="posts-presenter__post" data-postid="@post.Id">
+    <div class="posts-presenter__post" data-postid="@post.Id" data-postType="@post.Type">
         <div class="posts-presenter__post__content">
             <div class="content__infobox">
-                <div class="facebook"><img src="@post.ComposerPictureUrl"></div>
+                @if (post.Type.Equals("facebook", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    <div class="facebook"><img src="@post.ComposerPictureUrl"></div>
+                }
+                else if (post.Type.Equals("twitter", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    <div class="twitter"><img src="@post.ComposerPictureUrl"></div>
+                }
+                else
+                {
+                    <div><img src="@post.ComposerPictureUrl"></div>
+                }
+
                 <div>
                     <span>@post.Name</span>
                     <span>@post.GetCreatedTime()</span>

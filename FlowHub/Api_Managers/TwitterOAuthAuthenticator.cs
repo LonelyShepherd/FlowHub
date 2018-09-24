@@ -1,4 +1,5 @@
 ﻿using FlowHub.Controllers;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,13 +15,11 @@ namespace FlowHub.Api_Managers
 {
     public class TwitterOAuthAuthenticator
     {
-        private string ConsumerKey = "";
-        private string ConsumerSecret = "";
+        private string ConsumerKey = "qwIFnxQODU724OFmjmQB60aR0";
+        private string ConsumerSecret = "Jib6KoMUPjTLTNScDZ3ZuNK2pFNhGRCKFDslS9MTgQZzTYLr8b";
 
         private string SignatureMethod = "HMAC-SHA1";
         private string Version = "1.0";
-        private string requestToken;
-        private string requestTokenSecret;
         private static readonly HttpClient _clienttt = new HttpClient();
         private static readonly TwitterClient _client = new TwitterClient();
 
@@ -100,29 +99,35 @@ namespace FlowHub.Api_Managers
             return response;
         }
 
-        public async Task<ActionResult> LoginDialog(string uriRedirectString)
+        public async Task<Tuple<string, string>> LoginDialog(string uriRedirectString)
         {
             string requestTokenResponse = await RequestTokenAsync(uriRedirectString);
             var parsedResponse = HttpUtility.ParseQueryString(requestTokenResponse);
-            requestToken = parsedResponse["oauth_token"];
-            requestTokenSecret = parsedResponse["oauth_token_secret"];
             var baseUri = "https://api.twitter.com";
             var oauthRedirectUri = $"{baseUri}/oauth/authenticate?oauth_token={parsedResponse["oauth_token"]}";
 
-            return new RedirectResult(oauthRedirectUri);
+            return Tuple.Create(parsedResponse["oauth_token_secret"], oauthRedirectUri);
         }
 
-        public async Task<Tuple<string, string>> ExchangeRequestTokenAsync(string oauth_token, string oauth_verifier)
+        public async Task<Tuple<string, string>> ExchangeRequestTokenAsync(string oauth_token, string oauth_verifier, string request_token_secret)
         {
             Dictionary<string, string> requestParameters = new Dictionary<string, string>
             {         
                 { "oauth_verifier", oauth_verifier }
             };
 
-            string response = await _client.PostAsync("/oauth/access_token", requestParameters, GetOAuthAuthenticator(requestParameters, oauth_token, requestTokenSecret));
+            string response = await _client.PostAsync("/oauth/access_token", requestParameters, GetOAuthAuthenticator(requestParameters, oauth_token, request_token_secret));
             var parsedResponse = HttpUtility.ParseQueryString(response);
 
             return Tuple.Create(parsedResponse["oauth_token"], parsedResponse["oauth_token_secret"]);
+        }
+
+        public async Task<string> VerifyCredentials(string access_token, string access_token_secret)
+        {
+            string response = await _client.GetAsync("/1.1/account/verify_credentials.json", "", GetOAuthAuthenticator(new Dictionary<string, string>(), access_token, access_token_secret));
+            JObject parsedResponse = JObject.Parse(response);
+
+            return parsedResponse["screen_name"].ToString();
         }
 
         //public async Task<string> CreatePost(string message, string access_token, string access_token_secret) 

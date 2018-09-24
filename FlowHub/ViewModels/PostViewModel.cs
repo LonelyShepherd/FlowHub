@@ -23,6 +23,8 @@ namespace FlowHub.ViewModels
         public string ComposerPictureUrl { get; set; }
         public string ComposerId { get; set; }
 
+        public string Type { get; set; }
+
         public string GetCreatedTime()
         {
             DateTime time;

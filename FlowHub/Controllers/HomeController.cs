@@ -11,13 +11,12 @@ namespace FlowHub.Controllers
     public class HomeController : Controller
     {
         private static readonly FacebookClient _client = new FacebookClient();
-        private FacebookPostsApi postsApi;
-        private FacebookOAuthLogin fbLogin;
+        private static readonly FacebookPostsApi postsApi = new FacebookPostsApi();
+        private static readonly FacebookOAuthLogin fbLogin = new FacebookOAuthLogin();
 
         public HomeController()
         {
-            postsApi = new FacebookPostsApi(_client);
-            fbLogin = new FacebookOAuthLogin(_client);
+
         }
 
         public ActionResult Index()

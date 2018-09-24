@@ -58,13 +58,18 @@ namespace FlowHub.Api_Managers
 
             string response = await _client.GetAsync("/1.1/statuses/user_timeline.json", Utils.GetQueryString(fields), authenticator.GetOAuthAuthenticator(fields, access_token, access_token_secret));
             JArray jsonResponse = JArray.Parse(response);
+            var tt = jsonResponse[0]["in_reply_to_status_id"].ToString();
+
+            List<PostViewModel> allPosts = jsonResponse
+                .Select(post => ParseTweet(post.ToString()))
+                .ToList();
 
             List<PostViewModel> posts = jsonResponse
                 .Where(post => post["in_reply_to_status_id"].ToString() == "")
                 .Select(post => ParseTweet(post.ToString()))
                 .ToList();
 
-            string newMaxIdString = long.TryParse(posts.LastOrDefault().Id, out long newMaxId) ? Convert.ToString(newMaxId--) : "";
+            string newMaxIdString = long.TryParse(allPosts.LastOrDefault().Id, out long newMaxId) ? Convert.ToString(--newMaxId) : "";
 
             return Tuple.Create(posts, newMaxIdString);
         }
@@ -165,7 +170,8 @@ namespace FlowHub.Api_Managers
                 Photos = photos,
                 Name = $"@{jsonResponse["user"]["screen_name"].ToString()}",
                 ComposerPictureUrl = jsonResponse["user"]["profile_image_url_https"].ToString(),
-                ComposerId = jsonResponse["user"]["id_str"].ToString()
+                ComposerId = jsonResponse["user"]["id_str"].ToString(),
+                Type = "Twitter"
             };
 
             post.Message = jsonResponse["extended_entities"] != null ?

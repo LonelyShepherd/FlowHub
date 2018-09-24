@@ -17,7 +17,7 @@ namespace FlowHub.Api_Managers
             }
             else if (errorObject["errors"] != null)
             {
-                return CreateTwitterApiException(errorObject["errors"]);
+                return CreateTwitterApiException(errorObject["errors"][0]);
             }
 
             return null;
