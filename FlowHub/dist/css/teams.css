@@ -74,11 +74,7 @@
 
 .team__body__content {
   width: calc(100% - 320px);
-  background: #fff;
-  border-radius: 3px;
-  font-size: 13px;
-  border: 1px solid #e8e8e8;
-  padding: 12.5px 20px; }
+  font-size: 13px; }
 
 .team__body__content--raw {
   padding: 0;

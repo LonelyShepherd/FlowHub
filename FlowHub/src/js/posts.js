@@ -27,7 +27,7 @@ let composer = document.querySelector('.post-composer')
   , deleted = []
   , allPhotos = []
   , editingPost
-  ,currentTab = 'twitter'
+  , currentTab = 'twitter'
   , actions
   , mouseDown = false
   , load = true

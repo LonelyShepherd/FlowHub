@@ -51,11 +51,11 @@ namespace FlowHub.Controllers
             user.FbUserAccount.helper_access_token = access_token;
             _context.SaveChanges();
 
-            return View("~/Views/Dashboard/FacebookAccounts.cshtml", Tuple.Create("User", accounts));
-        }
+						return View("~/Views/Dashboard/FacebookAccounts.cshtml", new DashboardViewModel<Tuple<string, List<FacebookAccountViewModel>>, ApplicationUser>(Tuple.Create("User", accounts), user));
+		}
 
-        // POST OAuth/SaveUserAccount
-        public async Task<ActionResult> SaveUserAccount()
+		// POST OAuth/SaveUserAccount
+		public async Task<ActionResult> SaveUserAccount()
         {
             GetUser(out _, out ApplicationUser user);
             FacebookAccountViewModel account = (await FacebookAuthenticator.GetPageAuthTokens(user.FbUserAccount.helper_access_token, Request.Form["id"]))
@@ -111,7 +111,7 @@ namespace FlowHub.Controllers
                 user.FbTeamAccount.helper_access_token = access_token;
                 _context.SaveChanges();
 
-                return View("~/Views/Dashboard/FacebookAccounts.cshtml", Tuple.Create("Team", accounts));
+                return View("~/Views/Dashboard/FacebookAccounts.cshtml", new DashboardViewModel<Tuple<string, List<FacebookAccountViewModel>>, ApplicationUser>(Tuple.Create("Team", accounts), user));
             }
 
             string account_id = user.Team.Leader.FbTeamAccount.AccountId;
