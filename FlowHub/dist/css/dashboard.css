@@ -1209,3 +1209,52 @@ body {
   .dashboard-section--account-settings .password > div:first-of-type {
     float: left;
     width: 300px; }
+
+.connect-accounts {
+  width: 650px;
+  padding: 0;
+  margin-left: auto;
+  margin-right: auto; }
+
+.connect-accounts ul, .connect-teams {
+  margin-top: 20px;
+  background: red; }
+  .connect-accounts ul li, .connect-teams li {
+    float: left;
+    width: 100%;
+    margin-bottom: 10px;
+    line-height: 30px;
+    text-align: center;
+    display: table;
+    background: red;
+    position: relative;
+    padding: 5px 10px; }
+    .connect-accounts ul li > div, .connect-teams li > div {
+      float: left; }
+    .connect-accounts ul li > div:first-child, .connect-teams li > div:first-child {
+      color: #fff;
+      font-weight: 600;
+      font-size: 14px;
+      display: table; }
+      .connect-accounts ul li > div:first-child div, .connect-teams li > div:first-child div {
+        display: table-cell;
+        vertical-align: middle; }
+    .connect-accounts ul li img, .connect-teams li img {
+      width: 25px;
+      height: 25px;
+      vertical-align: middle;
+      margin-right: 10px; }
+    .connect-accounts ul li > div:last-child, .connect-teams li > div:last-child {
+      float: right;
+      margin-top: 2px; }
+      .connect-accounts ul li > div:last-child a, .connect-teams li > div:last-child a {
+        color: #fff;
+        font-size: 12px;
+        background: rgba(0, 0, 0, 0.2);
+        padding: 3px 10px;
+        text-transform: lowercase;
+        border-radius: 20px; }
+    .connect-accounts ul li:first-child, .connect-teams li:first-child {
+      background: #3b5998; }
+    .connect-accounts ul li:nth-child(2), .connect-teams li:nth-child(2) {
+      background: #1da1f2; }

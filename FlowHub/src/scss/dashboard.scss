@@ -330,3 +330,72 @@ body {
     }
   }
 }
+
+.connect-accounts {
+  width: 650px;
+  padding: 0;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.connect-accounts ul, .connect-teams {
+  margin-top: 20px;
+  background: red;
+
+  li {
+    float: left;
+    width: 100%;
+    margin-bottom: 10px;
+    line-height: 30px;
+    text-align: center;
+    display: table;
+    background: red;
+    position: relative;
+    padding: 5px 10px;
+
+    & > div {
+      float: left;
+    }
+
+    & > div:first-child {
+      color: #fff;
+      font-weight: 600;
+      font-size: 14px;
+      display: table;
+
+      div {
+        display: table-cell;
+        vertical-align: middle;
+      }
+    }
+
+    img {
+      width: 25px;
+      height: 25px;
+      vertical-align: middle;
+      margin-right: 10px;
+    }
+
+    & > div:last-child {
+      float: right;
+      margin-top: 2px;
+
+      a {
+        color: #fff;
+        font-size: 12px;
+        background: rgba(0,0,0,.2);
+        padding: 3px 10px;
+        text-transform: lowercase;
+        border-radius: 20px;
+      }
+    }
+
+    &:first-child {
+      background: #3b5998;
+    }
+
+    &:nth-child(2) {
+      background: #1da1f2;
+    }
+  }
+}

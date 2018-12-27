@@ -4,7 +4,8 @@
 	<div class="sidebar__section">
 		<ul>
 			<li><a id="1" href="javascript:;" class="active-subsection">Team</a></li>
-			<li><a id="2" href="javascript:;">Members</a></li>
+			<li><a id="2" href="javascript:;">Pages</a></li>
+			<li><a id="3" href="javascript:;">Members</a></li>
 		</ul>
 	</div>
 </div>
@@ -25,7 +26,33 @@
 			</div>
 		</div>
 	</div>
-	<div class="subsection subsection-2" style="display: none;">
+	<div class="subsection subsection-2" style="display: none">
+		<div class="accounts">
+			<h2>Connected pages</h2>
+			<p>Connect your accounts and allow your team help you managing them.</p>
+			<ul class="connect-teams">
+				<li>
+					<div>
+						<img src="~/dist/images/fb.png" />
+						<div>Facebook</div>
+					</div>
+					<div>
+						@Html.ActionLink("Connect", "FacebookTeamLogin", "OAuth")
+					</div>
+				</li>
+				<li>
+					<div>
+						<img src="~/dist/images/tw.png" />
+						<div>Twitter</div>
+					</div>
+					<div>
+						@Html.ActionLink("Connect", "TwitterTeamLogin", "OAuth")
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div class="subsection subsection-3" style="display: none;">
 		<div class="add-members clearfix">
 			<h2>Add members</h2>
 			<button type="button" class="btn btn-default add-members-team">Add</button>
@@ -34,7 +61,7 @@
 			<h2>Remove members</h2>
 			<p>Select the members you want to remove from the team</p>
 			<ul>
-				@if(Model.Team.ApplicationUsers.Count == 0)
+				@if (Model.Team.ApplicationUsers.Count == 0)
 				{
 					<li class="no-members">There are currently no other members in your team to remove</li>
 				}

@@ -158,25 +158,25 @@ eval("\n\nvar _Alter = __webpack_require__(/*! ./core/Alter */ \"./src/js/core/A
 
 /***/ }),
 
-/***/ "./src/scss/dashboard.scss":
-/*!*********************************!*\
-  !*** ./src/scss/dashboard.scss ***!
-  \*********************************/
+/***/ "./src/scss/teams.scss":
+/*!*****************************!*\
+  !*** ./src/scss/teams.scss ***!
+  \*****************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("module.exports = __webpack_require__.p + \"css/dashboard.css\";\n\n//# sourceURL=webpack:///./src/scss/dashboard.scss?");
+eval("module.exports = __webpack_require__.p + \"css/teams.css\";\n\n//# sourceURL=webpack:///./src/scss/teams.scss?");
 
 /***/ }),
 
 /***/ 0:
-/*!*********************************************************!*\
-  !*** multi ./src/js/posts.js ./src/scss/dashboard.scss ***!
-  \*********************************************************/
+/*!*****************************************************!*\
+  !*** multi ./src/js/posts.js ./src/scss/teams.scss ***!
+  \*****************************************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-eval("__webpack_require__(/*! ./src/js/posts.js */\"./src/js/posts.js\");\nmodule.exports = __webpack_require__(/*! ./src/scss/dashboard.scss */\"./src/scss/dashboard.scss\");\n\n\n//# sourceURL=webpack:///multi_./src/js/posts.js_./src/scss/dashboard.scss?");
+eval("__webpack_require__(/*! ./src/js/posts.js */\"./src/js/posts.js\");\nmodule.exports = __webpack_require__(/*! ./src/scss/teams.scss */\"./src/scss/teams.scss\");\n\n\n//# sourceURL=webpack:///multi_./src/js/posts.js_./src/scss/teams.scss?");
 
 /***/ })
 
