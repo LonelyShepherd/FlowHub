@@ -14,7 +14,6 @@ namespace FlowHub.Api_Managers
     public class TwitterPostsApi
     {
         private ISocialMediaClient _client = new TwitterClient();
-        private TwitterOAuthAuthenticator authenticator = new TwitterOAuthAuthenticator();
 
         public async Task<PostViewModel> CreatePostAsync(string message, HttpFileCollectionBase images, string access_token, string access_token_secret)
         {
@@ -34,7 +33,7 @@ namespace FlowHub.Api_Managers
                 payload.Add("media_ids", media_ids);
             }
 
-            string response = await _client.PostAsync("/1.1/statuses/update.json", payload, authenticator.GetOAuthAuthenticator(payload, access_token, access_token_secret));
+            string response = await _client.PostAsync("/1.1/statuses/update.json", payload, TwitterOAuthAuthenticator.GetOAuthAuthenticator(payload, access_token, access_token_secret));
             PostViewModel post = ParseTweet(response);
 
             return post;
@@ -56,9 +55,8 @@ namespace FlowHub.Api_Managers
                 }
             }
 
-            string response = await _client.GetAsync("/1.1/statuses/user_timeline.json", Utils.GetQueryString(fields), authenticator.GetOAuthAuthenticator(fields, access_token, access_token_secret));
+            string response = await _client.GetAsync("/1.1/statuses/user_timeline.json", Utils.GetQueryString(fields), TwitterOAuthAuthenticator.GetOAuthAuthenticator(fields, access_token, access_token_secret));
             JArray jsonResponse = JArray.Parse(response);
-            var tt = jsonResponse[0]["in_reply_to_status_id"].ToString();
 
             List<PostViewModel> allPosts = jsonResponse
                 .Select(post => ParseTweet(post.ToString()))
@@ -68,8 +66,9 @@ namespace FlowHub.Api_Managers
                 .Where(post => post["in_reply_to_status_id"].ToString() == "")
                 .Select(post => ParseTweet(post.ToString()))
                 .ToList();
-
-            string newMaxIdString = long.TryParse(allPosts.LastOrDefault().Id, out long newMaxId) ? Convert.ToString(--newMaxId) : "";
+            string newMaxIdString = allPosts.Count != 0 ? 
+                long.TryParse(allPosts.LastOrDefault().Id, out long newMaxId) ? Convert.ToString(--newMaxId) : "" :
+                "";
 
             return Tuple.Create(posts, newMaxIdString);
         }
@@ -84,10 +83,20 @@ namespace FlowHub.Api_Managers
                 { "in_reply_to_status_id", tweet_id }
             };
 
-            string response = await _client.PostAsync("/1.1/statuses/update.json", payload, authenticator.GetOAuthAuthenticator(payload, access_token, access_token_secret));
+            string response = await _client.PostAsync("/1.1/statuses/update.json", payload, TwitterOAuthAuthenticator.GetOAuthAuthenticator(payload, access_token, access_token_secret));
             CommentViewModel comment = ParseReply(response);
 
             return comment;
+        }
+
+        public async Task<string> DeleteTweetAsync(string tweet_id, string access_token, string access_token_secret)
+        {
+            var payload = new Dictionary<string, string>
+            {
+                { "id", tweet_id }
+            };
+
+            return await _client.PostAsync($"/1.1/statuses/destroy/{tweet_id}.json", payload, TwitterOAuthAuthenticator.GetOAuthAuthenticator(payload, access_token, access_token_secret));
         }
 
         public async Task<List<CommentViewModel>> GetPostCommentsAsync(string tweet_id, string screen_name, string access_token, string access_token_secret)
@@ -105,7 +114,7 @@ namespace FlowHub.Api_Managers
             };
 
             string response = await _client.GetAsync("/1.1/statuses/user_timeline.json",
-                Utils.GetQueryString(fields), authenticator.GetOAuthAuthenticator(fields, access_token, access_token_secret));
+                Utils.GetQueryString(fields), TwitterOAuthAuthenticator.GetOAuthAuthenticator(fields, access_token, access_token_secret));
 
             JArray jsonResponse = JArray.Parse(response);
 
@@ -139,7 +148,7 @@ namespace FlowHub.Api_Managers
 
                 content.Add(new ByteArrayContent(fileData), "media");
 
-                response = await _client.PostFileAsync(@"https://upload.twitter.com/1.1/media/upload.json", content, authenticator.GetOAuthAuthenticator(new Dictionary<string, string>(), access_token, access_token_secret));
+                response = await _client.PostFileAsync(@"https://upload.twitter.com/1.1/media/upload.json", content, TwitterOAuthAuthenticator.GetOAuthAuthenticator(new Dictionary<string, string>(), access_token, access_token_secret));
             }
 
             return JObject.Parse(response).SelectToken("media_id_string").ToString();

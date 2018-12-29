@@ -15,17 +15,16 @@ namespace FlowHub.Api_Managers
 {
     public class TwitterOAuthAuthenticator
     {
-        private string ConsumerKey = "qwIFnxQODU724OFmjmQB60aR0";
-        private string ConsumerSecret = "Jib6KoMUPjTLTNScDZ3ZuNK2pFNhGRCKFDslS9MTgQZzTYLr8b";
+        private static readonly string ConsumerKey = "";
+        private static readonly string ConsumerSecret = "";
 
-        private string SignatureMethod = "HMAC-SHA1";
-        private string Version = "1.0";
+        private static readonly string SignatureMethod = "HMAC-SHA1";
+        private static readonly string Version = "1.0";
         private static readonly HttpClient _clienttt = new HttpClient();
         private static readonly TwitterClient _client = new TwitterClient();
 
-        public TwitterOAuthAuthenticator() {}
 
-        public string GetBaseString(string method, string url, Dictionary<string, string> baseDictionary)
+        private static string GetBaseString(string method, string url, Dictionary<string, string> baseDictionary)
         {
             // If you find an issue it might be due to sorting (try sorting after mapping to string)
             string baseString = String
@@ -38,7 +37,7 @@ namespace FlowHub.Api_Managers
             return string.Concat(method.ToUpper(), "&", Uri.EscapeDataString(url), "&", Uri.EscapeDataString(baseString));
         }
 
-        public string GetOAuthSignature(string method, string url, Dictionary<string, string> baseDictionary, string OAuthTokenSecret = "")
+        private static string GetOAuthSignature(string method, string url, Dictionary<string, string> baseDictionary, string OAuthTokenSecret = "")
         {
             string oauth_signature;
             string signingKey = string.Concat(Uri.EscapeDataString(ConsumerSecret), "&", Uri.EscapeDataString(OAuthTokenSecret));
@@ -53,7 +52,7 @@ namespace FlowHub.Api_Managers
             return oauth_signature;
         }
         
-        public string GetAuthenticationHeader(Dictionary<string, string> parameters)
+        private static string GetAuthenticationHeader(Dictionary<string, string> parameters)
         {
             return String
                 .Join(",", parameters
@@ -61,7 +60,7 @@ namespace FlowHub.Api_Managers
                 .ToList());
         }
 
-        public Action<HttpRequestMessage> GetOAuthAuthenticator(Dictionary<string, string> requestParameters, string oauth_token = "", string oauth_token_secret = "")
+        public static Action<HttpRequestMessage> GetOAuthAuthenticator(Dictionary<string, string> requestParameters, string oauth_token = "", string oauth_token_secret = "")
         {
             string timestamp = ((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds().ToString();
             string nonce = Convert.ToBase64String(new ASCIIEncoding().GetBytes(DateTime.Now.Ticks.ToString()));
@@ -122,7 +121,7 @@ namespace FlowHub.Api_Managers
             return Tuple.Create(parsedResponse["oauth_token"], parsedResponse["oauth_token_secret"]);
         }
 
-        public async Task<string> VerifyCredentials(string access_token, string access_token_secret)
+        public async Task<string> GetUserScreenName(string access_token, string access_token_secret)
         {
             string response = await _client.GetAsync("/1.1/account/verify_credentials.json", "", GetOAuthAuthenticator(new Dictionary<string, string>(), access_token, access_token_secret));
             JObject parsedResponse = JObject.Parse(response);
@@ -130,19 +129,18 @@ namespace FlowHub.Api_Managers
             return parsedResponse["screen_name"].ToString();
         }
 
-        //public async Task<string> CreatePost(string message, string access_token, string access_token_secret) 
-        //{
-        //    Dictionary<string, string> requestParameters = new Dictionary<string, string>
-        //    {
-        //        { "status", message }
-        //    };
+        public static async Task<bool> IsAuthorized(string access_token, string access_token_secret)
+        {
+            try
+            {
+                await _client.GetAsync("/1.1/account/verify_credentials.json", "", GetOAuthAuthenticator(new Dictionary<string, string>(), access_token, access_token_secret));
+            }
+            catch (Exception)
+            {
+                return false;
+            }
 
-        //    string response = await _client.PostAsync(
-        //                "/1.1/statuses/update.json", 
-        //                requestParameters, 
-        //                GetOAuthAuthenticator(requestParameters, access_token, access_token_secret));
-
-        //    return response;
-        //}
+            return true;
+        }
     }
 }

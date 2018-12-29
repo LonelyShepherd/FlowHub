@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -52,6 +54,26 @@ namespace FlowHub.Common
         {
             JObject jObject = JObject.Parse(jsonString);
             return jObject.SelectToken(string.Join(".", nestedProperties), true).ToString();
+        }
+
+        // asynchronously-wait-for-taskt-to-complete-with-timeout
+        public static async Task<TResult> TimeoutAfter<TResult>(this Task<TResult> task, TimeSpan timeout, Func<TResult> timeoutResult)
+        {
+
+            using (var timeoutCancellationTokenSource = new CancellationTokenSource())
+            {
+
+                var completedTask = await Task.WhenAny(task, Task.Delay(timeout, timeoutCancellationTokenSource.Token));
+                if (completedTask == task)
+                {
+                    timeoutCancellationTokenSource.Cancel();
+                    return await task;  // Very important in order to propagate exceptions
+                }
+                else
+                {
+                    return timeoutResult();
+                }
+            }
         }
     }
 }

@@ -27,7 +27,7 @@ let composer = document.querySelector('.post-composer')
   , deleted = []
   , allPhotos = []
   , editingPost
-  , currentTab = 'twitter'
+  ,currentTab = 'all'
   , actions
   , mouseDown = false
   , load = true
@@ -87,9 +87,10 @@ function selectTab(trigger) {
     currentTab = trigger.getAttribute('data-href');
 
     postsPresenter.setAttribute('data-fbAcursor', '');
-      postsPresenter.setAttribute('data-twAcursor', '');
-      postsPresenter.innerHTML = "";
-      loadPosts();
+    postsPresenter.setAttribute('data-twAcursor', '');
+    postsPresenter.innerHTML = "";
+    load = true;
+    loadPosts();
 
     //ajaxHandler(trigger.getAttribute('data-href'));
   }
@@ -102,12 +103,12 @@ nav.addEventListener('click', e => {
 
 cloned.querySelector('input').addEventListener('change', display);
 cloned.addEventListener('click', e => {
-  if(e.target.className === 'remove-image') {
-    edits = edits.filter(file => e.target.parentNode.id !== file.id);
-    deleted.push(e.target.nextElementSibling.id);
-    Alter.unmount(e.target.parentNode);
-  }
-})
+    if (e.target.className === 'remove-image') {
+        edits = edits.filter(file => e.target.parentNode.id !== file.id);
+        deleted.push(e.target.nextElementSibling.id);
+        Alter.unmount(e.target.parentNode);
+    }
+});
 
 const actionsMenu = Utils.createElement('div', {
   className: 'post-actions-menu',
@@ -128,11 +129,13 @@ function close(e) {
 }
 
 function loadPosts() {
-  if (postsPresenter.getAttribute('data-fbAcursor') === '' && !load)
+    if ((postsPresenter.getAttribute('data-fbAcursor') === '' &&
+         postsPresenter.getAttribute('data-twAcursor') === '') &&
+        !load)
     return;
 
-  $.ajax({
-    url: '/Post/GetPosts',
+    $.ajax({
+        url: '/Post/GetPosts',
     dataType: 'json',
       data: 'tab=' + currentTab + '&fb_after_cursor=' + postsPresenter.getAttribute('data-fbAcursor') + '&twitter_after_cursor=' + postsPresenter.getAttribute('data-twAcursor')
   }).done(data => {
@@ -395,7 +398,6 @@ postsPresenter.addEventListener('click', e => {
 
           [].forEach.call(uploader.parentNode.querySelectorAll('.post-composer__uploader__image'), item => Alter.unmount(item));
 
-          console.log('dppP');
           edits.length = deleted.length = allPhotos.length = 0;
           if (photos) {
               [].forEach.call(photos.children, photo => {

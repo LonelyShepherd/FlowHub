@@ -21,11 +21,6 @@ namespace FlowHub.Api_Managers
     {
         private static readonly ISocialMediaClient _client = new FacebookClient(); // facebookClient should be reusable, not disposed after each request
 
-        public FacebookPostsApi()
-        {
-
-        }
-
         public async Task<PostViewModel> CreatePostAsync(string page_id, string message, HttpFileCollectionBase images, string access_token)
         {
             var payload = new Dictionary<string, string>

@@ -184,7 +184,7 @@ namespace FlowHub.Controllers
         {
             GetUser(out _, out ApplicationUser user);
             Tuple<string, string> tuple = await TwitterAuthenticator.ExchangeRequestTokenAsync(oauth_token, oauth_verifier, user.twitterUserAccount.helper_token_secret);
-            string screenName = await TwitterAuthenticator.VerifyCredentials(tuple.Item1, tuple.Item2);
+            string screenName = await TwitterAuthenticator.GetUserScreenName(tuple.Item1, tuple.Item2);
 
             user.twitterUserAccount.AccountId = screenName;
             user.twitterUserAccount.AccountName = screenName;
@@ -248,7 +248,7 @@ namespace FlowHub.Controllers
         {
             GetUser(out _, out ApplicationUser user);
             Tuple<string, string> tuple = await TwitterAuthenticator.ExchangeRequestTokenAsync(oauth_token, oauth_verifier, user.twitterTeamAccount.helper_token_secret);
-            string screenName = await TwitterAuthenticator.VerifyCredentials(tuple.Item1, tuple.Item2);
+            string screenName = await TwitterAuthenticator.GetUserScreenName(tuple.Item1, tuple.Item2);
 
             if(user.Team.LeaderId != user.Id && screenName != user.Team.Leader.twitterTeamAccount.AccountId)
             {

@@ -14,13 +14,8 @@ namespace FlowHub.Api_Managers
     public class FacebookOAuthLogin
     {
         private static readonly string app_id = "252497228687414";
-        private static readonly string app_secret = "3755e6aee13729a45a91826b3590b744";
+        private static readonly string app_secret = "";
         private static readonly ISocialMediaClient _client = new FacebookClient();
-
-        public FacebookOAuthLogin()
-        {
-
-        }
 
         public ActionResult LoginDialog(string uriRedirectString) // Default permissions manage_pages ad publish_pages
         {
@@ -68,7 +63,7 @@ namespace FlowHub.Api_Managers
                 return accounts;
             }
 
-            return new List<FacebookAccountViewModel> { parsedPages["data"].ToList()
+             return new List<FacebookAccountViewModel> { parsedPages["data"].ToList()
                 .Where(p => p["id"].ToString().Equals(account_id))
                 .Select(p => GetAccount(p))
                 .FirstOrDefault() };
@@ -81,6 +76,25 @@ namespace FlowHub.Api_Managers
             var response = await _client.DeleteAsync(endpoint, fields);
 
             return response;
+        }
+
+        public static async Task<bool> IsAuthorized(string access_token)
+        {
+            var fields = new Dictionary<string, string>
+            {
+                { "access_token", access_token }
+            };
+
+            try
+            {
+                await _client.GetAsync("/me", Utils.GetQueryString(fields));
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         #region
