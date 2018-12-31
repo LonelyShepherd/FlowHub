@@ -51,7 +51,7 @@ namespace FlowHub.Controllers
             user.FbUserAccount.helper_access_token = access_token;
             _context.SaveChanges();
 
-						return View("~/Views/Dashboard/FacebookAccounts.cshtml", new DashboardViewModel<Tuple<string, List<FacebookAccountViewModel>>, ApplicationUser>(Tuple.Create("User", accounts), user));
+			return View("~/Views/Dashboard/FacebookAccounts.cshtml", new DashboardViewModel<Tuple<string, List<FacebookAccountViewModel>>, ApplicationUser>(Tuple.Create("User", accounts), user));
 		}
 
 		// POST OAuth/SaveUserAccount
@@ -73,7 +73,8 @@ namespace FlowHub.Controllers
 
             _context.SaveChanges();
 
-            return RedirectToAction("Accounts", "Dashboard");
+            //return RedirectToAction("Accounts", "Dashboard");
+            return JavaScript("window.location = '" + Url.Action("Accounts", "Dashboard") + "'");
         }
 
         // GET: OAuth/FacebookTeamLogin

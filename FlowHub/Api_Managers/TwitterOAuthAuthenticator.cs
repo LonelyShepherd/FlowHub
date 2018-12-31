@@ -1,7 +1,7 @@
-﻿using FlowHub.Controllers;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -9,14 +9,13 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.Mvc;
 
 namespace FlowHub.Api_Managers
 {
     public class TwitterOAuthAuthenticator
     {
-        private static readonly string ConsumerKey = "";
-        private static readonly string ConsumerSecret = "";
+        private static readonly string ConsumerKey = ConfigurationManager.AppSettings["TwitterConsumerKey"];
+        private static readonly string ConsumerSecret = ConfigurationManager.AppSettings["TwitterConsumerSecret"];
 
         private static readonly string SignatureMethod = "HMAC-SHA1";
         private static readonly string Version = "1.0";

@@ -15,7 +15,7 @@ namespace FlowHub.Api_Managers
     {
         private ISocialMediaClient _client = new TwitterClient();
 
-        public async Task<PostViewModel> CreatePostAsync(string message, HttpFileCollectionBase images, string access_token, string access_token_secret)
+        public async Task<PostViewModel> CreatePostAsync(string message, List<MemoryStream> images, string access_token, string access_token_secret)
         {
             Dictionary<string, string> payload = new Dictionary<string, string>
             {
@@ -24,9 +24,9 @@ namespace FlowHub.Api_Managers
 
             if (images.Count != 0)
             {
-                IEnumerable<Task<string>> uploadTasks = images.AllKeys
-                                                              .Take(4)
-                                                              .Select(key => UploadFileAsync(images[key], access_token, access_token_secret));
+                IEnumerable<Task<string>> uploadTasks = images
+                    .Take(4)
+                    .Select(image  => UploadFileAsync(image, access_token, access_token_secret));
 
                 string[] imageIds = await Task.WhenAll(uploadTasks.ToArray());
                 string media_ids = String.Join(",", imageIds);
@@ -135,18 +135,39 @@ namespace FlowHub.Api_Managers
             return await RecursePost(comments, screen_name, tweet_id, lastComment.Id, access_token, access_token_secret);
         }
 
-        public async Task<string> UploadFileAsync(HttpPostedFileBase file, string access_token, string access_token_secret)
+        public async Task<SocialMediaAccountViewModel> GetProfileInfoAsync(string screen_name, string access_token, string access_token_secret)
+        {
+            var fields = new Dictionary<string, string>
+            {
+                { "screen_name", screen_name }
+            };
+
+            string response = await _client.GetAsync("/1.1/users/show.json",
+                Utils.GetQueryString(fields), TwitterOAuthAuthenticator.GetOAuthAuthenticator(fields, access_token, access_token_secret));
+
+            JObject jsonResponse = JObject.Parse(response);
+
+            return new SocialMediaAccountViewModel
+            {
+                Id = jsonResponse["screen_name"].ToString(),
+                Name = $"@{jsonResponse["screen_name"].ToString()}",
+                PictureUrl = jsonResponse["profile_image_url"].ToString(),
+                Type = "twitter"
+            };
+        }
+
+        public async Task<string> UploadFileAsync(MemoryStream file, string access_token, string access_token_secret)
         {
             string response;
             using (var content = new MultipartFormDataContent())
             {
-                byte[] fileData = null;
-                using (BinaryReader binaryReader = new BinaryReader(file.InputStream))
-                {
-                    fileData = binaryReader.ReadBytes(file.ContentLength);
-                }
+                byte[] fileData = file.ToArray();
+                //using (BinaryReader binaryReader = new BinaryReader(file.InputStream))
+                //{
+                //    fileData = binaryReader.ReadBytes(file.ContentLength);
+                //}
 
-                content.Add(new ByteArrayContent(fileData), "media");
+                content.Add(new ByteArrayContent(fileData), "media", "upload");
 
                 response = await _client.PostFileAsync(@"https://upload.twitter.com/1.1/media/upload.json", content, TwitterOAuthAuthenticator.GetOAuthAuthenticator(new Dictionary<string, string>(), access_token, access_token_secret));
             }

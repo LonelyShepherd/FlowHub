@@ -21,7 +21,7 @@ namespace FlowHub.Api_Managers
     {
         private static readonly ISocialMediaClient _client = new FacebookClient(); // facebookClient should be reusable, not disposed after each request
 
-        public async Task<PostViewModel> CreatePostAsync(string page_id, string message, HttpFileCollectionBase images, string access_token)
+        public async Task<PostViewModel> CreatePostAsync(string page_id, string message, List<MemoryStream> images, string access_token)
         {
             var payload = new Dictionary<string, string>
             {
@@ -31,9 +31,7 @@ namespace FlowHub.Api_Managers
 
             if (images.Count != 0)
             {
-                IEnumerable<Task<string>> uploadTasks = images.AllKeys
-                                                              .ToList()
-                                                              .Select(key => UploadFileAsync(page_id, message, images[key], access_token));
+                IEnumerable<Task<string>> uploadTasks = images.Select(image => UploadFileAsync(page_id, message, image, access_token));
 
                 string[] imageIds = await Task.WhenAll(uploadTasks.ToArray());
 
@@ -108,8 +106,13 @@ namespace FlowHub.Api_Managers
             if (newImages.Count != 0)
             {
                 IEnumerable<Task<string>> uploadTasks = newImages.AllKeys
-                                                              .ToList()
-                                                              .Select(key => UploadFileAsync(page_id, message, newImages[key], access_token));
+                                                             .ToList() // UploadFileAsync(page_id, message, newImages[key], access_token)
+                                                             .Select(key => {
+                                                                 MemoryStream imageStream = new MemoryStream();
+                                                                 newImages[key].InputStream.CopyTo(imageStream);
+                                                                 return imageStream;
+                                                             })
+                                                             .Select(stream => UploadFileAsync(page_id, message, stream, access_token));
 
                 imageIds = await Task.WhenAll(uploadTasks.ToArray());
 
@@ -257,7 +260,7 @@ namespace FlowHub.Api_Managers
             {
                 { "fields", "url" },
                 { "redirect", "false" },
-                { "access_token", access_token },
+                { "access_token", access_token }
             };
 
 
@@ -266,16 +269,36 @@ namespace FlowHub.Api_Managers
             return Utils.GetJsonProperty(response, "data", "url"); ;
         }
 
-        private async Task<string> UploadFileAsync(string page_id, string message, HttpPostedFileBase file, string access_token)
+        public async Task<SocialMediaAccountViewModel> GetProfileInfoAsync(string object_id, string access_token)
+        {
+            var fields = new Dictionary<string, string>
+            {
+                { "fields", "id,name,picture{url}" },
+                { "access_token", access_token }
+            };
+
+            string response = await _client.GetAsync($"/{object_id}", Utils.GetQueryString(fields));
+            JObject jsonResponse = JObject.Parse(response);
+
+            return new SocialMediaAccountViewModel
+            {
+                Id = jsonResponse["id"].ToString(),
+                Name = jsonResponse["name"].ToString(),
+                PictureUrl = jsonResponse["picture"]["data"]["url"].ToString(),
+                Type = "facebook"
+            };
+        }
+        // HttpPostedFileBase file
+        private async Task<string> UploadFileAsync(string page_id, string message, MemoryStream file, string access_token)
         {
             string response;
             using (var content = new MultipartFormDataContent())
             {
-                byte[] fileData = null;
-                using (BinaryReader binaryReader = new BinaryReader(file.InputStream))
-                {
-                    fileData = binaryReader.ReadBytes(file.ContentLength);
-                }
+                byte[] fileData = file.ToArray();
+                //using (BinaryReader binaryReader = new BinaryReader(file.InputStream))
+                //{
+                //    fileData = binaryReader.ReadBytes(file.ContentLength);
+                //}
 
                 content.Add(new StringContent(access_token), "access_token");
                 content.Add(new StringContent(message), "message");

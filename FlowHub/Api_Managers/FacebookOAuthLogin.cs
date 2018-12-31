@@ -3,6 +3,7 @@ using FlowHub.ViewModels;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -13,8 +14,8 @@ namespace FlowHub.Api_Managers
     // API - check when adding other
     public class FacebookOAuthLogin
     {
-        private static readonly string app_id = "252497228687414";
-        private static readonly string app_secret = "";
+        private static readonly string app_id = ConfigurationManager.AppSettings["FbAppId"];
+        private static readonly string app_secret = ConfigurationManager.AppSettings["FbAppSecret"];
         private static readonly ISocialMediaClient _client = new FacebookClient();
 
         public ActionResult LoginDialog(string uriRedirectString) // Default permissions manage_pages ad publish_pages
