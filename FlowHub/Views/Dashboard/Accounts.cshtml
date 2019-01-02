@@ -1,29 +1,46 @@
-﻿@{
+﻿@using FlowHub.Models
+@using FlowHub.ViewModels
+@model DashboardViewModel<Dictionary<string, SocialMediaAccountViewModel>, ApplicationUser>
+@{
+    /**/
+
     ViewBag.Title = "Accounts";
     Layout = "~/Views/Shared/_Dashboard.cshtml";
 }
-
 <div class="dashboard-section connect-accounts">
-	<h3>Have social accounts?</h3>
-	<h5>Connect them all and we'll help you reach your audience easier.</h5>
-	<ul>
-		<li>
-			<div>
-				<img src="~/dist/images/fb.png" />
-				<div>Facebook</div>
-			</div>
-			<div>
-				@Html.ActionLink("Connect", "FacebookUserLogin", "OAuth")
-			</div>
-		</li>
-		<li>
-			<div>
-				<img src="~/dist/images/tw.png" />
-				<div>Twitter</div>
-			</div>
-			<div>
-				@Html.ActionLink("Connect", "TwitterUserLogin", "OAuth")
-			</div>
-		</li>
-	</ul>
+    <h3>Have social accounts?</h3>
+    <h5>Connect them all and we'll help you reach your audience easier.</h5>
+    <ul>
+        <li>
+            @*@if (Model.VModel.ContainsKey("facebook"))
+                {
+                    <div>
+                        <img src="@Model.VModel["facebook"].PictureUrl" />
+                        <div>@Model.VModel["facebook"].Name</div>
+                    </div>
+                    <div>
+                        @Html.ActionLink("Disconnect", "FacebookUserDisconnect", "OAuth")
+                    </div>
+                }
+                else
+                {*@
+            <div>
+                <img src="~/dist/images/fb.png" />
+                <div>Facebook</div>
+            </div>
+            <div>
+                @Html.ActionLink("Connect", "FacebookUserLogin", "OAuth")
+            </div>
+            @*  } *@
+        </li>
+        <li>
+            <div>
+                <img src="~/dist/images/tw.png" />
+                <div>Twitter</div>
+            </div>
+            <div>
+                @Html.ActionLink("Connect", "TwitterUserLogin", "OAuth")
+            </div>
+        </li>
+    </ul>
 </div>

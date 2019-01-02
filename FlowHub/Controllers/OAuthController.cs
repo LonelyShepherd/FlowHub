@@ -164,6 +164,26 @@ namespace FlowHub.Controllers
             return RedirectToAction("Accounts", "Dashboard");
         }
 
+        //// GET: OAuth/FacebookUserDisconnect
+        //public ActionResult FacebookUserDisconnect()
+        //{
+        //    GetUser(out _, out ApplicationUser user);
+        //    user.FbUserAccountId = null;
+        //    _context.SaveChanges();
+
+        //    return RedirectToAction("Accounts", "Dashboard");
+        //}
+
+        //// GET: OAuth/FacebookTeamDisconnect
+        //public ActionResult FacebookTeamDisconnect()
+        //{
+        //    GetUser(out _, out ApplicationUser user);
+        //    user.FbTeamAccount = null;
+        //    _context.SaveChanges();
+
+        //    return RedirectToAction("Team", "Dashboard");
+        //}
+
         // GET: OAuth/TwitterUserLogin
         public async Task<ActionResult> TwitterUserLogin()
         {

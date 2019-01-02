@@ -32,12 +32,23 @@ namespace FlowHub.Controllers
             return View();
         }
 
-        // POST: Post/Create
+        // POST: Post/CreatePost
         [HttpPost]
-        public async Task<ActionResult> Create()
+        public async Task<ActionResult> CreatePost()
+        {
+            if (Request.Form["account_type"].ToLower() == "user")
+                return await CreatePost(SocialMediaAccounts.User, Request);
+
+            if (Request.Form["account_type"].ToLower() == "team")
+                return await CreatePost(SocialMediaAccounts.Team, Request);
+
+            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        }
+
+        private async Task<ActionResult> CreatePost(SocialMediaAccounts type, HttpRequestBase Request)
         {
             GetUser(out _, out ApplicationUser user);
-            GetSocialMediaAccounts(user, SocialMediaAccounts.User,
+            GetSocialMediaAccounts(user, type,
                 out FacebookUserAccount facebookAccount,
                 out TwitterUserAccount twitterAccount);
 
@@ -58,7 +69,8 @@ namespace FlowHub.Controllers
 
                 streams = images.AllKeys
                     .ToList()
-                    .Select(key => {
+                    .Select(key =>
+                    {
                         MemoryStream stream = new MemoryStream();
                         images[key].InputStream.CopyTo(stream);
                         return stream;
@@ -117,15 +129,32 @@ namespace FlowHub.Controllers
             return PartialView("~/Views/Post/Partials/_Posts.cshtml", postedPosts.Where(post => post.Id != "").ToList());
         }
 
-        // POST: Post/EditPost
+        // POST: Post/EditPostAsync
+        [HttpPost]
         public async Task<ActionResult> EditPostAsync()
+        {
+            if (Request.Form["account_type"].ToLower() == "user")
+                return await EditPostAsync(SocialMediaAccounts.User, Request);
+
+            if (Request.Form["account_type"].ToLower() == "team")
+                return await EditPostAsync(SocialMediaAccounts.Team, Request);
+
+            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        }
+
+        // POST: Post/EditPost
+        private async Task<ActionResult> EditPostAsync(SocialMediaAccounts type, HttpRequestBase Request)
         {
             var form = Request.Form;
             GetUser(out _, out ApplicationUser user);
+            GetSocialMediaAccounts(user, type,
+                out FacebookUserAccount facebookAccount,
+                out _);
+
             PostViewModel editedPost = null;
             try
             {
-                editedPost = await facebookPostsApi.EditPostAsync(user.FbUserAccount.AccountId, form["post-id"], form["message"], Request.Files, form["old-photos"], form["deleted"], user.FbUserAccount.account_access_token);
+                editedPost = await facebookPostsApi.EditPostAsync(facebookAccount.AccountId, form["post-id"], form["message"], Request.Files, form["old-photos"], form["deleted"], facebookAccount.account_access_token);
             }
             catch (SocialMediaApiException ex)
             {
@@ -139,23 +168,35 @@ namespace FlowHub.Controllers
             return PartialView("~/Views/Post/Partials/_Posts.cshtml", new List<PostViewModel>() { editedPost });
         }
 
+        // GET: Post/GetUserPosts
+        public async Task<ActionResult> GetUserPosts(string tab, string fb_after_cursor, string twitter_after_cursor)
+        {
+            return await GetPosts(SocialMediaAccounts.User, tab, fb_after_cursor, twitter_after_cursor);
+        }
+
+        // GET: Post/GetTeamPosts
+        public async Task<ActionResult> GetTeamPosts(string tab, string fb_after_cursor, string twitter_after_cursor)
+        {
+            return await GetPosts(SocialMediaAccounts.Team, tab, fb_after_cursor, twitter_after_cursor);
+        }
+
         // GET: Post/GetPosts
-        public async Task<ActionResult> GetPosts(string tab, string fb_after_cursor, string twitter_after_cursor)
+        private async Task<ActionResult> GetPosts(SocialMediaAccounts type, string tab, string fb_after_cursor, string twitter_after_cursor)
         {
             if (tab.ToLower() == "facebook")
-                return await GetFacebookPosts(fb_after_cursor);
+                return await GetFacebookPosts(type, fb_after_cursor);
 
             if (tab.ToLower() == "twitter")
-                return await GetTwitterPosts(twitter_after_cursor);
+                return await GetTwitterPosts(type, twitter_after_cursor);
 
-            return await GetAllPosts(fb_after_cursor, twitter_after_cursor);
+            return await GetAllPosts(type, fb_after_cursor, twitter_after_cursor);
         }
 
         // GET: Post/GetAllPosts -> Private
-        private async Task<ActionResult> GetAllPosts(string fb_after_cursor, string twitter_after_cursor)
+        private async Task<ActionResult> GetAllPosts(SocialMediaAccounts type, string fb_after_cursor, string twitter_after_cursor)
         {
             GetUser(out _, out ApplicationUser user);
-            GetSocialMediaAccounts(user, SocialMediaAccounts.User,
+            GetSocialMediaAccounts(user, type,
                 out FacebookUserAccount facebookAccount,
                 out TwitterUserAccount twitterAccount);
 
@@ -222,10 +263,10 @@ namespace FlowHub.Controllers
         }
 
         // GET: Post/GetFacebookPosts -> Private
-        private async Task<ActionResult> GetFacebookPosts(string fb_after_cursor)
+        private async Task<ActionResult> GetFacebookPosts(SocialMediaAccounts type, string fb_after_cursor)
         {
             GetUser(out _, out ApplicationUser user);
-            GetSocialMediaAccounts(user, SocialMediaAccounts.User, out FacebookUserAccount facebookAccount, out _);
+            GetSocialMediaAccounts(user, type, out FacebookUserAccount facebookAccount, out _);
 
             Tuple<List<PostViewModel>, string> facebookPosts;
 
@@ -254,10 +295,10 @@ namespace FlowHub.Controllers
         }
 
         // GET: Post/GetTwitterPosts -> Private
-        private async Task<ActionResult> GetTwitterPosts(string twitter_after_cursor)
+        private async Task<ActionResult> GetTwitterPosts(SocialMediaAccounts type, string twitter_after_cursor)
         {
             GetUser(out _, out ApplicationUser user);
-            GetSocialMediaAccounts(user, SocialMediaAccounts.User, out _, out TwitterUserAccount twitterAccount);
+            GetSocialMediaAccounts(user, type, out _, out TwitterUserAccount twitterAccount);
             Tuple<List<PostViewModel>, string> twitterPosts;
 
             try
@@ -289,12 +330,59 @@ namespace FlowHub.Controllers
 
         // DELETE: Post/DeleteFacebookPost
         [HttpDelete]
-        public async Task<ActionResult> DeleteFacebookPost(string post_id)
+        public async Task<ActionResult> DeleteFacebookPost(string post_id, string account_type)
+        {
+            if(account_type.ToLower() == "user")
+                return await DeleteFacebookPost(SocialMediaAccounts.User, post_id);
+
+            if(account_type.ToLower() == "team")
+                return await DeleteFacebookPost(SocialMediaAccounts.Team, post_id);
+
+            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        }
+
+        private async Task<ActionResult> DeleteFacebookPost(SocialMediaAccounts type, string post_id)
         {
             try
             {
                 GetUser(out _, out ApplicationUser user);
-                await facebookPostsApi.DeleteObjectAsync(post_id, user.FbUserAccount.account_access_token);
+                GetSocialMediaAccounts(user, type, out FacebookUserAccount facebookAccount, out _);
+
+                await facebookPostsApi.DeleteObjectAsync(post_id, facebookAccount.account_access_token);
+            }
+            catch (SocialMediaApiException ex)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, ex.Message);
+            }
+            catch (Exception)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            return new HttpStatusCodeResult(HttpStatusCode.Accepted);
+        }
+
+        // DELETE: Post/DeleteTwitterUserPost
+        [HttpDelete]
+        public async Task<ActionResult> DeleteTwitterPost(string post_id, string account_type)
+        {
+            if (account_type.ToLower() == "user")
+                return await DeleteTwitterPost(SocialMediaAccounts.User, post_id);
+
+            if (account_type.ToLower() == "team")
+                return await DeleteTwitterPost(SocialMediaAccounts.Team, post_id);
+
+            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        }
+
+        private async Task<ActionResult> DeleteTwitterPost(SocialMediaAccounts type, string post_id)
+        {
+            try
+            {
+                GetUser(out _, out ApplicationUser user);
+                GetSocialMediaAccounts(user, type, out _, out TwitterUserAccount twitterAccount);
+
+                await twitterPostsApi.DeleteTweetAsync(post_id, twitterAccount.account_access_token, twitterAccount.account_access_token_secret);
             }
             catch (SocialMediaApiException ex)
             {
@@ -309,13 +397,27 @@ namespace FlowHub.Controllers
         }
 
         // GET: Post/GetFacebookComments
-        public async Task<ActionResult> GetFacebookComments(string post_id, string after_cursor)
+        public async Task<ActionResult> GetFacebookComments(string post_id, string after_cursor, string account_type)
+        {
+            if (account_type.ToLower() == "user")
+                return await GetFacebookComments(SocialMediaAccounts.User, post_id, after_cursor);
+
+            if (account_type.ToLower() == "team")
+                return await GetFacebookComments(SocialMediaAccounts.Team, post_id, after_cursor);
+
+            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        }
+
+        // GET: Post/GetFacebookComments
+        private async Task<ActionResult> GetFacebookComments(SocialMediaAccounts type , string post_id, string after_cursor)
         {
             Tuple<List<CommentViewModel>, string> comments = null;
             try
             {
                 GetUser(out _, out ApplicationUser user);
-                comments = await facebookPostsApi.GetPostCommentsAsync(post_id, user.FbUserAccount.account_access_token, 5, after_cursor);
+                GetSocialMediaAccounts(user, type, out FacebookUserAccount facebookAccount, out _);
+
+                comments = await facebookPostsApi.GetPostCommentsAsync(post_id, facebookAccount.account_access_token, 5, after_cursor);
             }
             catch (SocialMediaApiException ex)
             {
@@ -336,57 +438,28 @@ namespace FlowHub.Controllers
             }, JsonRequestBehavior.AllowGet);
         }
 
-        // POST: Post/CreateFacebookComment
-        [HttpPost]
-        public async Task<ActionResult> CreateFacebookComment()
+        // GET: Post/GetTwitterComments
+        public async Task<ActionResult> GetTwitterComments(string post_id, string after_cursor, string account_type)
         {
-            CommentViewModel comment = null;
-            try
-            {
-                GetUser(out _, out ApplicationUser user);
-                comment = await facebookPostsApi.CreatePostCommentAsync(Request.Form["post_id"], Request.Form["message"], user.FbUserAccount.account_access_token);
-            }
-            catch (SocialMediaApiException ex)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, ex.Message);
-            }
-            catch (Exception)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+            if (account_type.ToLower() == "user")
+                return await GetTwitterComments(SocialMediaAccounts.User, post_id, after_cursor);
 
-            return PartialView("~/Views/Post/Partials/_Comments.cshtml", new List<CommentViewModel>() { comment });
-        }
+            if (account_type.ToLower() == "team")
+                return await GetTwitterComments(SocialMediaAccounts.Team, post_id, after_cursor);
 
-        // DELETE: Post/DeleteTwitterPost
-        [HttpDelete]
-        public async Task<ActionResult> DeleteTwitterPost(string post_id)
-        {
-            try
-            {
-                GetUser(out _, out ApplicationUser user);
-                await twitterPostsApi.DeleteTweetAsync(post_id, user.twitterUserAccount.account_access_token, user.twitterUserAccount.account_access_token_secret);
-            }
-            catch (SocialMediaApiException ex)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, ex.Message);
-            }
-            catch (Exception)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            return new HttpStatusCodeResult(HttpStatusCode.Accepted);
+            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
         }
 
         // GET: Post/GetTwitterComments
-        public async Task<ActionResult> GetTwitterComments(string post_id, string after_cursor)
+        private async Task<ActionResult> GetTwitterComments(SocialMediaAccounts type, string post_id, string after_cursor)
         {
             List<CommentViewModel> comments = null;
             try
             {
                 GetUser(out _, out ApplicationUser user);
-                comments = await twitterPostsApi.GetPostCommentsAsync(post_id, user.twitterUserAccount.AccountId, user.twitterUserAccount.account_access_token, user.twitterUserAccount.account_access_token_secret);
+                GetSocialMediaAccounts(user, type, out _, out TwitterUserAccount twitterAccount);
+
+                comments = await twitterPostsApi.GetPostCommentsAsync(post_id, twitterAccount.AccountId, twitterAccount.account_access_token, twitterAccount.account_access_token_secret);
             }
             catch (SocialMediaApiException ex)
             {
@@ -407,14 +480,66 @@ namespace FlowHub.Controllers
             }, JsonRequestBehavior.AllowGet);
         }
 
-        // POST: Post/CreateTwitterComment
+        // POST: Post/CreateFacebookComment
         [HttpPost]
-        public async Task<ActionResult> CreateTwitterComment()
+        public async Task<ActionResult> CreateFacebookComment()
+        {
+            if (Request.Form["account_type"].ToLower() == "user")
+                return await CreateFacebookComment(SocialMediaAccounts.User, Request);
+
+            if (Request.Form["account_type"].ToLower() == "team")
+                return await CreateFacebookComment(SocialMediaAccounts.Team, Request);
+
+            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        }
+
+        // POST: Post/CreateFacebookComment
+        //[HttpPost]
+        private async Task<ActionResult> CreateFacebookComment(SocialMediaAccounts type, HttpRequestBase Request)
         {
             CommentViewModel comment = null;
             try
             {
                 GetUser(out _, out ApplicationUser user);
+                GetSocialMediaAccounts(user, type, out FacebookUserAccount facebookAccount, out _);
+
+                comment = await facebookPostsApi.CreatePostCommentAsync(Request.Form["post_id"], Request.Form["message"], facebookAccount.account_access_token);
+            }
+            catch (SocialMediaApiException ex)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, ex.Message);
+            }
+            catch (Exception)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            return PartialView("~/Views/Post/Partials/_Comments.cshtml", new List<CommentViewModel>() { comment });
+        }
+
+        // POST: Post/CreateTwitterComment
+        [HttpPost]
+        public async Task<ActionResult> CreateTwitterComment()
+        { 
+            if (Request.Form["account_type"].ToLower() == "user")
+                return await CreateTwitterComment(SocialMediaAccounts.User, Request);
+
+            if (Request.Form["account_type"].ToLower() == "team")
+                return await CreateTwitterComment(SocialMediaAccounts.Team, Request);
+
+            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        }
+
+        // POST: Post/CreateTwitterComment
+        //[HttpPost]
+        private async Task<ActionResult> CreateTwitterComment(SocialMediaAccounts type, HttpRequestBase Request)
+        {
+            CommentViewModel comment = null;
+            try
+            {
+                GetUser(out _, out ApplicationUser user);
+                GetSocialMediaAccounts(user, type, out _, out TwitterUserAccount twitterAccount);
+
                 comment = await twitterPostsApi.CreatePostCommentAsync(Request.Form["post_id"], Request.Form["message"], user.twitterUserAccount.AccountId, user.twitterUserAccount.account_access_token, user.twitterUserAccount.account_access_token_secret);
             }
             catch (SocialMediaApiException ex)

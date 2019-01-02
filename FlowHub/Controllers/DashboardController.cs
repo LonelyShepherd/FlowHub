@@ -27,28 +27,35 @@ namespace FlowHub.Controllers
         public async System.Threading.Tasks.Task<ActionResult> Index()
         {
             GetUser(out _, out ApplicationUser user);
-            GetSocialMediaAccounts(user, SocialMediaAccounts.User,
-                out FacebookUserAccount facebookAccount,
-                out TwitterUserAccount twitterAccount);
-
-            bool CanAccessFacebook = facebookAccount.account_access_token != "" &&
-                await FacebookOAuthLogin.IsAuthorized(facebookAccount.account_access_token);
-            bool CanAccessTwitter = twitterAccount.account_access_token != "" &&
-                await TwitterOAuthAuthenticator.IsAuthorized(twitterAccount.account_access_token, twitterAccount.account_access_token_secret);
-
             List<SocialMediaAccountViewModel> profileInfo = new List<SocialMediaAccountViewModel>();
 
             try
             {
-                if (CanAccessFacebook)
-                {
-                    profileInfo.Add(await facebookPostsApi.GetProfileInfoAsync(facebookAccount.AccountId, facebookAccount.account_access_token));
-                }
+                profileInfo = await GetProfilesInfoAsync(user, SocialMediaAccounts.User);
+            }
+            catch (SocialMediaApiException ex)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, ex.Message);
+            }
+            catch (Exception)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            
 
-                if (CanAccessTwitter)
-                {
-                    profileInfo.Add(await twitterPostsApi.GetProfileInfoAsync(twitterAccount.AccountId, twitterAccount.account_access_token, twitterAccount.account_access_token_secret));
-                }
+            return View("~/Views/Post/Index.cshtml",
+                new DashboardViewModel<List<SocialMediaAccountViewModel>, ApplicationUser>(profileInfo, user));
+        }
+
+        // GET: Dashboard/Accounts
+        public async System.Threading.Tasks.Task<ActionResult> Accounts()
+        {
+            GetUser(out _, out ApplicationUser user);
+            List<SocialMediaAccountViewModel> profileInfo = new List<SocialMediaAccountViewModel>();
+
+            try
+            {
+                profileInfo = await GetProfilesInfoAsync(user, SocialMediaAccounts.User);
             }
             catch (SocialMediaApiException ex)
             {
@@ -59,23 +66,33 @@ namespace FlowHub.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
+            Dictionary<string, SocialMediaAccountViewModel> profileInfoDict = profileInfo.ToDictionary(p => p.Type.ToLower(), p => p);
 
-            return View("~/Views/Post/Index.cshtml", 
-                new DashboardViewModel<List<SocialMediaAccountViewModel>, ApplicationUser>(profileInfo, user));
-        }
-
-        // GET: Dashboard/Accounts
-        public ActionResult Accounts()
-        {
-            GetUser(out _, out ApplicationUser user);
-            return View(new DashboardViewModel<Team, ApplicationUser>(user.Team, user));
+            return View(new DashboardViewModel<Dictionary<string, SocialMediaAccountViewModel>, ApplicationUser>(profileInfoDict, user));
+            //return View(new DashboardViewModel<Team, ApplicationUser>(user.Team, user));
         }
 
         // GET: Dashboard/Team
-        public ActionResult Team()
+        public async System.Threading.Tasks.Task<ActionResult> Team()
         {
             GetUser(out _, out ApplicationUser user);
-            return View(new DashboardViewModel<Team, ApplicationUser>(user.Team, user));
+            List<SocialMediaAccountViewModel> profileInfo = new List<SocialMediaAccountViewModel>();
+
+            try
+            {
+                profileInfo = await GetProfilesInfoAsync(user, SocialMediaAccounts.Team);
+            }
+            catch (SocialMediaApiException ex)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, ex.Message);
+            }
+            catch (Exception)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            return View(new DashboardViewModel<Tuple<Team, List<SocialMediaAccountViewModel>>, ApplicationUser> (
+                Tuple.Create(user.Team, profileInfo), user));
         }
 
         // GET: Dashboard/SearchUsers
@@ -154,6 +171,33 @@ namespace FlowHub.Controllers
             twitterAccount.account_access_token = user.twitterUserAccount != null ? user.twitterUserAccount.account_access_token : "";
             twitterAccount.account_access_token_secret = user.twitterUserAccount != null ? user.twitterUserAccount.account_access_token_secret : "";
         }
+
+        private async System.Threading.Tasks.Task<List<SocialMediaAccountViewModel>> GetProfilesInfoAsync(ApplicationUser user, SocialMediaAccounts type)
+        {
+            GetSocialMediaAccounts(user, type,
+                out FacebookUserAccount facebookAccount,
+                out TwitterUserAccount twitterAccount);
+
+            bool CanAccessFacebook = facebookAccount.account_access_token != "" &&
+                await FacebookOAuthLogin.IsAuthorized(facebookAccount.account_access_token);
+            bool CanAccessTwitter = twitterAccount.account_access_token != "" &&
+                await TwitterOAuthAuthenticator.IsAuthorized(twitterAccount.account_access_token, twitterAccount.account_access_token_secret);
+
+            List<SocialMediaAccountViewModel> profileInfo = new List<SocialMediaAccountViewModel>();
+
+            if (CanAccessFacebook)
+            {
+                profileInfo.Add(await facebookPostsApi.GetProfileInfoAsync(facebookAccount.AccountId, facebookAccount.account_access_token));
+            }
+
+            if (CanAccessTwitter)
+            {
+                profileInfo.Add(await twitterPostsApi.GetProfileInfoAsync(twitterAccount.AccountId, twitterAccount.account_access_token, twitterAccount.account_access_token_secret));
+            }
+
+            return profileInfo;
+        }
+
         #endregion
     }
 }

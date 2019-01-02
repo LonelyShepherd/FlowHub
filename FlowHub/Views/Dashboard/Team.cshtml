@@ -1,6 +1,6 @@
 ﻿@using FlowHub.Models
 @using FlowHub.ViewModels
-@model DashboardViewModel<Team, ApplicationUser>
+@model DashboardViewModel<Tuple<Team, List<SocialMediaAccountViewModel>>, ApplicationUser>
 @{
 	ViewBag.Title = "Team";
 	Layout = "~/Views/Shared/_Dashboard.cshtml";
@@ -40,18 +40,18 @@ else
 			</div>
 		</div>
 		<div class="team__body clearfix">
-			@{Html.RenderPartial("~/Views/Team/Partials/_Overview.cshtml", Model.Model);}
+			@{Html.RenderPartial("~/Views/Team/Partials/_Overview.cshtml", Tuple.Create(Model.Model, Model.VModel.Item2));}
 		</div>
 	</div>
 	<div class="team-members-list">
-		<h5>Members &mdash; @(Model.VModel.ApplicationUsers.Count + 1)</h5>
+		<h5>Members &mdash; @(Model.VModel.Item1.ApplicationUsers.Count + 1)</h5>
 		<ul>
 			<li>
-				<img src="/Avatars/@Model.VModel.Leader.Avatar" />
-				<span>@(Model.VModel.Leader.Name + " " + Model.VModel.Leader.Surname)</span>
+				<img src="/Avatars/@Model.VModel.Item1.Leader.Avatar" />
+				<span>@(Model.VModel.Item1.Leader.Name + " " + Model.VModel.Item1.Leader.Surname)</span>
 				<span class="leader-icon" title="Team Leader"></span>
 			</li>
-			@foreach (var member in Model.VModel.ApplicationUsers)
+			@foreach (var member in Model.VModel.Item1.ApplicationUsers)
 			{
 				<li>
 					<img src="/Avatars/@member.Avatar" />

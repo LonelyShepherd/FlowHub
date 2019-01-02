@@ -165,11 +165,16 @@ namespace FlowHub.Api_Managers
             JObject postedPosts = JObject.Parse(response);
             List<PostViewModel> posts = postedPosts["data"]
                 .Select(p => ParsePost(p.ToString(), composerPictureUrl))
+                .Where(p => p.Name != "")
                 .ToList();
 
-            string afterCursor = posts.Count != 0 && postedPosts["paging"]["next"] != null ? 
-                postedPosts["paging"]["cursors"]["after"].ToString() : 
-                "";
+            //string afterCursor = posts.Count != 0 && postedPosts["paging"]["next"] != null ? 
+            //    postedPosts["paging"]["cursors"]["after"].ToString() : 
+            //    "";
+
+            string afterCursor = postedPosts["data"].Count() != 0 ? 
+                postedPosts["paging"]["cursors"]["after"].ToString() :
+                after_cursor;
 
             return Tuple.Create(posts, afterCursor);
         }
@@ -316,8 +321,8 @@ namespace FlowHub.Api_Managers
             dynamic postedPost = JsonConvert.DeserializeObject(jsonPost);
             PostViewModel post = JsonConvert.DeserializeObject<PostViewModel>(Convert.ToString(jsonPost));
             post.Type = "Facebook";
-            post.Name = postedPost.from.name;
-            post.ComposerId = postedPost.from.id;
+            post.Name = postedPost.from != null ? postedPost.from.name : "";
+            post.ComposerId = postedPost.from != null ? postedPost.from.id : "";
             post.ComposerPictureUrl = pictureUrl;
             post.CommentsCount = postedPost.comments.summary.total_count;
             post.LikesCount = postedPost.likes.summary.total_count;
@@ -334,7 +339,7 @@ namespace FlowHub.Api_Managers
                     }
                 }
                 else
-                    post.Photos.Add(Tuple.Create(Convert.ToString(postedPost.attachments.data[0].target.id), 
+                    post.Photos.Add(Tuple.Create<string,string>(Convert.ToString(postedPost.attachments.data[0].target.id), 
                         Convert.ToString(postedPost.attachments.data[0].media.image.src)));
             }
 

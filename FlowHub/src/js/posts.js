@@ -5,6 +5,7 @@ import Event from "./core/Event";
 import Modal from "./components/Modal";
 
 let composer = document.querySelector('.post-composer')
+    , role = 'User' // TTeam
     , textbox = composer.querySelector('textarea')
     , manager = textbox.nextElementSibling
     , createPost = composer.querySelector('.post-btn')
@@ -46,6 +47,7 @@ let composer = document.querySelector('.post-composer')
                 }
                 data.append('old-photos', allPhotos.join(','));
                 data.append('post-id', editingPost.getAttribute('data-postid'));
+                data.append('account_type', role);
 
                 $.ajax({
                     url: '/Post/EditPost',
@@ -136,7 +138,7 @@ function loadPosts() {
         return;
 
     $.ajax({
-        url: '/Post/GetPosts',
+        url: '/Post/Get' + role + 'Posts',
         dataType: 'json',
         data: 'tab=' + currentTab + '&fb_after_cursor=' + postsPresenter.getAttribute('data-fbAcursor') + '&twitter_after_cursor=' + postsPresenter.getAttribute('data-twAcursor')
     }).done(data => {
@@ -300,9 +302,10 @@ createPost.addEventListener('click', () => {
     });
 
     formData.append('accounts', JSON.stringify(selectedAccounts));
+    formData.append('account_type', role);
 
     $.ajax({
-        url: '/Post/Create',
+        url: '/Post/CreatePost',
         method: 'POST',
         data: formData,
         contentType: false,
@@ -403,7 +406,7 @@ postsPresenter.addEventListener('click', e => {
             $.ajax({
                 url: '/Post/Delete' + postType + 'Post',
                 method: 'DELETE',
-                data: 'post_id=' + post.getAttribute('data-postid')
+                data: 'post_id=' + post.getAttribute('data-postid') + '&account_type=' + role
             }).done(() => {
                 Alter.unmount(post);
             });
@@ -482,7 +485,7 @@ postsPresenter.addEventListener('click', e => {
             $.ajax({
                 url: '/Post/Get' + postType + 'Comments',
                 dataType: 'json',
-                data: 'post_id=' + postId + '&after_cursor=' + commentsPresenter.getAttribute('data-acursor')
+                data: 'post_id=' + postId + '&after_cursor=' + commentsPresenter.getAttribute('data-acursor') + '&account_type=' + role
             }).done(data => {
                 if (data.cursors.after === '')
                     Alter.unmount(action);
@@ -507,7 +510,9 @@ postsPresenter.addEventListener('click', e => {
         formData = new FormData();
         formData.append('message', commentValue);
         formData.append('post_id', post.getAttribute('data-postid'));
+        formData.append('account_type', role);
         let postType = post.getAttribute('data-postType');
+        
 
         if (commentComposer.value !== '') {
             showComments(action, true, true);
