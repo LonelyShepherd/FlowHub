@@ -428,7 +428,6 @@ document.addEventListener('click', e => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('IN');
     loadPosts();
 }, false);
 

@@ -21,7 +21,7 @@ namespace FlowHub.Api_Managers
         public ActionResult LoginDialog(string uriRedirectString) // Default permissions manage_pages ad publish_pages
         {
             var baseUri = "https://www.facebook.com/v3.0";
-            var permissions = "manage_pages, publish_pages"; // If needed pass as argument.
+            var permissions = "manage_pages,publish_pages,user_posts,user_likes"; // If needed pass as argument.
             var oauthRedirectUri = $"{baseUri}/dialog/oauth?client_id={app_id}&scope={permissions}&response_type=code&redirect_uri={uriRedirectString}"; // &state={{st=state123abc,ds=123456789}} &scope
 
             return new RedirectResult(oauthRedirectUri);
@@ -70,6 +70,21 @@ namespace FlowHub.Api_Managers
                 .FirstOrDefault() };
         }
 
+        public async Task<FacebookAccountViewModel> GetUserAccount(string access_token) // Exchange code for access_token 
+        {
+            var fields = new Dictionary<string, string>
+            {
+                { "fields", "id,name,picture{url}" },
+                { "access_token", access_token }
+            };
+
+            string response = await _client.GetAsync("/me", Utils.GetQueryString(fields));
+            FacebookAccountViewModel account = GetAccount(JObject.Parse(response));
+            account.access_token = access_token;
+
+            return account;
+        }
+
         public async Task<string> DeAuthorizeApp(string user_id, string access_token)
         {
             var endpoint = $"/{user_id}/permissions";
@@ -105,7 +120,7 @@ namespace FlowHub.Api_Managers
             {
                 Id = jsonAccount["id"].ToString(),
                 Name = jsonAccount["name"].ToString(),
-                access_token = jsonAccount["access_token"].ToString(),
+                access_token = jsonAccount["access_token"] != null ? jsonAccount["access_token"].ToString() : "",
                 PictureUrl = jsonAccount["picture"]["data"]["url"].ToString()
             };
         }

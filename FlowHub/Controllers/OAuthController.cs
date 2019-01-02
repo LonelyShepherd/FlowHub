@@ -45,6 +45,8 @@ namespace FlowHub.Controllers
             GetUser(out _, out ApplicationUser user);
             string access_token = await FacebookAuthenticator.ExchangeOAuthCodeAsync(code, Url.Action("FacebookUserAuth", "OAuth", null, this.Request.Url.Scheme));
             List<FacebookAccountViewModel> accounts = await FacebookAuthenticator.GetPageAuthTokens(access_token);
+            accounts.Insert(0, await FacebookAuthenticator.GetUserAccount(access_token));
+
             if (user.FbUserAccount == null)
                 user.FbUserAccount = new FacebookUserAccount();
 
@@ -60,8 +62,10 @@ namespace FlowHub.Controllers
             GetUser(out _, out ApplicationUser user);
             FacebookAccountViewModel account = (await FacebookAuthenticator.GetPageAuthTokens(user.FbUserAccount.helper_access_token, Request.Form["id"]))
                 .SingleOrDefault();
+            account = account ?? await FacebookAuthenticator.GetUserAccount(user.FbUserAccount.helper_access_token);
+            account = account.Id == Request.Form["id"] ? account : null;
 
-            if(account == null)
+            if (account == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest,
                     "Something went wrong, please make sure that you have selected an account.");
@@ -73,7 +77,6 @@ namespace FlowHub.Controllers
 
             _context.SaveChanges();
 
-            //return RedirectToAction("Accounts", "Dashboard");
             return JavaScript("window.location = '" + Url.Action("Accounts", "Dashboard") + "'");
         }
 
@@ -161,28 +164,28 @@ namespace FlowHub.Controllers
 
             _context.SaveChanges();
 
+            return JavaScript("window.location = '" + Url.Action("Team", "Dashboard") + "'");
+        }
+
+        // GET: OAuth/FacebookUserDisconnect
+        public ActionResult FacebookUserDisconnect()
+        {
+            GetUser(out _, out ApplicationUser user);
+            _context.FacebookUserAccounts.Remove(user.FbUserAccount);
+            _context.SaveChanges();
+
             return RedirectToAction("Accounts", "Dashboard");
         }
 
-        //// GET: OAuth/FacebookUserDisconnect
-        //public ActionResult FacebookUserDisconnect()
-        //{
-        //    GetUser(out _, out ApplicationUser user);
-        //    user.FbUserAccountId = null;
-        //    _context.SaveChanges();
+        // GET: OAuth/FacebookTeamDisconnect
+        public ActionResult FacebookTeamDisconnect()
+        {
+            GetUser(out _, out ApplicationUser user);
+            _context.FacebookTeamAccounts.Remove(user.FbTeamAccount);
+            _context.SaveChanges();
 
-        //    return RedirectToAction("Accounts", "Dashboard");
-        //}
-
-        //// GET: OAuth/FacebookTeamDisconnect
-        //public ActionResult FacebookTeamDisconnect()
-        //{
-        //    GetUser(out _, out ApplicationUser user);
-        //    user.FbTeamAccount = null;
-        //    _context.SaveChanges();
-
-        //    return RedirectToAction("Team", "Dashboard");
-        //}
+            return RedirectToAction("Team", "Dashboard");
+        }
 
         // GET: OAuth/TwitterUserLogin
         public async Task<ActionResult> TwitterUserLogin()
@@ -285,6 +288,26 @@ namespace FlowHub.Controllers
             _context.SaveChanges();
 
             return RedirectToAction("Accounts", "Dashboard");
+        }
+
+        // GET: OAuth/TwitterUserDisconnect
+        public ActionResult TwitterUserDisconnect()
+        {
+            GetUser(out _, out ApplicationUser user);
+            _context.TwitterUserAccounts.Remove(user.twitterUserAccount);
+            _context.SaveChanges();
+
+            return RedirectToAction("Accounts", "Dashboard");
+        }
+
+        // GET: OAuth/TwitterTeamDisconnect
+        public ActionResult TwitterTeamDisconnect()
+        {
+            GetUser(out _, out ApplicationUser user);
+            _context.TwitterTeamAccounts.Remove(user.twitterTeamAccount);
+            _context.SaveChanges();
+
+            return RedirectToAction("Team", "Dashboard");
         }
 
         protected override void Dispose(bool disposing)

@@ -151,7 +151,7 @@ namespace FlowHub.Api_Managers
             {
                 Id = jsonResponse["screen_name"].ToString(),
                 Name = $"@{jsonResponse["screen_name"].ToString()}",
-                PictureUrl = jsonResponse["profile_image_url"].ToString(),
+                PictureUrl = jsonResponse["profile_image_url"].ToString().Replace("normal", "bigger"),
                 Type = "twitter"
             };
         }

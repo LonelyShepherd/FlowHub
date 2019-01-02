@@ -38,18 +38,20 @@ namespace FlowHub.Api_Managers
             // Possible rate issues
             List<int> RateCodes = new List<int> { 2, 4, 17, 341, 368 };
             Predicate<int> TooManyApiCalls = code => RateCodes.Contains(code);
+            // {"error":{"message":"(#3) Publishing comments through the API is only available for page access tokens","type":"OAuthException","code":3,"fbtrace_id":"AiV8xBNDAZL"}}
+            Predicate<int> UnableToComment = code => code == 3;
             // 100
 
-            if(AccessTokenExpired(errorCode))
+            if (AccessTokenExpired(errorCode))
             {
                 return new FacebookApiException(errorCode, subcode, type, providedMessage, 
-                    "It looks like FlowHub has lost the authorization to post to Facebook. Re-authorize Flowhub.");
+                    "It looks like FlowHub has lost the authorization to post to Facebook. Re-authorize Flowhub");
             }
 
             if(MissingPermissions(errorCode))
             {
                 return new FacebookApiException(errorCode, subcode, type, providedMessage,
-                    "It looks like FlowHub needs more permissions. Provide missing permissions.");
+                    "It looks like FlowHub needs more permissions. Provide missing permissions");
             }
 
             if(DuplicatePost(errorCode))
@@ -61,7 +63,13 @@ namespace FlowHub.Api_Managers
             if(TooManyApiCalls(errorCode))
             {
                 return new FacebookApiException(errorCode, subcode, type, providedMessage,
-                    "It looks like we have too many requests. Please try again later.");
+                    "It looks like we have too many requests. Please try again later");
+            }
+
+            if(UnableToComment(errorCode))
+            {
+                return new FacebookApiException(errorCode, subcode, type, providedMessage,
+                    "It looks like you have connected a profile, commenting is available only for pages");
             }
 
             return new FacebookApiException(errorCode, subcode, type, providedMessage,

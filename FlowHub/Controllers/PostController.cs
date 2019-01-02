@@ -78,6 +78,8 @@ namespace FlowHub.Controllers
                     .ToList();
             }
 
+            List<PostViewModel> postedPosts = new List<PostViewModel>();
+
             try
             {
                 foreach (var account in selectedAccounts)
@@ -107,6 +109,11 @@ namespace FlowHub.Controllers
                             twitterAccount.account_access_token_secret));
                     }
                 }
+
+                foreach (var task in postTasks)
+                {
+                    postedPosts.Add(await task.TimeoutAfter<PostViewModel>(new TimeSpan(0, 0, 10), () => new PostViewModel { Id = "" }));
+                }
             }
             catch (SocialMediaApiException ex)
             {
@@ -115,13 +122,6 @@ namespace FlowHub.Controllers
             catch (Exception)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            List<PostViewModel> postedPosts = new List<PostViewModel>();
-
-            foreach (var task in postTasks)
-            {
-                postedPosts.Add(await task.TimeoutAfter<PostViewModel>(new TimeSpan(0, 0, 10), () => new PostViewModel { Id = "" }));
             }
 
             //PostViewModel post = await facebookPostsApi.CreatePostAsync(user.FbUserAccount.AccountId, Request.Form["message"], Request.Files, user.FbUserAccount.account_access_token);
@@ -509,10 +509,10 @@ namespace FlowHub.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest, ex.Message);
             }
-            catch (Exception)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
+            //catch (Exception)
+            //{
+            //    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            //}
 
             return PartialView("~/Views/Post/Partials/_Comments.cshtml", new List<CommentViewModel>() { comment });
         }

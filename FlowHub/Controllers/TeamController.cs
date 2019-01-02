@@ -87,46 +87,46 @@ namespace FlowHub.Controllers
         public async System.Threading.Tasks.Task<ActionResult> Manage(string tab)
         {
             GetUser(out _, out ApplicationUser user);
+            GetSocialMediaAccounts(user, SocialMediaAccounts.Team,
+                        out FacebookUserAccount facebookAccount,
+                        out TwitterUserAccount twitterAccount);
+
+            bool CanAccessFacebook = facebookAccount.account_access_token != "" &&
+                await FacebookOAuthLogin.IsAuthorized(facebookAccount.account_access_token);
+            bool CanAccessTwitter = twitterAccount.account_access_token != "" &&
+                await TwitterOAuthAuthenticator.IsAuthorized(twitterAccount.account_access_token, twitterAccount.account_access_token_secret);
+
+            List<SocialMediaAccountViewModel> profileInfo = new List<SocialMediaAccountViewModel>();
+
+            try
+            {
+                if (CanAccessFacebook)
+                {
+                    profileInfo.Add(await facebookPostsApi.GetProfileInfoAsync(facebookAccount.AccountId, facebookAccount.account_access_token));
+                }
+
+                if (CanAccessTwitter)
+                {
+                    profileInfo.Add(await twitterPostsApi.GetProfileInfoAsync(twitterAccount.AccountId, twitterAccount.account_access_token, twitterAccount.account_access_token_secret));
+                }
+            }
+            catch (SocialMediaApiException ex)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest, ex.Message);
+            }
+            catch (Exception)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
 
             switch (tab)
             {
                 case "overview":
-                    GetSocialMediaAccounts(user, SocialMediaAccounts.Team,
-                        out FacebookUserAccount facebookAccount,
-                        out TwitterUserAccount twitterAccount);
-
-                    bool CanAccessFacebook = facebookAccount.account_access_token != "" &&
-                        await FacebookOAuthLogin.IsAuthorized(facebookAccount.account_access_token);
-                    bool CanAccessTwitter = twitterAccount.account_access_token != "" &&
-                        await TwitterOAuthAuthenticator.IsAuthorized(twitterAccount.account_access_token, twitterAccount.account_access_token_secret);
-
-                    List<SocialMediaAccountViewModel> profileInfo = new List<SocialMediaAccountViewModel>();
-
-                    try
-                    {
-                        if (CanAccessFacebook)
-                        {
-                            profileInfo.Add(await facebookPostsApi.GetProfileInfoAsync(facebookAccount.AccountId, facebookAccount.account_access_token));
-                        }
-
-                        if (CanAccessTwitter)
-                        {
-                            profileInfo.Add(await twitterPostsApi.GetProfileInfoAsync(twitterAccount.AccountId, twitterAccount.account_access_token, twitterAccount.account_access_token_secret));
-                        }
-                    }
-                    catch (SocialMediaApiException ex)
-                    {
-                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest, ex.Message);
-                    }
-                    catch (Exception)
-                    {
-                        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                    }
-
                     return PartialView("~/Views/Team/Partials/_Overview.cshtml", Tuple.Create(user, profileInfo));
                 case "settings":
+                    Dictionary<string, SocialMediaAccountViewModel> profileInfoDict = profileInfo.ToDictionary(p => p.Type.ToLower(), p => p);
                     if (user.Team.LeaderId == user.Id)
-                        return PartialView("~/Views/Team/Partials/_Settings.cshtml", user);
+                        return PartialView("~/Views/Team/Partials/_Settings.cshtml", Tuple.Create(user, profileInfoDict));
                     else
                         return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
                 default:

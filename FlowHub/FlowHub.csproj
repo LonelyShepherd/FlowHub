@@ -264,6 +264,10 @@
     <Compile Include="Migrations\201809231433537_NullableAccountIds.Designer.cs">
       <DependentUpon>201809231433537_NullableAccountIds.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201901021029497_AddAccountDbSetsInContext.cs" />
+    <Compile Include="Migrations\201901021029497_AddAccountDbSetsInContext.Designer.cs">
+      <DependentUpon>201901021029497_AddAccountDbSetsInContext.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\FacebookUserAccount.cs" />
@@ -413,6 +417,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201809231433537_NullableAccountIds.resx">
       <DependentUpon>201809231433537_NullableAccountIds.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901021029497_AddAccountDbSetsInContext.resx">
+      <DependentUpon>201901021029497_AddAccountDbSetsInContext.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
