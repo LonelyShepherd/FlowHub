@@ -1,74 +1,76 @@
 ﻿@model FlowHub.ViewModels.DashboardViewModel<Tuple<string, List<FlowHub.ViewModels.FacebookAccountViewModel>>, FlowHub.Models.ApplicationUser>
-
 @{
-	ViewBag.Title = "Team";
-	Layout = "~/Views/Shared/_Dashboard.cshtml";
+    ViewBag.Title = "Team";
+    Layout = "~/Views/Shared/_Dashboard.cshtml";
 }
-
 <div class="dashboard-section js-container" data-kind="@Model.VModel.Item1">
-	<h3 style="margin-bottom: 30px;">Your accounts</h3>
-	@foreach (var account in Model.VModel.Item2)
-	{
-		<div>
-			<img src="@account.PictureUrl">
-			<h4>@account.Name</h4>
-			<button class="btn btn-default btn-small" data-accountId="@account.Id" class="js-account">Save</button>
-		</div>
-	}
+    <h3 style="margin-bottom: 30px;">Your accounts</h3>
+    @foreach (var account in Model.VModel.Item2)
+    {
+        <div>
+            <img src="@account.PictureUrl">
+            <h4>@account.Name</h4>
+            <button class="btn btn-default btn-small" data-accountId="@account.Id" class="js-account">Save</button>
+        </div>
+    }
 </div>
-
 @section styles
 {
-	<style>
-		.dashboard-section {
-			width: 650px;
-			padding: 0;
-			margin-left: auto;
-			margin-right: auto;
-		}
+    <style>
 
-		.dashboard-section div {
-			margin-right: 50px;
-			float: left;
-			text-align: center;
-		}
+        .dashboard-section {
+            width: 650px;
+            padding: 0;
+            margin-left: auto;
+            margin-right: auto;
+        }
 
-		.dashboard-section div img {
-			border: 2px solid #fff;
-			border-radius: 3px;
-			box-shadow: 0 0 3px rgba(0,0,0,.2);
-		}
+            .dashboard-section div {
+                margin-right: 50px;
+                margin-top: 20px;
+                float: left;
+                text-align: center;
+            }
 
-		.dashboard-section div h4 {
-			font-weight: 600;
-			margin: 5px 0 10px 0;
-		}
+                .dashboard-section div img {
+                    border: 2px solid #fff;
+                    border-radius: 3px;
+                    box-shadow: 0 0 3px rgba(0,0,0,.2);
+                }
 
-
-	</style>
+                .dashboard-section div h4 {
+                    font-weight: 600;
+                    margin: 5px 0 10px 0;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    width: 150px;
+                }
+    </style>
 }
-
+@Scripts.Render("~/bundles/jquery")
 @section scripts
 {
-	<script>
-		let container = document.querySelector('.js-container');
-		container.addEventListener('click', e => {
-			let action = e.target;
-			if (action.className === 'js-account') {
-				let data = new FormData();
-				data.append('id', action.getAttribute('data-accountId'));
+    <script>
+        let container = document.querySelector('.js-container');
+        container.addEventListener('click', e => {
+            let action = e.target;
+            if (action.hasAttribute("data-accountId")) {
+                let data = new FormData();
+                data.append('id', action.getAttribute('data-accountId'));
 
-				$.ajax({
-					url: '/OAuth/Save' + container.getAttribute('data-kind') + 'Account',
-					method: 'POST',
-					data: data,
-					contentType: false,
-					processData: false,
-					mimeType: 'multipart/form-data'
-				}).done(data => {
-					console.log(data);
-				});
-			}
-		});
-	</script>
+                $.ajax({
+                    url: '/OAuth/Save' + container.getAttribute('data-kind') + 'Account',
+                    method: 'POST',
+                    data: data,
+                    dataType: 'script',
+                    contentType: false,
+                    processData: false,
+                    mimeType: 'multipart/form-data'
+                }).done(data => {
+                    //console.log(data);
+                });
+            }
+        });
+    </script>
 }

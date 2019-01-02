@@ -51,8 +51,10 @@
             <div class="content__footer">
                 @if (!post.LikesCount.Equals("0"))
                 {<span title="Likes">@post.LikesCount</span>}
-                @if (!post.CommentsCount.Equals("0"))
+                @if (!post.CommentsCount.Equals("0") && post.Type.Equals("facebook", StringComparison.InvariantCultureIgnoreCase))
                 {<button title="Show comments" class="show-comments">See what others have said in @post.CommentsCount comments</button>}
+                @if (post.Type.Equals("twitter", StringComparison.InvariantCultureIgnoreCase))
+                {<button title="Show comments" class="show-comments">See what others have said</button>}
                 @if (!post.SharesCount.Equals("0"))
                 {<span title="Shares">@post.SharesCount</span>}
             </div>

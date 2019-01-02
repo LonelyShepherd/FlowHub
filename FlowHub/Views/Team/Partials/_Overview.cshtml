@@ -1,49 +1,40 @@
-﻿@model FlowHub.Models.ApplicationUser
+﻿@using FlowHub.Models
+@using FlowHub.ViewModels
+@model Tuple<ApplicationUser, List<SocialMediaAccountViewModel>>
 
 <div class="team__body__content team__body__content--fluid">
-	<div class="post-composer">
-		<textarea id="Test" name="Test" class="post-composer__textbox" placeholder="Say something to your audience..."></textarea>
-		<div class="post-composer__manager">
-			<div class="post-composer__uploader">
-				<div class="post-composer__uploader__uploaded">
-					<div class="post-composer__uploader__upload">
-						<label for="post-image"></label>
-						<input id="post-image" type="file" multiple />
-					</div>
-				</div>
-			</div>
-			<div class="post-composer__profiles">
-				<h6>Choose accounts</h6>
-				<div class="post-composer__profiles__profile">
-					<input id="profile-1" type="checkbox" checked />
-					<label for="profile-1">
-						<img src="/dist/images/avatar.png" />
-						<span>Text text Text</span>
-					</label>
-				</div>
-				<div class="post-composer__profiles__profile">
-					<input id="profile-2" type="checkbox" checked />
-					<label for="profile-2">
-						<img src="/dist/images/avatar.png" />
-						<span>Text text Text</span>
-					</label>
-				</div>
-				<div class="post-composer__profiles__profile">
-					<input id="profile-3" type="checkbox" checked />
-					<label for="profile-3">
-						<img src="/dist/images/avatar.png" />
-						<span>Text text Text</span>
-					</label>
-				</div>
-			</div>
-			<div class="post-composer__footer clearfix">
-				<button class="btn btn-default btn-small btn-bolded post-btn">Post</button>
-				<div class="post-composer__actions clearfix"></div>
-			</div>
-		</div>
-	</div>
+    <div class="post-composer">
+        <textarea id="Test" name="Test" class="post-composer__textbox" placeholder="Say something to your audience..."></textarea>
+        <div class="post-composer__manager">
+            <div class="post-composer__uploader">
+                <div class="post-composer__uploader__uploaded">
+                    <div class="post-composer__uploader__upload">
+                        <label for="post-image"></label>
+                        <input id="post-image" type="file" multiple />
+                    </div>
+                </div>
+            </div>
+            <div class="post-composer__profiles">
+                <h6>Choose accounts</h6>
+                @foreach (var account in Model.Item2)
+                {
+                    <div class="post-composer__profiles__profile">
+                        <input id="@account.Id" data-accounttype="@account.Type" data-accountid="@account.Id" type="checkbox" checked />
+                        <label for="@account.Id">
+                            <img src="@account.PictureUrl" />
+                            <span>@account.Name</span>
+                        </label>
+                    </div>
+                }
+            </div>
+            <div class="post-composer__footer clearfix">
+                <button class="btn btn-default btn-small btn-bolded post-btn">Post</button>
+                <div class="post-composer__actions clearfix"></div>
+            </div>
+        </div>
+    </div>
 </div>
 <div class="team__body__content team__body__content--fluid" style="margin-top: 15px">
-	<div class="posts-presenter" data-fbAcursor="" data-twAcursor="">
-	</div>
+    <div class="posts-presenter" data-fbAcursor="" data-twAcursor="">
+    </div>
 </div>

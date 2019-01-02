@@ -3,6 +3,7 @@ using FlowHub.ViewModels;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -13,19 +14,14 @@ namespace FlowHub.Api_Managers
     // API - check when adding other
     public class FacebookOAuthLogin
     {
-        private static readonly string app_id = "252497228687414";
-        private static readonly string app_secret = "3755e6aee13729a45a91826b3590b744";
+        private static readonly string app_id = ConfigurationManager.AppSettings["FbAppId"];
+        private static readonly string app_secret = ConfigurationManager.AppSettings["FbAppSecret"];
         private static readonly ISocialMediaClient _client = new FacebookClient();
-
-        public FacebookOAuthLogin()
-        {
-
-        }
 
         public ActionResult LoginDialog(string uriRedirectString) // Default permissions manage_pages ad publish_pages
         {
             var baseUri = "https://www.facebook.com/v3.0";
-            var permissions = "manage_pages, publish_pages"; // If needed pass as argument.
+            var permissions = "manage_pages,publish_pages,user_posts,user_likes"; // If needed pass as argument.
             var oauthRedirectUri = $"{baseUri}/dialog/oauth?client_id={app_id}&scope={permissions}&response_type=code&redirect_uri={uriRedirectString}"; // &state={{st=state123abc,ds=123456789}} &scope
 
             return new RedirectResult(oauthRedirectUri);
@@ -68,10 +64,25 @@ namespace FlowHub.Api_Managers
                 return accounts;
             }
 
-            return new List<FacebookAccountViewModel> { parsedPages["data"].ToList()
+             return new List<FacebookAccountViewModel> { parsedPages["data"].ToList()
                 .Where(p => p["id"].ToString().Equals(account_id))
                 .Select(p => GetAccount(p))
                 .FirstOrDefault() };
+        }
+
+        public async Task<FacebookAccountViewModel> GetUserAccount(string access_token) // Exchange code for access_token 
+        {
+            var fields = new Dictionary<string, string>
+            {
+                { "fields", "id,name,picture{url}" },
+                { "access_token", access_token }
+            };
+
+            string response = await _client.GetAsync("/me", Utils.GetQueryString(fields));
+            FacebookAccountViewModel account = GetAccount(JObject.Parse(response));
+            account.access_token = access_token;
+
+            return account;
         }
 
         public async Task<string> DeAuthorizeApp(string user_id, string access_token)
@@ -83,6 +94,25 @@ namespace FlowHub.Api_Managers
             return response;
         }
 
+        public static async Task<bool> IsAuthorized(string access_token)
+        {
+            var fields = new Dictionary<string, string>
+            {
+                { "access_token", access_token }
+            };
+
+            try
+            {
+                await _client.GetAsync("/me", Utils.GetQueryString(fields));
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         #region
         public FacebookAccountViewModel GetAccount(JToken jsonAccount)
         {
@@ -90,7 +120,7 @@ namespace FlowHub.Api_Managers
             {
                 Id = jsonAccount["id"].ToString(),
                 Name = jsonAccount["name"].ToString(),
-                access_token = jsonAccount["access_token"].ToString(),
+                access_token = jsonAccount["access_token"] != null ? jsonAccount["access_token"].ToString() : "",
                 PictureUrl = jsonAccount["picture"]["data"]["url"].ToString()
             };
         }

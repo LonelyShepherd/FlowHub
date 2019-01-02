@@ -52,6 +52,11 @@ namespace FlowHub.Models
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public DbSet<Team> Teams { get; set; }
+        public DbSet<FacebookUserAccount> FacebookUserAccounts { get; set; }
+        public DbSet<FacebookTeamAccount> FacebookTeamAccounts { get; set; }
+        public DbSet<TwitterUserAccount> TwitterUserAccounts { get; set; }
+        public DbSet<TwitterTeamAccount> TwitterTeamAccounts { get; set; }
+
 
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)

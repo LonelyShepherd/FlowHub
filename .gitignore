@@ -270,3 +270,6 @@ __pycache__/
 
 # Original files
 *.orig
+
+# AppSettings
+AppSettingsTokens.config

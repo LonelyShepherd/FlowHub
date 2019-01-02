@@ -45,13 +45,15 @@ namespace FlowHub.Controllers
             GetUser(out _, out ApplicationUser user);
             string access_token = await FacebookAuthenticator.ExchangeOAuthCodeAsync(code, Url.Action("FacebookUserAuth", "OAuth", null, this.Request.Url.Scheme));
             List<FacebookAccountViewModel> accounts = await FacebookAuthenticator.GetPageAuthTokens(access_token);
+            accounts.Insert(0, await FacebookAuthenticator.GetUserAccount(access_token));
+
             if (user.FbUserAccount == null)
                 user.FbUserAccount = new FacebookUserAccount();
 
             user.FbUserAccount.helper_access_token = access_token;
             _context.SaveChanges();
 
-						return View("~/Views/Dashboard/FacebookAccounts.cshtml", new DashboardViewModel<Tuple<string, List<FacebookAccountViewModel>>, ApplicationUser>(Tuple.Create("User", accounts), user));
+			return View("~/Views/Dashboard/FacebookAccounts.cshtml", new DashboardViewModel<Tuple<string, List<FacebookAccountViewModel>>, ApplicationUser>(Tuple.Create("User", accounts), user));
 		}
 
 		// POST OAuth/SaveUserAccount
@@ -60,8 +62,10 @@ namespace FlowHub.Controllers
             GetUser(out _, out ApplicationUser user);
             FacebookAccountViewModel account = (await FacebookAuthenticator.GetPageAuthTokens(user.FbUserAccount.helper_access_token, Request.Form["id"]))
                 .SingleOrDefault();
+            account = account ?? await FacebookAuthenticator.GetUserAccount(user.FbUserAccount.helper_access_token);
+            account = account.Id == Request.Form["id"] ? account : null;
 
-            if(account == null)
+            if (account == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest,
                     "Something went wrong, please make sure that you have selected an account.");
@@ -73,7 +77,7 @@ namespace FlowHub.Controllers
 
             _context.SaveChanges();
 
-            return RedirectToAction("Accounts", "Dashboard");
+            return JavaScript("window.location = '" + Url.Action("Accounts", "Dashboard") + "'");
         }
 
         // GET: OAuth/FacebookTeamLogin
@@ -160,7 +164,27 @@ namespace FlowHub.Controllers
 
             _context.SaveChanges();
 
+            return JavaScript("window.location = '" + Url.Action("Team", "Dashboard") + "'");
+        }
+
+        // GET: OAuth/FacebookUserDisconnect
+        public ActionResult FacebookUserDisconnect()
+        {
+            GetUser(out _, out ApplicationUser user);
+            _context.FacebookUserAccounts.Remove(user.FbUserAccount);
+            _context.SaveChanges();
+
             return RedirectToAction("Accounts", "Dashboard");
+        }
+
+        // GET: OAuth/FacebookTeamDisconnect
+        public ActionResult FacebookTeamDisconnect()
+        {
+            GetUser(out _, out ApplicationUser user);
+            _context.FacebookTeamAccounts.Remove(user.FbTeamAccount);
+            _context.SaveChanges();
+
+            return RedirectToAction("Team", "Dashboard");
         }
 
         // GET: OAuth/TwitterUserLogin
@@ -184,7 +208,7 @@ namespace FlowHub.Controllers
         {
             GetUser(out _, out ApplicationUser user);
             Tuple<string, string> tuple = await TwitterAuthenticator.ExchangeRequestTokenAsync(oauth_token, oauth_verifier, user.twitterUserAccount.helper_token_secret);
-            string screenName = await TwitterAuthenticator.VerifyCredentials(tuple.Item1, tuple.Item2);
+            string screenName = await TwitterAuthenticator.GetUserScreenName(tuple.Item1, tuple.Item2);
 
             user.twitterUserAccount.AccountId = screenName;
             user.twitterUserAccount.AccountName = screenName;
@@ -248,7 +272,7 @@ namespace FlowHub.Controllers
         {
             GetUser(out _, out ApplicationUser user);
             Tuple<string, string> tuple = await TwitterAuthenticator.ExchangeRequestTokenAsync(oauth_token, oauth_verifier, user.twitterTeamAccount.helper_token_secret);
-            string screenName = await TwitterAuthenticator.VerifyCredentials(tuple.Item1, tuple.Item2);
+            string screenName = await TwitterAuthenticator.GetUserScreenName(tuple.Item1, tuple.Item2);
 
             if(user.Team.LeaderId != user.Id && screenName != user.Team.Leader.twitterTeamAccount.AccountId)
             {
@@ -264,6 +288,26 @@ namespace FlowHub.Controllers
             _context.SaveChanges();
 
             return RedirectToAction("Accounts", "Dashboard");
+        }
+
+        // GET: OAuth/TwitterUserDisconnect
+        public ActionResult TwitterUserDisconnect()
+        {
+            GetUser(out _, out ApplicationUser user);
+            _context.TwitterUserAccounts.Remove(user.twitterUserAccount);
+            _context.SaveChanges();
+
+            return RedirectToAction("Accounts", "Dashboard");
+        }
+
+        // GET: OAuth/TwitterTeamDisconnect
+        public ActionResult TwitterTeamDisconnect()
+        {
+            GetUser(out _, out ApplicationUser user);
+            _context.TwitterTeamAccounts.Remove(user.twitterTeamAccount);
+            _context.SaveChanges();
+
+            return RedirectToAction("Team", "Dashboard");
         }
 
         protected override void Dispose(bool disposing)

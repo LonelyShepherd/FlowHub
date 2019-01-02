@@ -1258,3 +1258,25 @@ body {
       background: #3b5998; }
     .connect-accounts ul li:nth-child(2), .connect-teams li:nth-child(2) {
       background: #1da1f2; }
+
+ul li.disconnect {
+  background: none; }
+  ul li.disconnect img {
+    border: 2px solid #fff;
+    border-radius: 3px;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+    width: 50px;
+    height: 50px; }
+  ul li.disconnect > div:first-child {
+    color: #000; }
+  ul li.disconnect > div:last-child {
+    position: relative;
+    top: 50%;
+    -webkit-transform: translateY(25%);
+            transform: translateY(25%); }
+    ul li.disconnect > div:last-child a {
+      background: #e77e7e; }
+  ul li.disconnect:first-child {
+    background: none; }
+  ul li.disconnect:nth-child(2) {
+    background: none; }

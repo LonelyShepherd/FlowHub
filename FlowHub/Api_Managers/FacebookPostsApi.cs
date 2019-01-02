@@ -4,11 +4,13 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 
@@ -21,12 +23,7 @@ namespace FlowHub.Api_Managers
     {
         private static readonly ISocialMediaClient _client = new FacebookClient(); // facebookClient should be reusable, not disposed after each request
 
-        public FacebookPostsApi()
-        {
-
-        }
-
-        public async Task<PostViewModel> CreatePostAsync(string page_id, string message, HttpFileCollectionBase images, string access_token)
+        public async Task<PostViewModel> CreatePostAsync(string page_id, string message, List<MemoryStream> images, string access_token)
         {
             var payload = new Dictionary<string, string>
             {
@@ -36,9 +33,7 @@ namespace FlowHub.Api_Managers
 
             if (images.Count != 0)
             {
-                IEnumerable<Task<string>> uploadTasks = images.AllKeys
-                                                              .ToList()
-                                                              .Select(key => UploadFileAsync(page_id, message, images[key], access_token));
+                IEnumerable<Task<string>> uploadTasks = images.Select(image => UploadFileAsync(page_id, message, image, access_token));
 
                 string[] imageIds = await Task.WhenAll(uploadTasks.ToArray());
 
@@ -47,7 +42,7 @@ namespace FlowHub.Api_Managers
                     payload.Add($"attached_media[{i}]", $"{{media_fbid:{imageIds[i]}}}");
                 }
 
-                if(imageIds.Length == 1)
+                if (imageIds.Length == 1)
                     payload.Add($"attached_media[1]", $"{{media_fbid:{imageIds[0]}}}");
             }
 
@@ -113,8 +108,14 @@ namespace FlowHub.Api_Managers
             if (newImages.Count != 0)
             {
                 IEnumerable<Task<string>> uploadTasks = newImages.AllKeys
-                                                              .ToList()
-                                                              .Select(key => UploadFileAsync(page_id, message, newImages[key], access_token));
+                                                             .ToList() // UploadFileAsync(page_id, message, newImages[key], access_token)
+                                                             .Select(key =>
+                                                             {
+                                                                 MemoryStream imageStream = new MemoryStream();
+                                                                 newImages[key].InputStream.CopyTo(imageStream);
+                                                                 return imageStream;
+                                                             })
+                                                             .Select(stream => UploadFileAsync(page_id, message, stream, access_token));
 
                 imageIds = await Task.WhenAll(uploadTasks.ToArray());
 
@@ -124,7 +125,8 @@ namespace FlowHub.Api_Managers
                 }
             }
 
-            if (oldImageIds.Length + newImages.Count == 1) {
+            if (oldImageIds.Length + newImages.Count == 1)
+            {
                 if (oldImageIds.Length == 1)
                     payload.Add($"attached_media[1]", $"{{media_fbid:{oldImageIds[0]}}}");
                 else
@@ -133,7 +135,7 @@ namespace FlowHub.Api_Managers
 
 
             List<string> deletedImageIds = deletedImages.Split(',').ToList();
-            if(oldImageIds.Length == 0 && newImages.Count == 0)
+            if (oldImageIds.Length == 0 && newImages.Count == 0)
             {
                 IEnumerable<Task<string>> deleteTasks = deletedImageIds
                                                              .Select(id => _client.DeleteAsync($"{id}", $"?access_token={access_token}"));
@@ -147,8 +149,15 @@ namespace FlowHub.Api_Managers
             return post;
         }
 
-        public async Task<Tuple<List<PostViewModel>,string>> GetPostedPostsAsync(string page_id, string access_token, int limit = 0, string after_cursor = "")
+        public async Task<Tuple<List<PostViewModel>, string>> GetPostedPostsAsync(string page_id, string access_token, int limit = 0, string after_cursor = "")
         {
+            after_cursor = HttpUtility.UrlDecode(after_cursor);
+
+            if (after_cursor.StartsWith("?"))
+            {
+                return await GetUserPostsAsync(page_id, access_token, limit, after_cursor);
+            }
+
             var fields = new Dictionary<string, string>
             {
                 { "access_token", access_token },
@@ -167,13 +176,74 @@ namespace FlowHub.Api_Managers
             JObject postedPosts = JObject.Parse(response);
             List<PostViewModel> posts = postedPosts["data"]
                 .Select(p => ParsePost(p.ToString(), composerPictureUrl))
+                .Where(p => p.Name != "")
                 .ToList();
 
-            string afterCursor = posts.Count != 0 && postedPosts["paging"]["next"] != null ? 
-                postedPosts["paging"]["cursors"]["after"].ToString() : 
-                "";
+            //string afterCursor = posts.Count != 0 && postedPosts["paging"]["next"] != null ? 
+            //    postedPosts["paging"]["cursors"]["after"].ToString() : 
+            //    "";
 
-            return Tuple.Create(posts, afterCursor);
+            string afterCursor = "";
+            if (postedPosts["paging"]["cursors"] != null)
+            {
+                afterCursor = postedPosts["data"].Count() != 0 ?
+                    postedPosts["paging"]["cursors"]["after"].ToString() :
+                    after_cursor;
+            }
+            else if (postedPosts["paging"]["next"] != null)
+            {
+                afterCursor = postedPosts["paging"]["next"].ToString();
+                afterCursor = Regex.Replace(afterCursor, @"^https://graph.facebook.com/v.*/\d*/feed", "");
+                NameValueCollection hlp = HttpUtility.ParseQueryString(afterCursor);
+                Dictionary<string, string> dict = hlp.AllKeys.Where(k => k == "until" || k == "__paging_token").ToDictionary(k => k, k => hlp[k]);
+                dict.Add("last-post", posts.Last().Id);
+                afterCursor = Utils.GetQueryString(dict);
+            }
+
+            return Tuple.Create(posts, HttpUtility.UrlEncode(afterCursor));
+        }
+
+        public async Task<Tuple<List<PostViewModel>, string>> GetUserPostsAsync(string page_id, string access_token, int limit = 0, string after_cursor = "")
+        {
+            var fields = new Dictionary<string, string>
+            {
+                { "access_token", access_token },
+                { "fields", "id,message,created_time,from,attachments,comments.limit(1).summary(true),likes.summary(true),shares" }
+            };
+
+            NameValueCollection hlp = HttpUtility.ParseQueryString(after_cursor);
+            if (limit != 0)
+            {
+                fields.Add("limit", $"{limit}");
+                fields.Add("until", hlp["until"]);
+                fields.Add("__paging_token", hlp["__paging_token"]);
+            }
+
+            string endpoint_fields = access_token;
+            string response = await _client.GetAsync($"/{page_id}/feed", Utils.GetQueryString(fields));
+            string composerPictureUrl = await GetPictureUrlAsync(page_id, access_token);
+
+            JObject postedPosts = JObject.Parse(response);
+
+            List<PostViewModel> posts = postedPosts["data"]
+                .Select(p => ParsePost(p.ToString(), composerPictureUrl))
+                .Where(p => p.Name != "")
+                .Where(p => p.Id != hlp["last-post"])
+                .ToList();
+
+            string afterCursor = "";
+
+            if(postedPosts["data"].Count() != 0)
+            {
+                afterCursor = postedPosts["paging"]["next"].ToString();
+                afterCursor = Regex.Replace(afterCursor, @"^https://graph.facebook.com/v.*/\d*/feed", "");
+                hlp = HttpUtility.ParseQueryString(afterCursor);
+                Dictionary<string, string> dict = hlp.AllKeys.Where(k => k == "until" || k == "__paging_token").ToDictionary(k => k, k => hlp[k]);
+                dict.Add("last-post", posts.Last().Id);
+                afterCursor = Utils.GetQueryString(dict);
+            }
+
+            return Tuple.Create(posts, HttpUtility.UrlEncode(afterCursor));
         }
 
         public async Task<string> GetScheduledPostsAsync(string page_id, string access_token)
@@ -204,7 +274,7 @@ namespace FlowHub.Api_Managers
             return post;
         }
 
-        public async Task<string> DeleteObjectAsync(string object_id, string access_token) 
+        public async Task<string> DeleteObjectAsync(string object_id, string access_token)
         {
             return await _client.DeleteAsync($"/{object_id}", $"?access_token={access_token}");
         }
@@ -262,7 +332,7 @@ namespace FlowHub.Api_Managers
             {
                 { "fields", "url" },
                 { "redirect", "false" },
-                { "access_token", access_token },
+                { "access_token", access_token }
             };
 
 
@@ -271,16 +341,36 @@ namespace FlowHub.Api_Managers
             return Utils.GetJsonProperty(response, "data", "url"); ;
         }
 
-        private async Task<string> UploadFileAsync(string page_id, string message, HttpPostedFileBase file, string access_token)
+        public async Task<SocialMediaAccountViewModel> GetProfileInfoAsync(string object_id, string access_token)
+        {
+            var fields = new Dictionary<string, string>
+            {
+                { "fields", "id,name,picture{url}" },
+                { "access_token", access_token }
+            };
+
+            string response = await _client.GetAsync($"/{object_id}", Utils.GetQueryString(fields));
+            JObject jsonResponse = JObject.Parse(response);
+
+            return new SocialMediaAccountViewModel
+            {
+                Id = jsonResponse["id"].ToString(),
+                Name = jsonResponse["name"].ToString(),
+                PictureUrl = jsonResponse["picture"]["data"]["url"].ToString(),
+                Type = "facebook"
+            };
+        }
+        // HttpPostedFileBase file
+        private async Task<string> UploadFileAsync(string page_id, string message, MemoryStream file, string access_token)
         {
             string response;
             using (var content = new MultipartFormDataContent())
             {
-                byte[] fileData = null;
-                using (BinaryReader binaryReader = new BinaryReader(file.InputStream))
-                {
-                    fileData = binaryReader.ReadBytes(file.ContentLength);
-                }
+                byte[] fileData = file.ToArray();
+                //using (BinaryReader binaryReader = new BinaryReader(file.InputStream))
+                //{
+                //    fileData = binaryReader.ReadBytes(file.ContentLength);
+                //}
 
                 content.Add(new StringContent(access_token), "access_token");
                 content.Add(new StringContent(message), "message");
@@ -297,27 +387,34 @@ namespace FlowHub.Api_Managers
         {
             dynamic postedPost = JsonConvert.DeserializeObject(jsonPost);
             PostViewModel post = JsonConvert.DeserializeObject<PostViewModel>(Convert.ToString(jsonPost));
-            post.Type = "Facebook";
-            post.Name = postedPost.from.name;
-            post.ComposerId = postedPost.from.id;
-            post.ComposerPictureUrl = pictureUrl;
-            post.CommentsCount = postedPost.comments.summary.total_count;
-            post.LikesCount = postedPost.likes.summary.total_count;
-            post.SharesCount = postedPost.shares == null ? "0" : postedPost.shares.count;
-            post.Photos = new List<Tuple<string,string>>();
-
-            if (postedPost.attachments != null)
+            try
             {
-                if (postedPost.attachments.data[0].subattachments != null)
+                post.Type = "Facebook";
+                post.Name = postedPost.from != null ? postedPost.from.name : "";
+                post.ComposerId = postedPost.from != null ? postedPost.from.id : "";
+                post.ComposerPictureUrl = pictureUrl;
+                post.CommentsCount = postedPost.comments.summary.total_count;
+                post.LikesCount = postedPost.likes.summary.total_count;
+                post.SharesCount = postedPost.shares == null ? "0" : postedPost.shares.count;
+                post.Photos = new List<Tuple<string, string>>();
+
+                if (postedPost.attachments != null)
                 {
-                    foreach (dynamic photo in postedPost.attachments.data[0].subattachments.data)
+                    if (postedPost.attachments.data[0].subattachments != null)
                     {
-                        post.Photos.Add(Tuple.Create(Convert.ToString(photo.target.id), Convert.ToString(photo.media.image.src)));
+                        foreach (dynamic photo in postedPost.attachments.data[0].subattachments.data)
+                        {
+                            post.Photos.Add(Tuple.Create(Convert.ToString(photo.target.id), Convert.ToString(photo.media.image.src)));
+                        }
                     }
+                    else
+                        post.Photos.Add(Tuple.Create<string, string>(Convert.ToString(postedPost.attachments.data[0].target.id),
+                            Convert.ToString(postedPost.attachments.data[0].media.image.src)));
                 }
-                else
-                    post.Photos.Add(Tuple.Create(Convert.ToString(postedPost.attachments.data[0].target.id), 
-                        Convert.ToString(postedPost.attachments.data[0].media.image.src)));
+            }
+            catch (Exception)
+            {
+                post.Name = "";
             }
 
             return post;
