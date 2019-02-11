@@ -142,7 +142,7 @@ namespace FlowHub.Controllers
 
             _context.SaveChanges();
 
-            return RedirectToAction("Accounts", "Dashboard");
+            return RedirectToAction("Team", "Dashboard");
         }
 
         // POST OAuth/SaveTeamAccount
@@ -182,6 +182,16 @@ namespace FlowHub.Controllers
         {
             GetUser(out _, out ApplicationUser user);
             _context.FacebookTeamAccounts.Remove(user.FbTeamAccount);
+
+            if (user.Team.LeaderId == user.Id)
+            {
+                foreach(var u in user.Team.ApplicationUsers)
+                {
+                    if (u.FbTeamAccount != null)
+                        _context.FacebookTeamAccounts.Remove(u.FbTeamAccount);
+                }
+            }
+
             _context.SaveChanges();
 
             return RedirectToAction("Team", "Dashboard");
@@ -287,7 +297,7 @@ namespace FlowHub.Controllers
 
             _context.SaveChanges();
 
-            return RedirectToAction("Accounts", "Dashboard");
+            return RedirectToAction("Team", "Dashboard");
         }
 
         // GET: OAuth/TwitterUserDisconnect
@@ -305,6 +315,16 @@ namespace FlowHub.Controllers
         {
             GetUser(out _, out ApplicationUser user);
             _context.TwitterTeamAccounts.Remove(user.twitterTeamAccount);
+
+            if (user.Team.LeaderId == user.Id)
+            {
+                foreach (var u in user.Team.ApplicationUsers)
+                {
+                    if (u.twitterTeamAccount != null)
+                        _context.TwitterTeamAccounts.Remove(u.twitterTeamAccount);
+                }
+            }
+
             _context.SaveChanges();
 
             return RedirectToAction("Team", "Dashboard");

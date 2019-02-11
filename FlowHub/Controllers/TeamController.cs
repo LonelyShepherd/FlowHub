@@ -125,10 +125,10 @@ namespace FlowHub.Controllers
                     return PartialView("~/Views/Team/Partials/_Overview.cshtml", Tuple.Create(user, profileInfo));
                 case "settings":
                     Dictionary<string, SocialMediaAccountViewModel> profileInfoDict = profileInfo.ToDictionary(p => p.Type.ToLower(), p => p);
-                    if (user.Team.LeaderId == user.Id)
+                    //if (user.Team.LeaderId == user.Id)
                         return PartialView("~/Views/Team/Partials/_Settings.cshtml", Tuple.Create(user, profileInfoDict));
-                    else
-                        return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+                    //else
+                    //    return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
                 default:
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
@@ -186,9 +186,24 @@ namespace FlowHub.Controllers
 
             Avatar.Delete(team.Avatar);
 
+            if (user.twitterTeamAccount != null)
+                _context.TwitterTeamAccounts.Remove(user.twitterTeamAccount);
+
+            if (user.FbTeamAccount != null)
+                _context.FacebookTeamAccounts.Remove(user.FbTeamAccount);
+
+            foreach (var u in team.ApplicationUsers)
+            {
+                if (u.twitterTeamAccount != null)
+                    _context.TwitterTeamAccounts.Remove(u.twitterTeamAccount);
+
+                if (u.FbTeamAccount != null)
+                    _context.FacebookTeamAccounts.Remove(u.FbTeamAccount);
+            }
+
             user.Team = null;
             team.Leader = null;
-            team.ApplicationUsers = null;
+            //team.ApplicationUsers = null;
             foreach (var member in team.ApplicationUsers?.ToList())
                 member.Team = null;
 
