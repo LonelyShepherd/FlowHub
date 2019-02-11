@@ -82,10 +82,20 @@ function ajaxHandler(selected) {
         dataType: 'html'
     }).done(data => {
         main.notify('clear');
-        body.innerHTML = data;
+
+        if (selected === 'overview') {
+            body_wrap.style.display = 'block';
+            Alter.unmount(settings_wrap);
+            load = true;
+        }
 
         if (selected !== 'settings')
             return;
+
+        load = false;
+        body_wrap.style.display = 'none';
+        settings_wrap.innerHTML = data;
+        Alter.before(settings_wrap, body_wrap);
 
         document.body.appendChild(script);
         loaded = true;
@@ -103,6 +113,8 @@ function selectTab(trigger) {
 }
 
 let body = document.querySelector('.team__body')
+    , body_wrap = body.querySelector('.team__body__content-wrapper')
+    , settings_wrap = Utils.createElement('div', { className: 'settings-wrapper' })
     , nav = document.querySelector('.team__header__nav')
     , placeholder = Utils.createElement('div', {}, {
         height: nav.offsetHeight + 'px'
@@ -308,6 +320,7 @@ function close(e) {
 }
 
 function loadPosts() {
+
     if ((postsPresenter.getAttribute('data-fbAcursor') === '' &&
         postsPresenter.getAttribute('data-twAcursor') === '') &&
         !load)
@@ -524,7 +537,7 @@ createPost.addEventListener('click', () => {
 });
 
 window.addEventListener('scroll', () => {
-    if (document.documentElement.offsetHeight === window.scrollY + window.innerHeight)
+    if (document.documentElement.offsetHeight === window.scrollY + window.innerHeight && load)
         loadPosts();
 });
 

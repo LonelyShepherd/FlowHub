@@ -125,10 +125,10 @@ namespace FlowHub.Controllers
                     return PartialView("~/Views/Team/Partials/_Overview.cshtml", Tuple.Create(user, profileInfo));
                 case "settings":
                     Dictionary<string, SocialMediaAccountViewModel> profileInfoDict = profileInfo.ToDictionary(p => p.Type.ToLower(), p => p);
-                    if (user.Team.LeaderId == user.Id)
+                    //if (user.Team.LeaderId == user.Id)
                         return PartialView("~/Views/Team/Partials/_Settings.cshtml", Tuple.Create(user, profileInfoDict));
-                    else
-                        return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
+                    //else
+                    //    return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
                 default:
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
