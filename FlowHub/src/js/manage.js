@@ -48,6 +48,7 @@ let composer = document.querySelector('.post-composer')
                 data.append('post-id', editingPost.getAttribute('data-postid'));
                 data.append('account_type', role);
 
+                main.notify('working');
                 $.ajax({
                     url: '/Post/EditPost',
                     method: 'POST',
@@ -56,9 +57,13 @@ let composer = document.querySelector('.post-composer')
                     processData: false,
                     mimeType: 'multipart/form-data'
                 }).done(data => {
+                    main.notify('success', 'Your post has been successfully edited');
+
                     editingPost.display = 'none';
                     editingPost.insertAdjacentHTML('afterend', data);
                     Alter.unmount(editingPost);
+                }).fail((jqXHR, textStatus, errorThrown) => {
+                    main.notify('error', errorThrown);
                 });
 
                 deleted.length = edits.length = 0;
@@ -320,20 +325,24 @@ function close(e) {
 }
 
 function loadPosts() {
-    console.log(load);
     if ((postsPresenter.getAttribute('data-fbAcursor') === '' &&
         postsPresenter.getAttribute('data-twAcursor') === '') &&
         !load)
         return;
 
+    main.notify('working');
     $.ajax({
         url: '/Post/Get' + role + 'Posts',
         dataType: 'json',
         data: 'tab=' + currentTab + '&fb_after_cursor=' + postsPresenter.getAttribute('data-fbAcursor') + '&twitter_after_cursor=' + postsPresenter.getAttribute('data-twAcursor')
     }).done(data => {
+        main.notify('clear');
+  
         postsPresenter.setAttribute('data-fbAcursor', data.cursors.fbafter);
         postsPresenter.setAttribute('data-twAcursor', data.cursors.twafter);
         postsPresenter.innerHTML += data.posts;
+    }).fail((jqXHR, textStatus, errorThrown) => {
+        main.notify('error', errorThrown);
     });
 
     load = true;
@@ -493,6 +502,7 @@ createPost.addEventListener('click', () => {
     formData.append('accounts', JSON.stringify(selectedAccounts));
     formData.append('account_type', role);
 
+    main.notify('working');
     $.ajax({
         url: '/Post/CreatePost',
         method: 'POST',
@@ -501,6 +511,7 @@ createPost.addEventListener('click', () => {
         processData: false,
         mimeType: 'multipart/form-data'
     }).done(data => {
+        main.notify('success', 'You have successfully created a post');
         let temp = Utils.createElement('div', { innerHTML: data.trim() }); // Never return a text node of whitespace as the result
 
         let fbPost = Array.from(temp.children).find(post => post.getAttribute('data-postType').toLowerCase() === 'facebook');
@@ -510,7 +521,6 @@ createPost.addEventListener('click', () => {
             Alter.prepend(temp, postsPresenter);
         }
         else if (currentTab === 'facebook') {
-            console.log('fb');
             Alter.prepend(fbPost, postsPresenter);
         }
         else if (currentTab === 'twitter') {
@@ -533,6 +543,8 @@ createPost.addEventListener('click', () => {
         });
         Utils.removeClass(manager, 'post-composer__manager--slide');
         document.removeEventListener('click', close);
+    }).fail((jqXHR, textStatus, errorThrown) => {
+        main.notify('error', errorThrown);
     });
 });
 
@@ -592,12 +604,16 @@ postsPresenter.addEventListener('click', e => {
             post = Traversal.parents(action, '.posts-presenter__post');
             let postType = post.getAttribute('data-postType')
 
+            main.notify('working');
             $.ajax({
                 url: '/Post/Delete' + postType + 'Post',
                 method: 'DELETE',
                 data: 'post_id=' + post.getAttribute('data-postid') + '&account_type=' + role
             }).done(() => {
+                main.notify('success', 'Your have successfully deleted the post');
                 Alter.unmount(post);
+            }).fail((jqXHR, textStatus, errorThrown) => {
+                main.notify('error', errorThrown);
             });
             break;
         case 'Edit':
@@ -671,16 +687,20 @@ postsPresenter.addEventListener('click', e => {
             let postType = post.getAttribute('data-postType');
             commentsPresenter = Traversal.prev(action, '.comment-presenter');
 
+            main.notify('working');
             $.ajax({
                 url: '/Post/Get' + postType + 'Comments',
                 dataType: 'json',
                 data: 'post_id=' + postId + '&after_cursor=' + commentsPresenter.getAttribute('data-acursor') + '&account_type=' + role
             }).done(data => {
+                main.notify('clear');
                 if (data.cursors.after === '')
                     Alter.unmount(action);
 
                 commentsPresenter.innerHTML += data.comments;
                 commentsPresenter.setAttribute('data-acursor', data.cursors.after);
+            }).fail((jqXHR, textStatus, errorThrown) => {
+                main.notify('error', errorThrown);
             });
             break;
         case 'post-actions-menu__action':
@@ -695,7 +715,6 @@ postsPresenter.addEventListener('click', e => {
 
         post = Traversal.parents(action, '.posts-presenter__post');
         commentsPresenter = post.querySelector('.comment-presenter');
-        console.log(commentsPresenter);
         formData = new FormData();
         formData.append('message', commentValue);
         formData.append('post_id', post.getAttribute('data-postid'));
@@ -704,6 +723,8 @@ postsPresenter.addEventListener('click', e => {
 
         if (commentComposer.value !== '') {
             showComments(action, true, true);
+
+            main.notify('working');
             $.ajax({
                 url: '/Post/Create' + postType + 'Comment',
                 method: 'POST',
@@ -712,6 +733,8 @@ postsPresenter.addEventListener('click', e => {
                 processData: false,
                 mimeType: 'multipart/form-data'
             }).done(data => {
+                main.notify('success', 'You have successfully commented on the post..');
+
                 let temp = Utils.createElement('div', { innerHTML: data });
 
                 //commentsPresenter.getAttribute('data-acursor') !== ''
@@ -722,6 +745,8 @@ postsPresenter.addEventListener('click', e => {
 
                 commentComposer.value = '';
                 action.parentNode.style.display = 'none';
+            }).fail((jqXHR, textStatus, errorThrown) => {
+                main.notify('error', errorThrown);
             });
         } else action.parentNode.style.display = 'none';
     }

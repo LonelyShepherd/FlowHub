@@ -508,7 +508,7 @@ postsPresenter.addEventListener('click', e => {
                 dataType: 'json',
                 data: 'post_id=' + postId + '&after_cursor=' + commentsPresenter.getAttribute('data-acursor') + '&account_type=' + role
             }).done(data => {
-                main.notify('success', 'Post comments are loaded');
+                main.notify('clear');
                 if (data.cursors.after === '')
                     Alter.unmount(action);
 
