@@ -540,7 +540,7 @@ namespace FlowHub.Controllers
                 GetUser(out _, out ApplicationUser user);
                 GetSocialMediaAccounts(user, type, out _, out TwitterUserAccount twitterAccount);
 
-                comment = await twitterPostsApi.CreatePostCommentAsync(Request.Form["post_id"], Request.Form["message"], user.twitterUserAccount.AccountId, user.twitterUserAccount.account_access_token, user.twitterUserAccount.account_access_token_secret);
+                comment = await twitterPostsApi.CreatePostCommentAsync(Request.Form["post_id"], Request.Form["message"], twitterAccount.AccountId, twitterAccount.account_access_token, twitterAccount.account_access_token_secret);
             }
             catch (SocialMediaApiException ex)
             {

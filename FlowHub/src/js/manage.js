@@ -320,7 +320,7 @@ function close(e) {
 }
 
 function loadPosts() {
-
+    console.log(load);
     if ((postsPresenter.getAttribute('data-fbAcursor') === '' &&
         postsPresenter.getAttribute('data-twAcursor') === '') &&
         !load)
@@ -336,7 +336,7 @@ function loadPosts() {
         postsPresenter.innerHTML += data.posts;
     });
 
-    load = false;
+    load = true;
 }
 
 function autoresize(e) {

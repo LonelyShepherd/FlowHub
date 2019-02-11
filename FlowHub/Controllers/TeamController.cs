@@ -186,9 +186,24 @@ namespace FlowHub.Controllers
 
             Avatar.Delete(team.Avatar);
 
+            if (user.twitterTeamAccount != null)
+                _context.TwitterTeamAccounts.Remove(user.twitterTeamAccount);
+
+            if (user.FbTeamAccount != null)
+                _context.FacebookTeamAccounts.Remove(user.FbTeamAccount);
+
+            foreach (var u in team.ApplicationUsers)
+            {
+                if (u.twitterTeamAccount != null)
+                    _context.TwitterTeamAccounts.Remove(u.twitterTeamAccount);
+
+                if (u.FbTeamAccount != null)
+                    _context.FacebookTeamAccounts.Remove(u.FbTeamAccount);
+            }
+
             user.Team = null;
             team.Leader = null;
-            team.ApplicationUsers = null;
+            //team.ApplicationUsers = null;
             foreach (var member in team.ApplicationUsers?.ToList())
                 member.Team = null;
 
